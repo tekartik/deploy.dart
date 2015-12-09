@@ -41,4 +41,3 @@ String simpleFileName = "filename.txt";
 String simpleFileName2 = "filename_2.txt";
 String simpleContent = "simple content";
 
-String clearOutTestPath([parts]) => clearTestOutPath(parts);

@@ -146,7 +146,7 @@ Future<int> linkFile(String target, String link) {
 /**
  * link dir (work on all platforms)
  */
-Future _link(String target, String link) {
+Future<int> _link(String target, String link) {
   link = normalize(absolute(link));
   target = normalize(absolute(target));
   Link ioLink = new Link(link);

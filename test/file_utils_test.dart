@@ -37,7 +37,7 @@ void main() => defineTests();
 void defineTests() {
   group('copy_file', () {
     test('copy_file_if_newer', () {
-      clearOutTestPath();
+      clearTestOutPath();
       String path1 = outDataFilenamePath(simpleFileName);
       String path2 = outDataFilenamePath(simpleFileName2);
       writeStringContentSync(path1, simpleContent);
@@ -52,7 +52,7 @@ void defineTests() {
     });
 
     test('link_or_copy_file_if_newer', () {
-      clearOutTestPath();
+      clearTestOutPath();
       String path1 = outDataFilenamePath(simpleFileName);
       String path2 = outDataFilenamePath(simpleFileName2);
 
@@ -71,7 +71,7 @@ void defineTests() {
     });
 
     test('copy_files_if_newer', () {
-      clearOutTestPath();
+      clearTestOutPath();
       String sub1 = outDataFilenamePath('sub1');
       String file1 = join(sub1, simpleFileName);
       writeStringContentSync(file1, simpleContent + "1");
@@ -100,7 +100,7 @@ void defineTests() {
     });
 
     test('link_or_copy_if_newer_file', () {
-      clearOutTestPath();
+      clearTestOutPath();
       String path1 = outDataFilenamePath(simpleFileName);
       String path2 = outDataFilenamePath(simpleFileName2);
       writeStringContentSync(path1, simpleContent);
@@ -115,7 +115,7 @@ void defineTests() {
     });
 
     test('link_or_copy_if_newer_dir', () {
-      clearOutTestPath();
+      clearTestOutPath();
       String sub1 = outDataFilenamePath('sub1');
       String file1 = join(sub1, simpleFileName);
       writeStringContentSync(file1, simpleContent + "1");
@@ -135,7 +135,7 @@ void defineTests() {
     });
 
     test('deployEntityIfNewer', () async {
-      clearOutTestPath();
+      clearTestOutPath();
       String sub1 = outDataFilenamePath('sub1');
       String file1 = join(sub1, simpleFileName);
       writeStringContentSync(file1, simpleContent + "1");
@@ -158,7 +158,7 @@ void defineTests() {
   group('symlink', () {
     // new way to link a dir (work on linux/windows
     test('link_dir', () async {
-      clearOutTestPath();
+      clearTestOutPath();
       String sub1 = outDataFilenamePath('sub1');
       String file1 = join(sub1, simpleFileName);
       writeStringContentSync(file1, simpleContent);
@@ -179,7 +179,7 @@ void defineTests() {
     });
 
     test('create file symlink', () async {
-      clearOutTestPath();
+      clearTestOutPath();
       // file symlink not supported on windows
       if (Platform.isWindows) {
         return null;

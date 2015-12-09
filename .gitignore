@@ -12,3 +12,9 @@ packages
 
 # Include when developing application packages.
 pubspec.lock
+
+# webstorm
+.idea/
+
+# out
+test/out

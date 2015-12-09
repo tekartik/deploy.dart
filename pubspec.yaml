@@ -1,0 +1,14 @@
+name: tekartik_deploy
+version: 0.0.1
+description: File deployment helper
+dependencies:
+  path: any
+  pub_semver: any
+dev_dependencies:
+  test: any
+  dev_test: any
+  process_run: any
+  tekartik_pub:
+    git: git://github.com/tekartik/tekartik_pub.dart
+executables:
+  dirdeploy:

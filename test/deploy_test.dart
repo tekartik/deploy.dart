@@ -1,12 +1,10 @@
 @TestOn("vm")
 import 'package:tekartik_deploy/deploy.dart';
-import 'package:tekartik_deploy/src/file_utils.dart';
 //import 'package:tekartik_core/log_utils.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart';
 import 'package:dev_test/test.dart';
 //import 'package:fs_shim/fs.dart';
-import 'package:fs_shim/fs_memory.dart';
 import 'package:fs_shim_test/test.dart';
 
 void main() {

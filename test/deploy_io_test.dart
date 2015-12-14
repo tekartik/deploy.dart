@@ -1,8 +1,4 @@
 @TestOn("vm")
-import 'package:tekartik_deploy/deploy_io.dart';
-import 'package:tekartik_deploy/src/file_utils.dart';
-//import 'package:tekartik_core/log_utils.dart';
-import 'package:yaml/yaml.dart';
 import 'package:path/path.dart';
 //import "dart:io";
 import 'package:dev_test/test.dart';
@@ -26,6 +22,7 @@ main() {
       Directory top = await ctx.prepare();
       //Directory
       Directory dir = new Directory(join(top.path, 'dir'));
+      expect(dir.path, join(top.path, 'dir'));
     });
   });
 }

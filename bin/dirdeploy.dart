@@ -7,7 +7,8 @@ import 'package:yaml/yaml.dart';
 import 'package:tekartik_deploy/src/file_utils.dart';
 import 'package:tekartik_deploy/src/bin_version.dart';
 //import 'package:tekartik_core/log_utils.dart';
-import 'package:tekartik_deploy/deploy_io.dart';
+//import 'package:tekartik_deploy/deploy_io.dart' hide Config, deployConfig;
+import 'package:tekartik_deploy/deploy.dart';
 
 const String _HELP = 'help';
 
@@ -31,11 +32,15 @@ Future _deployEntity(String src, String dst) {
 
 String get currentScriptName => basenameWithoutExtension(Platform.script.path);
 
-void main(List<String> arguments) {
+Future main(List<String> arguments) async {
   //debugQuickLogging(Level.FINE);
 
   ArgParser parser = new ArgParser(allowTrailingOptions: true);
   parser.addFlag(_HELP, abbr: 'h', help: 'Usage help', negatable: false);
+  parser.addFlag("dir",
+      abbr: 'd',
+      help: 'Deploy a directory as is, even if no deploy.yaml is present',
+      negatable: false);
   parser.addFlag("version",
       help: 'Display the script version', negatable: false);
 
@@ -61,18 +66,20 @@ void main(List<String> arguments) {
   bool help = _argsResult[_HELP];
   if (help) {
     _usage();
-    return;
+    return null;
   }
 
   if (_argsResult['version']) {
     stdout.writeln('${currentScriptName} ${version}');
-    return;
+    return null;
   }
 
   if (_argsResult.rest.length > 3) {
     _usage();
-    return;
+    return null;
   }
+
+  bool dirOnly = _argsResult["dir"];
 
   String srcDir;
   String dstDir;
@@ -109,7 +116,7 @@ void main(List<String> arguments) {
   }
   */
 
-  Future _handleDir(String dir) {
+  Future _handleDir(String dir) async {
     // this is a directoru
     String deployYaml = "deploy.yaml";
 
@@ -154,6 +161,13 @@ void main(List<String> arguments) {
     });
   }
 
+  Future _newDeploy(Map settings) async {
+    Config config = new Config(settings,
+        src: new Directory(srcDir),
+        dst: dstDir == null ? null : new Directory(dstDir));
+
+    return await deployConfig(config);
+  }
   // int argIndex = 0;
   // Handle direct yaml file
   if (_argsResult.rest.length > 0) {
@@ -171,16 +185,22 @@ void main(List<String> arguments) {
           dstDir = normalize(absolute(_argsResult.rest[2]));
         }
       }
-      new File(yamlFilePath).readAsString().then((content) {
-        Map settings = loadYaml(content);
 
-        Config config = new Config(settings, src: srcDir, dst: dstDir);
+      String content = await new File(yamlFilePath).readAsString();
 
-        return deployConfig(config);
-      });
-      return;
+      Map settings = loadYaml(content);
+      return await _newDeploy(settings);
+    }
+
+    if (dirOnly) {
+      srcDir = firstArg;
+      if (_argsResult.rest.length > 1) {
+        dstDir = normalize(absolute(_argsResult.rest[1]));
+      }
+      return await _newDeploy({});
     }
   }
+
   // Regular dart build
   if (_argsResult.rest.length < 2) {
     String dir = _argsResult.rest.length == 0
@@ -214,10 +234,11 @@ void main(List<String> arguments) {
     dstDir = _argsResult.rest[1];
     //}
 
-    _handleDir(srcDir).then((count) {
+    await _handleDir(srcDir).then((count) {
       if (count == 0) {
         print('no deploy.yaml file found in ${srcDir}');
       }
     });
   }
+  return null;
 }

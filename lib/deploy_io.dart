@@ -63,24 +63,26 @@ class Config {
   }
 
   void _init() {
-    var files = settings['files'];
-    if (files is List) {
-      for (var fileOrDir in files) {
-        if (fileOrDir is String) {
-          _entities.add(new EntityConfig(fileOrDir));
-        } else if (fileOrDir is Map) {
-          // - fileName: dstFileName
-          String src = fileOrDir.keys.first;
-          String dst = fileOrDir[src];
+    if (settings != null) {
+      var files = settings['files'];
+      if (files is List) {
+        for (var fileOrDir in files) {
+          if (fileOrDir is String) {
+            _entities.add(new EntityConfig(fileOrDir));
+          } else if (fileOrDir is Map) {
+            // - fileName: dstFileName
+            String src = fileOrDir.keys.first;
+            String dst = fileOrDir[src];
 
-          _entities.add(new EntityConfig.withDst(src, dst));
+            _entities.add(new EntityConfig.withDst(src, dst));
+          }
         }
+      } else if (files is Map) {
+        files.forEach((String key, var value) {
+          //devPrint('$key => $value');
+          _entities.add(new EntityConfig(key));
+        });
       }
-    } else if (files is Map) {
-      files.forEach((String key, var value) {
-        //devPrint('$key => $value');
-        _entities.add(new EntityConfig(key));
-      });
     }
   }
 

@@ -11,6 +11,14 @@ local dir deploy
     dirdeploy
 
 
+## deploy.yaml
+
+
+    files:
+    - file_to_include
+    exclude:
+     file_or_dir_to exclude
+
 ## Activation
 
 ### From git repository
@@ -20,3 +28,4 @@ local dir deploy
 ### From local path
 
     pub global activate -s path .
+

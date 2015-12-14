@@ -4,7 +4,6 @@ import 'package:path/path.dart';
 import 'dart:async';
 import 'package:fs_shim/fs.dart';
 import 'package:fs_shim/utils/copy.dart';
-import 'package:tekartik_deploy/src/file_utils.dart';
 import 'package:logging/logging.dart';
 
 Logger _log = new Logger("tekartik.deploy");
@@ -64,24 +63,26 @@ class Config {
   }
 
   void _init() {
-    var files = settings['files'];
-    if (files is List) {
-      for (var fileOrDir in files) {
-        if (fileOrDir is String) {
-          _entities.add(new EntityConfig(fileOrDir));
-        } else if (fileOrDir is Map) {
-          // - fileName: dstFileName
-          String src = fileOrDir.keys.first;
-          String dst = fileOrDir[src];
+    if (settings != null) {
+      var files = settings['files'];
+      if (files is List) {
+        for (var fileOrDir in files) {
+          if (fileOrDir is String) {
+            _entities.add(new EntityConfig(fileOrDir));
+          } else if (fileOrDir is Map) {
+            // - fileName: dstFileName
+            String src = fileOrDir.keys.first;
+            String dst = fileOrDir[src];
 
-          _entities.add(new EntityConfig.withDst(src, dst));
+            _entities.add(new EntityConfig.withDst(src, dst));
+          }
         }
+      } else if (files is Map) {
+        files.forEach((String key, var value) {
+          //devPrint('$key => $value');
+          _entities.add(new EntityConfig(key));
+        });
       }
-    } else if (files is Map) {
-      files.forEach((String key, var value) {
-        //devPrint('$key => $value');
-        _entities.add(new EntityConfig(key));
-      });
     }
   }
 
@@ -129,24 +130,6 @@ Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
       config.src.fs.newLink(src), config.src.fs.newLink(dst));
 }
 
-Future _deployEntity(String src, String dst) {
-  return FileSystemEntity.isDirectory(src).then((bool isDir) {
-    if (isDir) {
-      //fu.copyFilesIfNewer(src_, dst_);
-      //return fu.linkDir(src_, dst_);
-      return linkOrCopyFilesInDirIfNewer(src, dst, recursive: true);
-    } else {
-      return FileSystemEntity.isFile(src).then((bool isFile) {
-        if (isFile) {
-          return linkOrCopyFileIfNewer(src, dst);
-        } else {
-          throw "${src} entity not found";
-        }
-      });
-    }
-  });
-}
-
 Future<int> deployConfig(Config config) async {
   Directory dst = config.dst.fs.newDirectory(config.dst.path);
   try {
@@ -154,7 +137,7 @@ Future<int> deployConfig(Config config) async {
   } catch (_) {}
   await dst.create(recursive: true);
 
-  List<Future> futures = [];
+  //List<Future> futures = [];
   _log.info(config.entities);
 
   int sum = 0;

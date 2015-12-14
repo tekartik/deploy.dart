@@ -55,6 +55,42 @@ main() {
       //print(processResultToDebugString(result));
     });
 
+    test('deploy.yaml_exclude', () async {
+      Directory top = await ctx.prepare();
+      //Directory
+      Directory dir = new Directory(join(top.path, 'dir'));
+      File file = new File(join(dir.path, "file"));
+      await file.create(recursive: true);
+      await file.writeAsString("test", flush: true);
+      File file2 = new File(join(dir.path, "file2"));
+      await file2.create(recursive: true);
+      await file2.writeAsString("test", flush: true);
+
+      File deployYamlFile = new File(join(dir.path, "deploy.yaml"));
+      await deployYamlFile.create();
+      await deployYamlFile.writeAsString('''
+      exclude:
+        - file
+      ''');
+
+      Directory dst = new Directory(join(top.path, 'dst'));
+
+      await runCmd(
+          dartCmd([dirdeployDartScript, deployYamlFile.path, dir.path, dst.path]));
+      //await runCmd(dartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
+      //print(processResultToDebugString(result));
+      expect(
+          await fs
+              .newFile(join(dst.path, "file2"))
+              .readAsString(),
+          "test");
+      expect(
+          await fs
+              .newFile(join(dst.path, "file"))
+              .exists(),
+          isFalse);
+    });
+
     test('dir', () async {
       Directory top = await ctx.prepare();
       //Directory

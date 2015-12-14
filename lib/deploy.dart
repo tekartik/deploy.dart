@@ -83,11 +83,16 @@ class Config {
           _entities.add(new EntityConfig(key));
         });
       }
+
+      // exclude
+      this.exclude = settings['exclude'];
     }
   }
 
   List<EntityConfig> _entities = [];
   List<EntityConfig> get entities => _entities;
+
+  List<String> exclude = [];
 
   @override
   String toString() {
@@ -143,8 +148,13 @@ Future<int> deployConfig(Config config) async {
   int sum = 0;
   if (config.entities.isEmpty) {
     // default copy all
+    // recursiveLinkOrCopyNewerOptions);
+
+    CopyOptions options =  new CopyOptions(
+        recursive: true, checkSizeAndModifiedDate: true, tryToLinkFile: true,exclude: config.exclude);
+
     sum += await copyFileSystemEntity(config.src, config.dst,
-        options: recursiveLinkOrCopyNewerOptions);
+        options: options);
     /*
     List<FileSystemEntity> list =
         new Directory(config.src).listSync(recursive: false, followLinks: true);

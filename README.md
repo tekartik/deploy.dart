@@ -10,14 +10,20 @@ local dir deploy
 
     dirdeploy
 
+Google Cloud Storage deploy
+
+    gsdeploy
+
 
 ## deploy.yaml
 
+For dirdeploy
 
     files:
     - file_to_include
+      file_to_include2: new_file_name
     exclude:
-     file_or_dir_to exclude
+      file_or_dir_to exclude
 
 ## Activation
 

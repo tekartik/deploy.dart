@@ -161,6 +161,7 @@ Future main(List<String> arguments) async {
     });
   }
 
+  // new implementation
   Future _newDeploy(Map settings) async {
     Config config = new Config(settings,
         src: new Directory(srcDir),

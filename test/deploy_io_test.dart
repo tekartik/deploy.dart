@@ -4,16 +4,37 @@ import 'package:tekartik_deploy/src/file_utils.dart';
 //import 'package:tekartik_core/log_utils.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart';
-import "dart:io";
+//import "dart:io";
 import 'package:dev_test/test.dart';
 import 'io_test_common.dart';
 
-void main() {
-  //debugQuickLogging(Level.FINEST);
-  defineTests();
+import 'package:fs_shim_test/test_io.dart';
+//import 'package:fs_shim/fs_io.dart';
+import 'deploy_test.dart' as deploy_test;
+
+class TestScript extends Script {}
+
+String get testScriptPath => getScriptPath(TestScript);
+String top = join(dirname(testScriptPath), 'out');
+FileSystemTestContext ctx = newIoFileSystemContext(top);
+
+main() {
+  defineTests(ctx);
+
+  group('raw', () {
+    test('dir', () async {
+      Directory top = await ctx.prepare();
+      //Directory
+      Directory dir = new Directory(join(top.path, 'dir'));
+    });
+  });
 }
 
-void defineTests() {
+void defineTests(FileSystemTestContext ctx) {
+  group('io', () {
+    deploy_test.defineTests(ctx);
+  });
+  /*
   group('config', () {
     test('empty', () {
       Config config = new Config({});
@@ -134,5 +155,7 @@ void defineTests() {
             simpleContent);
       });
     });
+
   });
+      */
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env dart
-import 'dart:io';
+import 'package:fs_shim/fs_io.dart';
 import 'dart:async';
 import 'package:args/args.dart';
 import 'package:path/path.dart';

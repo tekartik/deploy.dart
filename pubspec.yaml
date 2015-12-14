@@ -8,7 +8,16 @@ dev_dependencies:
   test: any
   dev_test: any
   process_run: any
+  fs_shim:
+    git: git://github.com/tekartik/fs_shim.dart
+  fs_shim_test:
+    git: git://github.com/tekartik/fs_shim_test.dart
   tekartik_pub:
     git: git://github.com/tekartik/tekartik_pub.dart
+dependency_overrides:
+  fs_shim_test:
+    path: /media/ssd/devx/git/github.com/tekartik/fs_shim_test.dart
+  fs_shim:
+    path: /media/ssd/devx/git/github.com/tekartik/fs_shim.dart
 executables:
   dirdeploy:

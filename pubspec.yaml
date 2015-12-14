@@ -21,3 +21,4 @@ dependency_overrides:
 #    path: /media/ssd/devx/git/github.com/tekartik/fs_shim.dart
 executables:
   dirdeploy:
+  gsdeploy:

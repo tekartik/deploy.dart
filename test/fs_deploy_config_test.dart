@@ -1,4 +1,4 @@
-import 'package:tekartik_deploy/deploy.dart';
+import 'package:tekartik_deploy/fs_deploy.dart';
 //import 'package:tekartik_core/log_utils.dart';
 import 'package:yaml/yaml.dart';
 import 'package:dev_test/test.dart';
@@ -6,7 +6,6 @@ import 'package:dev_test/test.dart';
 import 'package:fs_shim_test/test.dart';
 
 void main() {
-
   group('config', () {
     test('empty', () {
       Config config = new Config({});

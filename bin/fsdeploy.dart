@@ -8,7 +8,7 @@ import 'package:tekartik_deploy/src/file_utils.dart';
 import 'package:tekartik_deploy/src/bin_version.dart';
 //import 'package:tekartik_core/log_utils.dart';
 //import 'package:tekartik_deploy/deploy_io.dart' hide Config, deployConfig;
-import 'package:tekartik_deploy/deploy.dart';
+import 'package:tekartik_deploy/fs_deploy.dart';
 
 const String _HELP = 'help';
 

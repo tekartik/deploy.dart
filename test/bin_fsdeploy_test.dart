@@ -16,7 +16,7 @@ String get _pubPackageRoot => getPubPackageRootSync(testDirPath);
 
 String get dirdeployDartScript {
   PubPackage pkg = new PubPackage(_pubPackageRoot);
-  return join(pkg.path, 'bin', 'dirdeploy.dart');
+  return join(pkg.path, 'bin', 'fsdeploy.dart');
 }
 
 class TestScript extends Script {}
@@ -28,12 +28,12 @@ FileSystem fs = ctx.fs;
 main() {
   //defineTests(ctx);
   //useVMConfiguration();
-  group('dirdeploy', () {
+  group('fsdeploy', () {
     test('version', () async {
       ProcessResult result =
           await runCmd(dartCmd([dirdeployDartScript, '--version']));
       List<String> parts = LineSplitter.split(result.stdout).first.split(' ');
-      expect(parts.first, 'dirdeploy');
+      expect(parts.first, 'fsdeploy');
       expect(new Version.parse(parts.last), version);
     });
 
@@ -75,20 +75,12 @@ main() {
 
       Directory dst = new Directory(join(top.path, 'dst'));
 
-      await runCmd(
-          dartCmd([dirdeployDartScript, deployYamlFile.path, dir.path, dst.path]));
+      await runCmd(dartCmd(
+          [dirdeployDartScript, deployYamlFile.path, dir.path, dst.path]));
       //await runCmd(dartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //print(processResultToDebugString(result));
-      expect(
-          await fs
-              .newFile(join(dst.path, "file2"))
-              .readAsString(),
-          "test");
-      expect(
-          await fs
-              .newFile(join(dst.path, "file"))
-              .exists(),
-          isFalse);
+      expect(await fs.newFile(join(dst.path, "file2")).readAsString(), "test");
+      expect(await fs.newFile(join(dst.path, "file")).exists(), isFalse);
     });
 
     test('dir', () async {

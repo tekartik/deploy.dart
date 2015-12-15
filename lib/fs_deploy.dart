@@ -121,6 +121,13 @@ class EntityConfig {
   }
 }
 
+Future<int> deployConfigEntity(Config config, String sub) async {
+  TopCopy topCopy =
+      new TopCopy(fsTopEntity(config.src), fsTopEntity(config.dst));
+  ChildCopy childCopy = new ChildCopy(topCopy, sub);
+  return await childCopy.run();
+}
+
 Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
   String src = join(config.src.path, entityConfig.src);
   String dst = join(config.dst.path, entityConfig.dst);
@@ -130,7 +137,11 @@ Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
     _log.info("${entityConfig.src}");
   }
   //return _deployEntity(src, dst);
-
+  // OLD
+  /*
+  TopCopy topCopy = new TopCopy(fsTopEntity(config.src), fsTopEntity(config.dst));
+  ChildCopy child = new ChildCopy()
+  */
   return await copyFileSystemEntity(
       config.src.fs.newLink(src), config.src.fs.newLink(dst));
 }
@@ -150,24 +161,29 @@ Future<int> deployConfig(Config config) async {
     // default copy all
     // recursiveLinkOrCopyNewerOptions);
 
-    CopyOptions options =  new CopyOptions(
-        recursive: true, checkSizeAndModifiedDate: true, tryToLinkFile: true,exclude: config.exclude);
+    CopyOptions options = new CopyOptions(
+        recursive: true,
+        checkSizeAndModifiedDate: true,
+        tryToLinkFile: true,
+        exclude: config.exclude);
 
-    sum += await copyFileSystemEntity(config.src, config.dst,
+    TopCopy topCopy = new TopCopy(
+        fsTopEntity(config.src), fsTopEntity(config.dst),
         options: options);
-    /*
-    List<FileSystemEntity> list =
-        new Directory(config.src).listSync(recursive: false, followLinks: true);
-    list.forEach((FileSystemEntity fse) {
-      config.entities.add(new EntityConfig(basename(fse.path)));
-    });
-    */
+    sum += await topCopy.run();
+  } else {
+    CopyOptions options = new CopyOptions(
+        recursive: true,
+        checkSizeAndModifiedDate: true,
+        tryToLinkFile: true,
+        exclude: config.exclude);
+
+    TopCopy topCopy = new TopCopy(
+        fsTopEntity(config.src), fsTopEntity(config.dst),
+        options: options);
+    for (EntityConfig entityConfig in config.entities) {
+      sum += await topCopy.runChild(entityConfig.src, entityConfig.dst);
+    }
   }
-  for (EntityConfig entityConfig in config.entities) {
-    sum += await deployEntity(config, entityConfig);
-  }
-//      for (String fileOrDir in settings['files']) {
-//        print(fileOrDir);
-//      }
   return sum;
 }

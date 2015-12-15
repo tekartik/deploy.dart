@@ -1,10 +1,14 @@
 @TestOn("vm")
-import 'package:tekartik_deploy/deploy.dart';
+import 'package:tekartik_deploy/fs_deploy.dart';
 //import 'package:tekartik_core/log_utils.dart';
 import 'package:path/path.dart';
 import 'package:dev_test/test.dart';
 //import 'package:fs_shim/fs.dart';
 import 'package:fs_shim_test/test.dart';
+
+import 'package:fs_shim/utils/read_write.dart';
+import 'package:fs_shim/utils/entity.dart';
+import 'package:fs_shim/utils/copy.dart';
 
 void main() {
   //debugQuickLogging(Level.FINEST);
@@ -14,10 +18,75 @@ void main() {
 void defineTests(FileSystemTestContext ctx) {
   FileSystem fs = ctx.fs;
 
-
   group('deploy', () {
     setUp(() {
       // clearOutFolderSync();
+    });
+
+    Directory top;
+    Directory src;
+    Directory dst;
+
+    Future _prepare() async {
+      top = await ctx.prepare();
+      src = childDirectory(top, "src");
+      dst = childDirectory(top, "dst");
+    }
+
+    test('exclude', () async {
+      await _prepare();
+      await writeString(childFile(src, "file1"), "test");
+      await writeString(childFile(src, "file2"), "test");
+      TopCopy copy = new TopCopy(fsTopEntity(src), fsTopEntity(dst),
+          options: new CopyOptions(recursive: true, exclude: ["file1"]));
+      await copy.run();
+      expect(await entityExists(childFile(dst, "file1")), isFalse);
+      expect(await readString(childFile(dst, "file2")), "test");
+    });
+
+    test('simple entity', () async {
+      await _prepare();
+      await writeString(childFile(src, "file"), "test");
+      Config config = new Config({})
+        ..src = src
+        ..dst = dst;
+      int count = await deployConfigEntity(config, "file");
+      expect(count, 1);
+      expect(await readString(childFile(dst, "file")), "test");
+    });
+
+    test('empty_config', () async {
+      await _prepare();
+      await writeString(childFile(src, "file"), "test");
+      Config config = new Config({}, src: src, dst: dst);
+      int count = await deployConfig(config);
+      expect(count, 1);
+      expect(await readString(childFile(dst, "file")), "test");
+      /*
+      expect(
+          await fs
+              .newFile(join(top.path, "deploy", "dir", "file.txt"))
+              .readAsString(),
+          "test");
+          */
+    });
+
+    test('single_entity_config', () async {
+      await _prepare();
+      await writeString(childFile(src, "file"), "test");
+      Config config = new Config({
+        "files": ['file']
+      }, src: src, dst: dst);
+      int count = await deployConfig(config);
+      expect(count, 1);
+      expect(await readString(childFile(dst, "file")), "test");
+      /*
+      expect(
+          await fs
+              .newFile(join(top.path, "deploy", "dir", "file.txt"))
+              .readAsString(),
+          "test");
+          */
     });
 
     test('simple entity', () async {

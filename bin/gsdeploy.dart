@@ -9,7 +9,6 @@ import 'package:tekartik_deploy/src/bin_version.dart';
 
 const String _HELP = 'help';
 
-
 String get currentScriptName => basenameWithoutExtension(Platform.script.path);
 
 Future main(List<String> arguments) async {

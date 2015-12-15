@@ -5,8 +5,37 @@ import 'dart:async';
 import 'package:fs_shim/fs.dart';
 import 'package:fs_shim/utils/copy.dart';
 import 'package:logging/logging.dart';
+import 'package:yaml/yaml.dart';
 
 Logger _log = new Logger("tekartik.deploy");
+
+///
+/// Deploy between 2 folders with an option config file
+///
+/// [settings] can be set (files and exclude keys)
+///
+Future<int> fsDeploy(
+    {Map settings, File yaml, Directory src, Directory dst}) async {
+  if (settings == null) {
+    if (yaml != null) {
+      String content = await yaml.readAsString();
+      settings = loadYaml(content);
+    }
+    settings ??= {};
+  }
+
+  // default src?
+  if (src == null) {
+    if (yaml == null) {
+      throw new ArgumentError("need src or yaml specified");
+    }
+    src = yaml.parent;
+  }
+
+  Config config = new Config(settings, src: src, dst: dst);
+
+  return await deployConfig(config);
+}
 
 ///
 /// Config format
@@ -24,13 +53,18 @@ class Config {
   FileSystemEntity get dst => _dst;
   FileSystemEntity get src => _src;
   set src(FileSystemEntity src) {
-    _src = src;
-    String dstBasename = basename(src.path);
-    _dst = _src.fs.newLink(join(dirname(src.path), 'deploy', dstBasename));
+    if (src != null) {
+      _src = src;
+      String dstBasename = basename(src.path);
+      _dst = _src.fs.newLink(join(dirname(src.path), 'deploy', dstBasename));
+    }
   }
 
   set dst(FileSystemEntity dst) {
-    _dst = dst;
+    // don't replace with null
+    if (dst != null) {
+      _dst = dst;
+    }
   }
 
 //  Future _handleYaml(String dir, String yamlFilePath) {

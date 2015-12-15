@@ -71,22 +71,63 @@ void defineTests(FileSystemTestContext ctx) {
           */
     });
 
+    test('fs_deploy', () async {
+      await _prepare();
+      await writeString(childFile(src, "file"), "test");
+
+      int count = await fsDeploy(src: src, dst: dst);
+      expect(count, 1);
+      expect(await readString(childFile(dst, "file")), "test");
+    });
+
+    test('fs_deploy_no_dst', () async {
+      await _prepare();
+      await writeString(childFile(src, "file"), "test");
+
+      int count = await fsDeploy(src: src);
+      expect(count, 1);
+      expect(await readString(childFile(top, join("deploy", "src", "file"))),
+          "test");
+    });
+
     test('single_entity_config', () async {
       await _prepare();
       await writeString(childFile(src, "file"), "test");
-      Config config = new Config({
+      int count = await fsDeploy(settings: {
         "files": ['file']
       }, src: src, dst: dst);
-      int count = await deployConfig(config);
       expect(count, 1);
       expect(await readString(childFile(dst, "file")), "test");
-      /*
-      expect(
-          await fs
-              .newFile(join(top.path, "deploy", "dir", "file.txt"))
-              .readAsString(),
+    });
+
+    test('with_config_file_only', () async {
+      await _prepare();
+      await writeString(childFile(src, "file"), "test");
+      File yaml = childFile(src, "pubspec.yaml");
+      await writeString(
+          yaml,
+          '''
+      files:
+       - file''');
+      int count = await fsDeploy(yaml: yaml);
+      expect(count, 1);
+      // location deploy/src if not specified
+      expect(await readString(childFile(top, join("deploy", "src", "file"))),
           "test");
-          */
+    });
+
+    test('with_config_file_and dst', () async {
+      await _prepare();
+      await writeString(childFile(src, "file"), "test");
+      File yaml = childFile(src, "pubspec.yaml");
+      await writeString(
+          yaml,
+          '''
+      files:
+       - file''');
+      int count = await fsDeploy(yaml: yaml, dst: dst);
+      expect(count, 1);
+      expect(await readString(childFile(dst, "file")), "test");
     });
 
     test('simple entity', () async {

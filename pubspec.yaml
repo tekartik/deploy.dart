@@ -8,8 +8,7 @@ dev_dependencies:
   test: any
   dev_test: any
   process_run: any
-  fs_shim:
-    git: git://github.com/tekartik/fs_shim.dart
+  fs_shim: any
   fs_shim_test:
     git: git://github.com/tekartik/fs_shim_test.dart
   tekartik_pub:

@@ -131,6 +131,7 @@ void defineTests(FileSystemTestContext ctx) {
     });
 
     test('simple entity', () async {
+      //fsCopyDebug = true;
       Directory top = await ctx.prepare();
       Directory dir = fs.newDirectory(join(top.path, "dir"));
       Config config = new Config({});

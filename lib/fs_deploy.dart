@@ -163,8 +163,8 @@ Future<int> deployConfigEntity(Config config, String sub) async {
 }
 
 Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
-  String src = join(config.src.path, entityConfig.src);
-  String dst = join(config.dst.path, entityConfig.dst);
+  //String src = join(config.src.path, entityConfig.src);
+  //String dst = join(config.dst.path, entityConfig.dst);
   if (entityConfig.hasDst) {
     _log.info("${entityConfig.src} => ${entityConfig.dst}");
   } else {
@@ -172,12 +172,15 @@ Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
   }
   //return _deployEntity(src, dst);
   // OLD
-  /*
-  TopCopy topCopy = new TopCopy(fsTopEntity(config.src), fsTopEntity(config.dst));
-  ChildCopy child = new ChildCopy()
-  */
-  return await copyFileSystemEntity(
+
+  TopCopy topCopy =
+      new TopCopy(fsTopEntity(config.src), fsTopEntity(config.dst));
+  //ChildCopy child = new ChildCopy()
+  return await topCopy.runChild(
+      basename(entityConfig.src), basename(entityConfig.dst));
+  /*  return await copyFileSystemEntity(
       config.src.fs.newLink(src), config.src.fs.newLink(dst));
+      */
 }
 
 Future<int> deployConfig(Config config) async {

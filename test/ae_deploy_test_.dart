@@ -23,6 +23,6 @@ void defineTests(FileSystemTestContext ctx) {
   group('ae_deploy', () {
     test('test', () async {
       await aeDeployEmpty('tekartik-dev', 'test');
-    });
+    }, timeout: new Timeout(new Duration(minutes: 5)));
   });
 }

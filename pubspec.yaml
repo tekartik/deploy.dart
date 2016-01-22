@@ -9,6 +9,8 @@ dev_dependencies:
   dev_test: any
   process_run: any
   fs_shim: any
+  mustache_no_mirror: any
+  resource: any
   fs_shim_test:
     git: git://github.com/tekartik/fs_shim_test.dart
   tekartik_pub:

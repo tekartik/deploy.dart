@@ -1,0 +1,4 @@
+files:
+  - app.yaml
+  - index.html
+  - main.go

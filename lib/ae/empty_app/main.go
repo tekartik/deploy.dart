@@ -1,0 +1,4 @@
+package noserver
+
+func init() {
+}

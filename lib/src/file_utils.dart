@@ -113,20 +113,22 @@ Future<int> dirSize(String path) {
   return new Directory(path)
       .list(recursive: true, followLinks: true)
       .listen((FileSystemEntity fse) {
-    //devPrint(FileSystemEntity.type(fse.path));
-    futures.add(FileSystemEntity.isFile(fse.path).then((bool isFile) {
-      if (isFile) {
-        return fse.stat().then((FileStat stat) {
-          //devPrint("${stat.size} ${fse}");
-          size += stat.size;
+        //devPrint(FileSystemEntity.type(fse.path));
+        futures.add(FileSystemEntity.isFile(fse.path).then((bool isFile) {
+          if (isFile) {
+            return fse.stat().then((FileStat stat) {
+              //devPrint("${stat.size} ${fse}");
+              size += stat.size;
+            });
+          }
+        }));
+      })
+      .asFuture()
+      .then((_) {
+        return Future.wait(futures).then((_) {
+          return size;
         });
-      }
-    }));
-  }).asFuture().then((_) {
-    return Future.wait(futures).then((_) {
-      return size;
-    });
-  });
+      });
 }
 
 /**

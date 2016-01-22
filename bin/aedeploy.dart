@@ -3,32 +3,13 @@ import 'package:fs_shim/fs_io.dart';
 import 'dart:async';
 import 'package:args/args.dart';
 import 'package:path/path.dart';
-import 'package:yaml/yaml.dart';
-import 'package:tekartik_deploy/src/file_utils.dart';
+//import 'package:yaml/yaml.dart';
 import 'package:tekartik_deploy/src/bin_version.dart';
 //import 'package:tekartik_core/log_utils.dart';
 //import 'package:tekartik_deploy/deploy_io.dart' hide Config, deployConfig;
-import 'package:tekartik_deploy/fs_deploy.dart';
+import 'package:tekartik_deploy/ae_deploy.dart';
 
 const String _HELP = 'help';
-
-Future _deployEntity(String src, String dst) {
-  return FileSystemEntity.isDirectory(src).then((bool isDir) {
-    if (isDir) {
-      //fu.copyFilesIfNewer(src_, dst_);
-      //return fu.linkDir(src_, dst_);
-      return linkOrCopyFilesInDirIfNewer(src, dst, recursive: true);
-    } else {
-      return FileSystemEntity.isFile(src).then((bool isFile) {
-        if (isFile) {
-          return linkOrCopyFileIfNewer(src, dst);
-        } else {
-          throw "${src} entity not found";
-        }
-      });
-    }
-  });
-}
 
 String get currentScriptName => basenameWithoutExtension(Platform.script.path);
 
@@ -49,16 +30,11 @@ Future main(List<String> arguments) async {
   _usage() {
     stdout.writeln('Deploy from build to deploy folder from a top pub package');
     stdout.writeln('');
-    stdout.writeln('  ${currentScriptName} [project_dir]');
+    stdout.writeln(
+        '  ${currentScriptName} <cmd> <applicationId> <module> <template_dir>');
     stdout.writeln('');
     stdout.writeln('or from a given folder to another one');
-    stdout.writeln('');
-    stdout.writeln(
-        '  ${currentScriptName} <dir_containing_deploy_yaml> >destination_dir>');
-    stdout
-        .writeln('  ${currentScriptName} <deploy_file.yaml> <destination_dir>');
-    stdout.writeln(
-        '  ${currentScriptName} <deploy_file.yaml> <source_dir> <destination_dir>');
+
     stdout.writeln();
     stdout.writeln(parser.usage);
   }
@@ -79,6 +55,10 @@ Future main(List<String> arguments) async {
     return null;
   }
 
+  //bool debug = true;
+
+  await aeDeployEmpty('tekartik-dev', 'default');
+  /*
   bool dirOnly = _argsResult["dir"];
 
   String srcDir;
@@ -143,21 +123,17 @@ Future main(List<String> arguments) async {
           } else {
             List<Future> sub = [];
 
-            return new Directory(dir)
-                .list()
-                .listen((FileSystemEntity fse) {
-                  sub.add(_handleDir(fse.path));
-                })
-                .asFuture()
-                .then((_) {
-                  return Future.wait(sub).then((List<int> results) {
-                    int count = 0;
-                    results.forEach((int value) {
-                      count += value;
-                    });
-                    return count;
-                  });
+            return new Directory(dir).list().listen((FileSystemEntity fse) {
+              sub.add(_handleDir(fse.path));
+            }).asFuture().then((_) {
+              return Future.wait(sub).then((List<int> results) {
+                int count = 0;
+                results.forEach((int value) {
+                  count += value;
                 });
+                return count;
+              });
+            });
           }
         });
       }
@@ -245,5 +221,6 @@ Future main(List<String> arguments) async {
       }
     });
   }
+  */
   return null;
 }

@@ -31,11 +31,13 @@ ProcessCmd gsutilCopyCmd(String src, String dst, {bool recursive}) {
     src = join(src, '*');
   }
 
-  gsutilArgs.addAll(['-v', '-z', 'html,css,js,json', '-a', 'public-read', src, dst]);
+  gsutilArgs
+      .addAll(['-v', '-z', 'html,css,js,json', '-a', 'public-read', src, dst]);
 
   return gsutilCmd(gsutilArgs);
 }
 
 // gsutil setwebcfg -m index.html gs://gstest.tekartik.com
 //ProcessCmd gsDeployCmd(String src, String dst) => gsutilRsyncCmd(src, dst);
-ProcessCmd gsDeployCmd(String src, String dst) => gsutilCopyCmd(src, dst, recursive: true);
+ProcessCmd gsDeployCmd(String src, String dst) =>
+    gsutilCopyCmd(src, dst, recursive: true);

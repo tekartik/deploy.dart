@@ -6,6 +6,7 @@ import 'package:fs_shim/fs.dart';
 import 'package:fs_shim/utils/copy.dart';
 import 'package:logging/logging.dart';
 import 'package:yaml/yaml.dart';
+import 'src/fs_deploy_impl.dart';
 
 Logger _log = new Logger("tekartik.deploy");
 
@@ -25,12 +26,7 @@ Future<int> fsDeploy(
   }
 
   // default src?
-  if (src == null) {
-    if (yaml == null) {
-      throw new ArgumentError("need src or yaml specified");
-    }
-    src = yaml.parent;
-  }
+  src = getDeploySrc(yaml: yaml, src: src);
 
   Config config = new Config(settings, src: src, dst: dst);
 

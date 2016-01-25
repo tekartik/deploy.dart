@@ -1,5 +1,6 @@
 @TestOn("vm")
 import 'package:tekartik_deploy/fs_deploy.dart';
+import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
 //import 'package:tekartik_core/log_utils.dart';
 import 'package:path/path.dart';
 import 'package:dev_test/test.dart';
@@ -55,6 +56,26 @@ void defineTests(FileSystemTestContext ctx) {
       expect(await readString(childFile(dst, "file")), "test");
     });
 
+    test('simple entity_link', () async {
+      await _prepare();
+      File _fileChild = childFile(src, "file");
+      await writeString(_fileChild, "test");
+      Config config = new Config({})
+        ..src = src
+        ..dst = dst;
+      int count = await deployConfigEntity(config, "file");
+      expect(count, 1);
+      if (fs.supportsFileLink) {
+        Link link = childLink(dst, "file");
+        expect(await fs.isLink(link.path), isTrue);
+        String target = await link.target();
+        expect(target, _fileChild.path);
+        expect(_fileChild.isAbsolute, isTrue);
+        expect(fs.pathContext.isAbsolute(_fileChild.path), isTrue);
+        //expect(await readString(fs.newFile(link.path)), "test");
+      }
+    });
+
     test('empty_config', () async {
       await _prepare();
       await writeString(childFile(src, "file"), "test");
@@ -102,7 +123,8 @@ void defineTests(FileSystemTestContext ctx) {
 
     test('with_config_file_only', () async {
       await _prepare();
-      await writeString(childFile(src, "file"), "test");
+      File _fileChild = childFile(src, "file");
+      await writeString(_fileChild, "test");
       File yaml = childFile(src, "pubspec.yaml");
       await writeString(
           yaml,
@@ -112,8 +134,14 @@ void defineTests(FileSystemTestContext ctx) {
       int count = await fsDeploy(yaml: yaml);
       expect(count, 1);
       // location deploy/src if not specified
-      expect(await readString(childFile(top, join("deploy", "src", "file"))),
-          "test");
+      File _dstFile = childFile(top, join("deploy", "src", "file"));
+      expect(await readString(_dstFile), "test");
+      if (fs.supportsFileLink) {
+        Link link = fs.newLink(_dstFile.path);
+        expect(await fs.isLink(link.path), isTrue);
+        String target = await link.target();
+        expect(target, _fileChild.path);
+      }
     });
 
     test('with_config_file_and dst', () async {
@@ -206,6 +234,33 @@ void defineTests(FileSystemTestContext ctx) {
       expect(count, 1);
       expect(
           await fs.newFile(join(dst.path, "file.txt")).readAsString(), "test");
+    });
+
+    group('impl', () {
+      test('getDeploySrc', () async {
+        try {
+          getDeploySrc();
+          fail('should fail');
+        } on ArgumentError catch (_) {}
+
+        Directory src = getDeploySrc(
+            yaml: fs.newFile(fs.pathContext.join('yaml_dir', 'toc.yaml')));
+
+        expect(isAbsolute(src.path), isTrue);
+        expect(src.path, endsWith('yaml_dir'));
+
+        src = getDeploySrc(
+            yaml: fs.newFile(fs.pathContext.join('yaml_dir', 'toc.yaml')),
+            src: fs.newDirectory("src"));
+
+        expect(isAbsolute(src.path), isTrue);
+        expect(src.path, endsWith('src'));
+
+        src = getDeploySrc(src: fs.newDirectory("src"));
+
+        expect(isAbsolute(src.path), isTrue);
+        expect(src.path, endsWith('src'));
+      });
     });
   });
 }

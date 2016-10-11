@@ -2,17 +2,29 @@ library tekartik_deploy.gs_deploy;
 
 //import 'dart:io';
 
-import 'package:process_run/cmd_run.dart';
 import 'package:path/path.dart';
+import 'package:process_run/cmd_run.dart';
+
+import 'src/gsutil.dart';
 
 final ARG_OUT = 'out';
 
-ProcessCmd gsutilCmd(List<String> args) => processCmd('gsutil', args);
+
+// User [gsUtilCmd]
+@deprecated
+ProcessCmd gsutilCmd(List<String> args) => gsUtilCmd(args);
+
+ProcessCmd gsUtilCmd(List<String> args) =>
+    new GsUtilCmd(gsUtilExecutable, args);
 
 /// synchronize from src to dst (no delete)
-ProcessCmd gsutilRsyncCmd(String src, String dst) {
-  List<String> args = ['rsync', '-r', src, dst];
-  return gsutilCmd(args);
+ProcessCmd gsutilRsyncCmd(String src, String dst, {bool recursive}) {
+  List<String> args = ['rsync'];
+  if (recursive == true) {
+    args.add('-r');
+  }
+  args.addAll([src, dst]);
+  return gsUtilCmd(args);
 }
 
 ProcessCmd gsutilCopyCmd(String src, String dst, {bool recursive}) {
@@ -34,10 +46,10 @@ ProcessCmd gsutilCopyCmd(String src, String dst, {bool recursive}) {
   gsutilArgs
       .addAll(['-v', '-z', 'html,css,js,json', '-a', 'public-read', src, dst]);
 
-  return gsutilCmd(gsutilArgs);
+  return gsUtilCmd(gsutilArgs);
 }
 
 // gsutil setwebcfg -m index.html gs://gstest.tekartik.com
 //ProcessCmd gsDeployCmd(String src, String dst) => gsutilRsyncCmd(src, dst);
 ProcessCmd gsDeployCmd(String src, String dst) =>
-    gsutilCopyCmd(src, dst, recursive: true);
+    gsutilRsyncCmd(src, dst, recursive: true);

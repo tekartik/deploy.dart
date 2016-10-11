@@ -4,7 +4,7 @@ library tekartik_deploy.test.bin_dirdeploy_test;
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:dev_test/test.dart';
-import 'package:tekartik_pub/pub.dart';
+import 'package:tekartik_pub/io.dart';
 //import 'package:tekartik_pub/script.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:tekartik_deploy/src/bin_version.dart';

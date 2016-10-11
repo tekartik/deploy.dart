@@ -53,8 +53,5 @@ Future main(List<String> arguments) async {
 //  setupQuickLogging(Level.FINE);
 //  String buildPath = APPENGINE_APP_DEPLOY_TOP;
 //
-  await runCmd(gsDeployCmd(src, dst)
-    ..connectStderr = true
-    ..connectStdin = true
-    ..connectStdout = true);
+  await runCmd(gsDeployCmd(src, dst), verbose: true);
 }

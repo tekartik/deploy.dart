@@ -1,34 +1,17 @@
 library tekartik.deploy.aedeploy;
 
-import 'package:path/path.dart';
 import 'dart:async';
-//import 'dart:convert';
-import 'package:fs_shim/utils/src/utils_impl.dart';
-import 'package:fs_shim/utils/read_write.dart';
-import 'package:fs_shim/utils/entity.dart';
+import 'dart:io';
+
+import 'package:fs_shim/utils/io/entity.dart';
+import 'package:fs_shim/utils/io/read_write.dart';
 import 'package:logging/logging.dart';
-import 'package:yaml/yaml.dart';
-import 'package:process_run/cmd_run.dart';
 import 'package:mustache_no_mirror/mustache.dart' as mustache;
-import 'package:tekartik_pub/pub_fs_io.dart';
-import 'dart:io' as io;
-import 'package:yaml/yaml.dart' as yaml;
+import 'package:path/path.dart';
+import 'package:process_run/cmd_run.dart';
 import 'package:resource/resource.dart';
+import 'package:yaml/yaml.dart' as yaml;
 
-@deprecated
-devPrint(String msg) {
-  print(msg);
-}
-
-/*
-class _Script extends Script {}
-
-String get _scriptPath => getScriptPath(_Script);
-String get _scriptDir => dirname(_scriptPath);
-String get _aeEmptyAppTemplateDir => join(_scriptDir, 'ae', 'empty_app');
-*/
-// Future<String> _getAeEmptyAppTemplateDir() async {}
-///
 Logger _log = new Logger("tekartik.aedeploy");
 
 ///
@@ -41,8 +24,8 @@ Future aeDeployEmpty(String applicationId, String module) async {
   Uri uri = Uri.parse(baseUrl);
 
   //Directory dir = new Directory(_aeEmptyAppTemplateDir);
-  Directory out = new Directory((await io.Directory.systemTemp
-          .createTemp('empty_app $applicationId $module'))
+  Directory out = new Directory((await Directory.systemTemp
+      .createTemp('empty_app $applicationId $module'))
       .path);
 
   await emptyOrCreateDirectory(out);
@@ -65,7 +48,7 @@ Future aeDeployEmpty(String applicationId, String module) async {
     print(text);
     Map list = yaml.loadYaml(text);
 
-    List<String> files = list["files"];
+    List<String> files = list["files"] as List<String>;
     if (files != null) {
       for (String file in files) {
         Uri fileUri = listUri.resolve(file);
@@ -75,7 +58,7 @@ Future aeDeployEmpty(String applicationId, String module) async {
         mustache.Template t = mustache.parse(input, lenient: true);
 
         String output =
-            t.renderString(settings, lenient: true, htmlEscapeValues: false);
+        t.renderString(settings, lenient: true, htmlEscapeValues: false);
 
         //devPrint(output);
         // file path
@@ -95,17 +78,15 @@ Future aeDeployEmpty(String applicationId, String module) async {
       "deploy",
       join(out.path, "app.yaml"),
       "--project",
-      applicationId, //   Force deploying, overriding any previous in-progress deployments to this version
+      applicationId,
+      //   Force deploying, overriding any previous in-progress deployments to this version
       "--quiet", // No prompt
     ]);
     //ProcessCmd cmd = new ProcessCmd('gcloud', ['help']);
     print(processCmdToDebugString(cmd));
     await runCmd(cmd
-      ..connectStdin = true
-      ..connectStderr = true
-      ..connectStdout = true
       ..runInShell = true
-      ..includeParentEnvironment = true);
+      ..includeParentEnvironment = true, verbose: true);
   }
 
   print(out);

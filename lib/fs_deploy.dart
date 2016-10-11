@@ -115,7 +115,7 @@ class Config {
       }
 
       // exclude
-      this.exclude = settings['exclude'];
+      this.exclude = settings['exclude'] as List<String>;
     }
   }
 

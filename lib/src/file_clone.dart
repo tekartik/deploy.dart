@@ -21,8 +21,8 @@ Future _copyFile(String input, String output) {
   });
 }
 
-Future<int> _copyFileIfNewer(String input, String output) {
-  return FileStat.stat(input).then((FileStat inputStat) {
+Future<int> _copyFileIfNewer(String input, String output) async {
+  return await FileStat.stat(input).then((FileStat inputStat) {
     return FileStat.stat(output).then((FileStat outputStat) {
       if ((inputStat.size != outputStat.size) ||
           (inputStat.modified.isAfter(outputStat.modified))) {
@@ -66,7 +66,7 @@ Future<int> _linkFile(String target, String link) {
 /**
  * link dir (work on all platforms)
  */
-Future<int> _link(String target, String link) {
+Future<int> _link(String target, String link) async {
   link = normalize(absolute(link));
   target = normalize(absolute(target));
   Link ioLink = new Link(link);
@@ -91,7 +91,7 @@ Future<int> _link(String target, String link) {
     }
   }
 
-  return ioLink.create(target).catchError((e) {
+  return await ioLink.create(target).catchError((e) {
     Directory parent = new Directory(dirname(link));
     if (!parent.existsSync()) {
       try {
@@ -124,7 +124,7 @@ Future<int> _linkOrCopyFileIfNewer(String input, String output) {
  * create the dirs but copy or link the files
  */
 Future<int> _linkOrCopyFilesInDirIfNewer(String input, String output,
-    {bool recursive: true, List<String> but}) {
+    {bool recursive: true, List<String> but}) async {
   List<Future<int>> futures = new List();
 
   List<FileSystemEntity> entities =
@@ -155,7 +155,7 @@ Future<int> _linkOrCopyFilesInDirIfNewer(String input, String output,
     }
   });
 
-  return Future.wait(futures).then((List<int> list) {
+  return await Future.wait(futures).then((List<int> list) {
     int count = 0;
     list.forEach((delta) {
       count += delta;
@@ -167,8 +167,8 @@ Future<int> _linkOrCopyFilesInDirIfNewer(String input, String output,
 /**
  * Helper to copy recursively a source to a destination
  */
-Future<int> cloneFiles(String src, String dst) {
-  return FileSystemEntity.isDirectory(src).then((bool isDir) {
+Future<int> cloneFiles(String src, String dst) async {
+  return await FileSystemEntity.isDirectory(src).then((bool isDir) {
     if (isDir) {
       return _linkOrCopyFilesInDirIfNewer(src, dst, recursive: true);
     } else {

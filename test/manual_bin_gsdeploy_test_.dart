@@ -4,7 +4,7 @@ library tekartik_deploy.test.bin_dirdeploy_test;
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:dev_test/test.dart';
-import 'package:tekartik_pub/pub.dart';
+import 'package:tekartik_pub/io.dart';
 import 'package:fs_shim_test/test_io.dart';
 import 'io_test_common.dart';
 
@@ -36,10 +36,7 @@ main() {
       String gsDst =
           "gs://gstest.tekartik.com/dev/tekartik_deploy/test/deploy_1_file";
       ProcessCmd cmd = dartCmd([gsdeployDartScript, dir.path, gsDst]);
-      await runCmd(cmd
-        ..connectStdout = true
-        ..connectStdin = true
-        ..connectStderr = true);
+      await runCmd(cmd, verbose: true);
     });
 
     /*

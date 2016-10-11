@@ -27,7 +27,7 @@ Future copyFile(String input, String output) {
 Future<int> copyFilesIfNewer(String input, String output,
     {bool recursive: true, bool followLinks: false}) {
   int count = 0;
-  Completer completer = new Completer();
+  Completer<int> completer = new Completer();
   List<Future> futures = new List();
   new Directory(input)
       .list(recursive: recursive, followLinks: followLinks)
@@ -47,8 +47,8 @@ Future<int> copyFilesIfNewer(String input, String output,
   return completer.future;
 }
 
-Future<int> copyFileIfNewer(String input, String output) {
-  return FileStat.stat(input).then((FileStat inputStat) {
+Future<int> copyFileIfNewer(String input, String output) async {
+  return await FileStat.stat(input).then((FileStat inputStat) {
     return FileStat.stat(output).then((FileStat outputStat) {
       if ((inputStat.size != outputStat.size) ||
           (inputStat.modified.isAfter(outputStat.modified))) {
@@ -106,11 +106,11 @@ Directory emptyOrCreateDirSync(String path) {
   return dir;
 }
 
-Future<int> dirSize(String path) {
+Future<int> dirSize(String path) async {
   int size = 0;
   List<Future> futures = [];
 
-  return new Directory(path)
+  return await new Directory(path)
       .list(recursive: true, followLinks: true)
       .listen((FileSystemEntity fse) {
         //devPrint(FileSystemEntity.type(fse.path));
@@ -148,7 +148,7 @@ Future<int> linkFile(String target, String link) {
 /**
  * link dir (work on all platforms)
  */
-Future<int> _link(String target, String link) {
+Future<int> _link(String target, String link) async {
   link = normalize(absolute(link));
   target = normalize(absolute(target));
   Link ioLink = new Link(link);
@@ -173,7 +173,7 @@ Future<int> _link(String target, String link) {
     }
   }
 
-  return ioLink.create(target).catchError((e) {
+  return await ioLink.create(target).catchError((e) {
     Directory parent = new Directory(dirname(link));
     if (!parent.existsSync()) {
       try {
@@ -221,7 +221,7 @@ Future<int> linkOrCopyFileIfNewer(String input, String output) {
  * create the dirs but copy or link the files
  */
 Future<int> linkOrCopyFilesInDirIfNewer(String input, String output,
-    {bool recursive: true, List<String> but}) {
+    {bool recursive: true, List<String> but}) async {
   List<Future<int>> futures = new List();
 
   List<FileSystemEntity> entities =
@@ -251,7 +251,7 @@ Future<int> linkOrCopyFilesInDirIfNewer(String input, String output,
     }
   });
 
-  return Future.wait(futures).then((List<int> list) {
+  return await Future.wait(futures).then((List<int> list) {
     int count = 0;
     list.forEach((delta) {
       count += delta;
@@ -263,8 +263,8 @@ Future<int> linkOrCopyFilesInDirIfNewer(String input, String output,
 /**
  * Helper to copy recursively a source to a destination
  */
-Future<int> linkOrCopyIfNewer(String src, String dst) {
-  return FileSystemEntity.isDirectory(src).then((bool isDir) {
+Future<int> linkOrCopyIfNewer(String src, String dst) async {
+  return await FileSystemEntity.isDirectory(src).then((bool isDir) {
     if (isDir) {
       return linkOrCopyFilesInDirIfNewer(src, dst, recursive: true);
     } else {
@@ -283,13 +283,13 @@ Future<int> linkOrCopyIfNewer(String src, String dst) {
  * Helper to copy recursively a source to a destination
  */
 Future<int> deployEntitiesIfNewer(
-    String srcDir, String dstDir, List<String> entitiesPath) {
+    String srcDir, String dstDir, List<String> entitiesPath) async {
   List<Future> futures = [];
   for (String entityPath in entitiesPath) {
     futures.add(
         linkOrCopyIfNewer(join(srcDir, entityPath), join(dstDir, entityPath)));
   }
-  return Future.wait(futures).then((_) {
+  return await Future.wait(futures).then((_) {
     // Todo
     return 0;
   });
@@ -300,7 +300,7 @@ Future<int> deployEntitiesIfNewer(
  */
 Future<int> createSymlink(
     Directory targetDir, Directory linkDir, String targetSubPath,
-    [String linkSubPath]) {
+    [String linkSubPath]) async {
   if (linkSubPath == null) {
     linkSubPath = targetSubPath;
   }
@@ -324,7 +324,7 @@ Future<int> createSymlink(
       //print(path);
       futures.add(createSymlink(inDir, outDir, basename(entity.path)));
     }
-    return Future.wait(futures).then((List<int> list) {
+    return await Future.wait(futures).then((List<int> list) {
       //return list.last;
       return 0;
     });
@@ -337,11 +337,11 @@ Future<int> createSymlink(
 
     // Windows has a special implementation that will copy the files
     if (Platform.isWindows) {
-      return copyFile(target, link);
+      return await copyFile(target, link);
     } else {
       // print("${target} ${new Directory.fromPath(target).existsSync()}");
       Link ioLink = new Link(link);
-      return ioLink.create(absolute(target)).then((_) {
+      return await ioLink.create(absolute(target)).then((_) {
         return 0;
       }).catchError((_) {
         return 0;

@@ -1,13 +1,15 @@
 name: tekartik_deploy
-version: 0.0.1
+version: 0.2.0
 description: File deployment helper
 dependencies:
   path: any
   pub_semver: any
   mustache_no_mirror: any
-  fs_shim: any
+  fs_shim: '>=0.6.4'
   resource: any
-  process_run: any
+  process_run: '>=0.5.0+1'
+  tekartik_io_utils:
+    git: git://github.com/tekartik/tekartik_io_utils.dart
 dev_dependencies:
   test: any
   dev_test: any
@@ -16,10 +18,15 @@ dev_dependencies:
   tekartik_pub:
     git: git://github.com/tekartik/tekartik_pub.dart
 dependency_overrides:
+#  process_run:
+#    path: /opt/devx/git/github.com/tekartik/process_run.dart
 #  fs_shim_test:
 #    path: /media/ssd/devx/git/github.com/tekartik/fs_shim_test.dart
 #  fs_shim:
 #    path: /media/ssd/devx/git/github.com/tekartik/fs_shim.dart
+#  fs_shim:
+#    git: git://github.com/tekartik/fs_shim.dart
+
 executables:
   fsdeploy:
   gsdeploy:

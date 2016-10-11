@@ -2,7 +2,7 @@
 library tekartik_deploy.test.file_utils_tests;
 
 import 'package:tekartik_deploy/src/file_utils.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' hide equals;
 import 'io_test_common.dart';
 
 import 'dart:io';

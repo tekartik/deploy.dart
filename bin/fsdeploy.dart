@@ -116,32 +116,31 @@ Future main(List<String> arguments) async {
   }
   */
 
-  Future _handleDir(String dir) async {
+  Future<int> _handleDir(String dir) async {
     // this is a directoru
     String deployYaml = "deploy.yaml";
 
-    return (FileSystemEntity.isDirectory(dir)).then((bool isDir) {
+    return await (FileSystemEntity.isDirectory(dir)).then((bool isDir) {
       //print("dir $dir: ${isDir}");
       if (isDir) {
         String deployYamlPath = join(dir, deployYaml);
         //devPrint(dir);
         return FileSystemEntity
             .isFile(deployYamlPath)
-            .then((bool containsDeployYaml) {
+            .then((bool containsDeployYaml) async {
           //print("gitFile $gitFile: ${containsDotGit}");
           if (containsDeployYaml) {
             //gitPull(dir);
-            return new File(deployYamlPath).readAsString().then((content) {
+            return await new File(deployYamlPath).readAsString().then((content) async {
               var doc = loadYaml(content);
               if (doc is YamlMap) {
-                return _deploy(doc, relative(dir, from: srcDir)).then((_) {
-                  return 1;
-                });
+                await _deploy(doc, relative(dir, from: srcDir));
+                return 1;
               }
               return 0;
             });
           } else {
-            List<Future> sub = [];
+            List<Future<int>> sub = [];
 
             return new Directory(dir)
                 .list()

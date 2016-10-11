@@ -31,10 +31,21 @@ main() {
       String gsDst =
           "gs://gstest.tekartik.com/dev/tekartik_deploy/test/deploy_1_file";
       ProcessCmd cmd = gsDeployCmd(dir.path, gsDst);
-      await runCmd(cmd
-        ..connectStdout = true
-        ..connectStdin = true
-        ..connectStderr = true);
+      await runCmd(cmd, verbose: true);
+    });
+
+    test('rsync_1_dir', () async {
+      Directory top = await ctx.prepare();
+      //Directory
+      Directory dir = new Directory(join(top.path, 'dir'));
+      File file = new File(join(dir.path, "file"));
+      await file.create(recursive: true);
+      await file.writeAsString("test", flush: true);
+
+      String gsDst =
+          "gs://gstest.tekartik.com/dev/tekartik_deploy/test/rsync_1_file";
+      ProcessCmd cmd = gsutilRsyncCmd(dir.path, gsDst, recursive: true);
+      await runCmd(cmd, verbose: true);
     });
 
     /*

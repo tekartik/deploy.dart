@@ -18,8 +18,14 @@ ProcessCmd gsUtilCmd(List<String> args) =>
     new GsUtilCmd(gsUtilExecutable, args);
 
 /// synchronize from src to dst (no delete)
-ProcessCmd gsutilRsyncCmd(String src, String dst, {bool recursive}) {
-  List<String> args = ['rsync'];
+ProcessCmd gsutilRsyncCmd(String src, String dst, {bool recursive, bool parallel}) {
+  List<String> args = [];
+
+  // run operation in parallel, good when src or dest is is a bucket
+  if (parallel == true) {
+    args.add('-m');
+  }
+  args.add('rsync');
   if (recursive == true) {
     args.add('-r');
   }
@@ -51,5 +57,5 @@ ProcessCmd gsutilCopyCmd(String src, String dst, {bool recursive}) {
 
 // gsutil setwebcfg -m index.html gs://gstest.tekartik.com
 //ProcessCmd gsDeployCmd(String src, String dst) => gsutilRsyncCmd(src, dst);
-ProcessCmd gsDeployCmd(String src, String dst) =>
-    gsutilRsyncCmd(src, dst, recursive: true);
+ProcessCmd gsDeployCmd(String src, String dst, {bool recursive: true, bool parallel: true}) =>
+    gsutilRsyncCmd(src, dst, recursive: recursive, parallel: parallel);

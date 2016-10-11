@@ -154,7 +154,7 @@ class EntityConfig {
 Future<int> deployConfigEntity(Config config, String sub) async {
   TopCopy topCopy =
       new TopCopy(fsTopEntity(config.src), fsTopEntity(config.dst));
-  ChildCopy childCopy = new ChildCopy(topCopy, sub);
+  ChildCopy childCopy = new ChildCopy(topCopy, null, sub);
   return await childCopy.run();
 }
 
@@ -172,7 +172,7 @@ Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
   TopCopy topCopy =
       new TopCopy(fsTopEntity(config.src), fsTopEntity(config.dst));
   //ChildCopy child = new ChildCopy()
-  return await topCopy.runChild(
+  return await topCopy.runChild(null,
       basename(entityConfig.src), basename(entityConfig.dst));
   /*  return await copyFileSystemEntity(
       config.src.fs.newLink(src), config.src.fs.newLink(dst));
@@ -215,7 +215,7 @@ Future<int> deployConfig(Config config) async {
         fsTopEntity(config.src), fsTopEntity(config.dst),
         options: options);
     for (EntityConfig entityConfig in config.entities) {
-      sum += await topCopy.runChild(entityConfig.src, entityConfig.dst);
+      sum += await topCopy.runChild(null, entityConfig.src, entityConfig.dst);
     }
   }
   return sum;

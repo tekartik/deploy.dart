@@ -27,9 +27,10 @@ dependency_overrides:
 #    path: /media/ssd/devx/git/github.com/tekartik/fs_shim_test.dart
 #  fs_shim:
 #    path: /media/ssd/devx/git/github.com/tekartik/fs_shim.dart
-  fs_shim:
-    git: git://github.com/tekartik/fs_shim.dart
+#  fs_shim:
+#    git: git://github.com/tekartik/fs_shim.dart
 
 executables:
   fsdeploy:
   gsdeploy:
+  gswebdeploy:

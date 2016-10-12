@@ -6,6 +6,10 @@ File deployment helper (file system, google storage)
 
 ## Usage
 
+Google Cloud Storage web deploy
+
+    gswebdeploy <local_src> <gs://bucket/path>
+    
 local dir deploy
 
     dirdeploy

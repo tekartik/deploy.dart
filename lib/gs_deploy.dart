@@ -20,7 +20,12 @@ ProcessCmd gsUtilCmd(List<String> args) =>
 
 /// synchronize from src to dst (no delete)
 ProcessCmd gsutilRsyncCmd(String src, String dst,
-    {bool recursive, bool parallel, Map<String, String> header}) {
+    {bool recursive, bool parallel,
+    // Causes the rsync command to compute and compare checksums (instead of comparing mtime) for files
+    // if the size of source and destination as well as mtime (if available) match.
+    // This option increases local disk I/O and run time if either src_url or dst_url are on the local file system.
+    bool useChecksum,
+    Map<String, String> header}) {
   List<String> args = [];
 
   // run operation in parallel, good when src or dest is is a bucket
@@ -37,6 +42,9 @@ ProcessCmd gsutilRsyncCmd(String src, String dst,
     });
   }
   args.add('rsync');
+  if (useChecksum == true) {
+    args.add('-c');
+  }
   if (recursive == true) {
     args.add('-r');
   }
@@ -77,9 +85,9 @@ ProcessCmd gsDeployCmd(String src, String dst,
 
 List<ProcessCmd> gsWebDeployCmds(String src, String dst) {
   ProcessCmd gzipCmd = gsutilRsyncCmd(join(src, encodingGZipFolder), join(dst),
-      recursive: true, parallel: true, header: {'Content-Encoding': 'gzip'});
+      recursive: true, parallel: true, useChecksum: true, header: {'Content-Encoding': 'gzip'});
   ProcessCmd noneCmd = gsutilRsyncCmd(join(src, encodingNoneFolder), join(dst),
-      recursive: true, parallel: true);
+      recursive: true, parallel: true, useChecksum: true, );
   return [gzipCmd, noneCmd];
 }
 

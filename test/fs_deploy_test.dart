@@ -1,5 +1,5 @@
 @TestOn("vm")
-import 'package:tekartik_deploy/fs_deploy.dart';
+import 'package:tekartik_deploy/fs/fs_deploy.dart';
 import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
 //import 'package:tekartik_core/log_utils.dart';
 import 'package:path/path.dart';

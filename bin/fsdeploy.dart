@@ -1,4 +1,3 @@
-#!/usr/bin/env dart
 import 'package:fs_shim/fs_io.dart';
 import 'dart:async';
 import 'package:args/args.dart';
@@ -8,7 +7,7 @@ import 'package:tekartik_deploy/src/file_utils.dart';
 import 'package:tekartik_deploy/src/bin_version.dart';
 //import 'package:tekartik_core/log_utils.dart';
 //import 'package:tekartik_deploy/deploy_io.dart' hide Config, deployConfig;
-import 'package:tekartik_deploy/fs_deploy.dart';
+import 'package:tekartik_deploy/fs/fs_deploy.dart';
 
 const String _HELP = 'help';
 
@@ -54,7 +53,7 @@ Future main(List<String> arguments) async {
     stdout.writeln('or from a given folder to another one');
     stdout.writeln('');
     stdout.writeln(
-        '  ${currentScriptName} <dir_containing_deploy_yaml> >destination_dir>');
+        '  ${currentScriptName} <dir_containing_deploy_yaml> destination_dir>');
     stdout
         .writeln('  ${currentScriptName} <deploy_file.yaml> <destination_dir>');
     stdout.writeln(

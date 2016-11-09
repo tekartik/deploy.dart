@@ -6,7 +6,7 @@ library fs_shim.fs_io_test;
 import 'package:dev_test/test.dart';
 import 'package:fs_shim_test/test_io.dart';
 
-import 'fs_deploy_test.dart' as fs_deploy;
+import 'src_fs_deploy_test.dart' as fs_deploy;
 
 class TestScript extends Script {}
 

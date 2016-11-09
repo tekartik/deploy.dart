@@ -1,11 +1,13 @@
 name: tekartik_deploy
 version: 0.2.1
 description: File deployment helper
+environment:
+  sdk: '>=1.20.1 <2.0.0'
 dependencies:
   path: any
   pub_semver: any
   mustache_no_mirror: any
-  fs_shim: '>=0.6.4'
+  fs_shim: '>=0.6.7'
   resource: any
   process_run: '>=0.5.0+1'
   tekartik_io_utils:

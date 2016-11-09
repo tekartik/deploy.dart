@@ -4,9 +4,11 @@ import 'package:path/path.dart';
 import 'dart:async';
 import 'package:fs_shim/fs.dart';
 import 'package:fs_shim/utils/copy.dart';
+
 import 'package:logging/logging.dart';
 import 'package:yaml/yaml.dart';
 import '../src/fs_deploy_impl.dart';
+import 'package:tekartik_common_utils/common_utils_import.dart';
 
 Logger _log = new Logger("tekartik.deploy");
 
@@ -31,6 +33,27 @@ Future<int> fsDeploy(
   Config config = new Config(settings, src: src, dst: dst);
 
   return await deployConfig(config);
+}
+
+///
+/// List source files
+///
+Future<List<File>> fsDeployListFiles(
+    {Map settings, File yaml, Directory src}) async {
+  if (settings == null) {
+    if (yaml != null) {
+      String content = await yaml.readAsString();
+      settings = loadYaml(content);
+    }
+    settings ??= {};
+  }
+
+  // default src?
+  src = getDeploySrc(yaml: yaml, src: src);
+
+  Config config = new Config(settings, src: src);
+
+  return await deployConfigListFiles(config);
 }
 
 ///
@@ -177,6 +200,38 @@ Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
   /*  return await copyFileSystemEntity(
       config.src.fs.newLink(src), config.src.fs.newLink(dst));
       */
+}
+
+Future<List<File>> deployConfigListFiles(Config config) async {
+  List<File> files = [];
+
+  if (config.entities.isEmpty) {
+    // default copy all
+    // recursiveLinkOrCopyNewerOptions);
+
+    CopyOptions options = new CopyOptions(
+        recursive: true,
+        checkSizeAndModifiedDate: true,
+        tryToLinkFile: true,
+        exclude: config.exclude);
+
+    files.addAll(await copyDirectoryListFiles(config.src, options: options));
+
+  } else {
+    CopyOptions options = new CopyOptions(
+        recursive: true,
+        checkSizeAndModifiedDate: true,
+        tryToLinkFile: true,
+        exclude: config.exclude);
+
+    TopSourceNode topSourceNode = new TopSourceNode(
+        fsTopEntity(config.src), options: options);
+    for (EntityConfig entityConfig in config.entities) {
+      files.addAll(await topSourceNode.runChild(null, entityConfig.src, entityConfig.dst));
+    }
+  }
+
+  return files;
 }
 
 Future<int> deployConfig(Config config) async {

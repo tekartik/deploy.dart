@@ -1,7 +1,7 @@
 @TestOn("vm")
 library tekartik_deploy.test.bin_dirdeploy_test;
 
-import 'dart:core' hide Resource;
+import 'dart:core';
 
 import 'package:dev_test/test.dart';
 import 'package:process_run/cmd_run.dart';

@@ -23,3 +23,24 @@ Future<int> fsDeploy(
   }
   return fs.fsDeploy(settings: settings, yaml: fsYaml, src: fsSrc, dst:fsDst);
 }
+
+///
+/// Deploy list files
+///
+/// [settings] can be set (files and exclude keys)
+///
+Future<List<File>> fsDeployListFiles(
+    {Map settings, File yaml, Directory src}) async {
+  fs.File fsYaml;
+  fs.Directory fsSrc;
+  if (yaml != null) {
+    fsYaml = fs.wrapIoFile(yaml);
+  }
+  if (src != null) {
+    fsSrc = fs.wrapIoDirectory(src);
+  }
+  List<fs.File> fsFiles = await fs.fsDeployListFiles(settings: settings, yaml: fsYaml, src: fsSrc);
+  return new List.generate(fsFiles.length, (int index) {
+    return fs.unwrapIoFile(fsFiles[index]);
+  });
+}

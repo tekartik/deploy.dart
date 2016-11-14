@@ -19,20 +19,111 @@ void main() {
 void defineTests(FileSystemTestContext ctx) {
   FileSystem fs = ctx.fs;
 
+  Directory top;
+  Directory src;
+  Directory dst;
+
+  Future _prepare() async {
+    top = await ctx.prepare();
+    src = childDirectory(top, "src");
+    dst = childDirectory(top, "dst");
+  }
+
+  group('fs_deploy', () {
+    test('fs_deploy', () async {
+      await _prepare();
+      await writeString(childFile(src, "file"), "test");
+
+      int count = await fsDeploy(src: src, dst: dst);
+      expect(count, 1);
+      expect(await readString(childFile(dst, "file")), "test");
+    });
+
+    test('fs_deploy_no_dst', () async {
+      await _prepare();
+      await writeString(childFile(src, "file"), "test");
+
+      int count = await fsDeploy(src: src);
+      expect(count, 1);
+      expect(await readString(childFile(top, join("deploy", "src", "file"))),
+          "test");
+    });
+
+    test('single_entity_config', () async {
+      await _prepare();
+      await writeString(childFile(src, "file"), "test");
+      int count = await fsDeploy(settings: {
+        "files": ['file']
+      }, src: src, dst: dst);
+      expect(count, 1);
+      expect(await readString(childFile(dst, "file")), "test");
+    });
+
+    test('with_config_file_only', () async {
+      await _prepare();
+      File _fileChild = childFile(src, "file");
+      await writeString(_fileChild, "test");
+      File yaml = childFile(src, "pubspec.yaml");
+      await writeString(
+          yaml,
+          '''
+      files:
+       - file''');
+      int count = await fsDeploy(yaml: yaml);
+      expect(count, 1);
+      // location deploy/src if not specified
+      File _dstFile = childFile(top, join("deploy", "src", "file"));
+      expect(await readString(_dstFile), "test");
+      if (fs.supportsFileLink) {
+        Link link = fs.newLink(_dstFile.path);
+        expect(await fs.isLink(link.path), isTrue);
+        String target = await link.target();
+        expect(target, _fileChild.path);
+      }
+    });
+
+    test('with_config_file_only_nosymlink', () async {
+      await _prepare();
+      File _fileChild = childFile(src, "file");
+      await writeString(_fileChild, "test");
+      File yaml = childFile(src, "pubspec.yaml");
+      await writeString(
+          yaml,
+          '''
+      files:
+       - file''');
+      int count = await fsDeploy(options: fsDeployOptionsNoSymLink, yaml: yaml);
+      expect(count, 1);
+      // location deploy/src if not specified
+      File _dstFile = childFile(top, join("deploy", "src", "file"));
+      expect(await readString(_dstFile), "test");
+      if (fs.supportsFileLink) {
+        String path = _dstFile.path;
+        expect(await fs.isLink(path), isFalse);
+        expect(await fs.isFile(path), isTrue);
+      }
+    });
+
+    test('with_config_file_and dst', () async {
+      await _prepare();
+      await writeString(childFile(src, "file"), "test");
+      File yaml = childFile(src, "pubspec.yaml");
+      await writeString(
+          yaml,
+          '''
+      files:
+       - file''');
+      int count = await fsDeploy(yaml: yaml, dst: dst);
+      expect(count, 1);
+      expect(await readString(childFile(dst, "file")), "test");
+    });
+  });
   group('deploy', () {
     setUp(() {
       // clearOutFolderSync();
     });
 
-    Directory top;
-    Directory src;
-    Directory dst;
 
-    Future _prepare() async {
-      top = await ctx.prepare();
-      src = childDirectory(top, "src");
-      dst = childDirectory(top, "dst");
-    }
 
     test('exclude', () async {
       await _prepare();
@@ -96,71 +187,7 @@ void defineTests(FileSystemTestContext ctx) {
           */
     });
 
-    test('fs_deploy', () async {
-      await _prepare();
-      await writeString(childFile(src, "file"), "test");
 
-      int count = await fsDeploy(src: src, dst: dst);
-      expect(count, 1);
-      expect(await readString(childFile(dst, "file")), "test");
-    });
-
-    test('fs_deploy_no_dst', () async {
-      await _prepare();
-      await writeString(childFile(src, "file"), "test");
-
-      int count = await fsDeploy(src: src);
-      expect(count, 1);
-      expect(await readString(childFile(top, join("deploy", "src", "file"))),
-          "test");
-    });
-
-    test('single_entity_config', () async {
-      await _prepare();
-      await writeString(childFile(src, "file"), "test");
-      int count = await fsDeploy(settings: {
-        "files": ['file']
-      }, src: src, dst: dst);
-      expect(count, 1);
-      expect(await readString(childFile(dst, "file")), "test");
-    });
-
-    test('with_config_file_only', () async {
-      await _prepare();
-      File _fileChild = childFile(src, "file");
-      await writeString(_fileChild, "test");
-      File yaml = childFile(src, "pubspec.yaml");
-      await writeString(
-          yaml,
-          '''
-      files:
-       - file''');
-      int count = await fsDeploy(yaml: yaml);
-      expect(count, 1);
-      // location deploy/src if not specified
-      File _dstFile = childFile(top, join("deploy", "src", "file"));
-      expect(await readString(_dstFile), "test");
-      if (fs.supportsFileLink) {
-        Link link = fs.newLink(_dstFile.path);
-        expect(await fs.isLink(link.path), isTrue);
-        String target = await link.target();
-        expect(target, _fileChild.path);
-      }
-    });
-
-    test('with_config_file_and dst', () async {
-      await _prepare();
-      await writeString(childFile(src, "file"), "test");
-      File yaml = childFile(src, "pubspec.yaml");
-      await writeString(
-          yaml,
-          '''
-      files:
-       - file''');
-      int count = await fsDeploy(yaml: yaml, dst: dst);
-      expect(count, 1);
-      expect(await readString(childFile(dst, "file")), "test");
-    });
 
     test('simple entity', () async {
       //fsCopyDebug = true;

@@ -12,13 +12,19 @@ import 'package:tekartik_common_utils/common_utils_import.dart';
 
 Logger _log = new Logger("tekartik.deploy");
 
+FsDeployOptions fsDeployOptionsNoSymLink = new FsDeployOptions()..noSymLink = true;
+
+class FsDeployOptions {
+  bool noSymLink;
+}
+
 ///
 /// Deploy between 2 folders with an option config file
 ///
 /// [settings] can be set (files and exclude keys)
 ///
 Future<int> fsDeploy(
-    {Map settings, File yaml, Directory src, Directory dst}) async {
+    {FsDeployOptions options, Map settings, File yaml, Directory src, Directory dst}) async {
   if (settings == null) {
     if (yaml != null) {
       String content = await yaml.readAsString();
@@ -32,7 +38,8 @@ Future<int> fsDeploy(
 
   Config config = new Config(settings, src: src, dst: dst);
 
-  return await deployConfig(config);
+  //return await deployConfig(config);
+  return await new FsDeployImpl(options).deployConfig(config);
 }
 
 ///

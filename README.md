@@ -33,7 +33,7 @@ For dirdeploy
 
 ### From git repository
 
-    pub global activate -s git git://github.com/tekartik/tekartik_deploy.dart
+    pub global activate -s git git://github.com/tekartik/deploy.dart
 
 ### From local path
 

@@ -1,6 +1,7 @@
 name: tekartik_deploy
 version: 0.2.1
 description: File deployment helper
+homepage: https://github.com/tekartik/deploy.dart
 environment:
   sdk: '>=1.20.1 <2.0.0'
 dependencies:
@@ -13,14 +14,14 @@ dependencies:
   process_run: '>=0.5.0+1'
   yaml: any
   tekartik_io_utils:
-    git: git://github.com/tekartik/tekartik_io_utils.dart
+    git: git://github.com/tekartik/io_utils.dart
 dev_dependencies:
   test: any
   dev_test: any
   fs_shim_test:
     git: git://github.com/tekartik/fs_shim_test.dart
   tekartik_pub:
-    git: git://github.com/tekartik/tekartik_pub.dart
+    git: git://github.com/tekartik/pub.dart
   chrome_travis:
     git: git://github.com/tekartik/chrome_travis.dart
     version: '>=0.1.3'

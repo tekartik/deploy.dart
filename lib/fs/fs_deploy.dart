@@ -12,7 +12,8 @@ import 'package:tekartik_common_utils/common_utils_import.dart';
 
 Logger _log = new Logger("tekartik.deploy");
 
-FsDeployOptions fsDeployOptionsNoSymLink = new FsDeployOptions()..noSymLink = true;
+FsDeployOptions fsDeployOptionsNoSymLink = new FsDeployOptions()
+  ..noSymLink = true;
 
 class FsDeployOptions {
   bool noSymLink;
@@ -24,7 +25,11 @@ class FsDeployOptions {
 /// [settings] can be set (files and exclude keys)
 ///
 Future<int> fsDeploy(
-    {FsDeployOptions options, Map settings, File yaml, Directory src, Directory dst}) async {
+    {FsDeployOptions options,
+    Map settings,
+    File yaml,
+    Directory src,
+    Directory dst}) async {
   if (settings == null) {
     if (yaml != null) {
       String content = await yaml.readAsString();
@@ -202,8 +207,8 @@ Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
   TopCopy topCopy =
       new TopCopy(fsTopEntity(config.src), fsTopEntity(config.dst));
   //ChildCopy child = new ChildCopy()
-  return await topCopy.runChild(null,
-      basename(entityConfig.src), basename(entityConfig.dst));
+  return await topCopy.runChild(
+      null, basename(entityConfig.src), basename(entityConfig.dst));
   /*  return await copyFileSystemEntity(
       config.src.fs.newLink(src), config.src.fs.newLink(dst));
       */
@@ -223,7 +228,6 @@ Future<List<File>> deployConfigListFiles(Config config) async {
         exclude: config.exclude);
 
     files.addAll(await copyDirectoryListFiles(config.src, options: options));
-
   } else {
     CopyOptions options = new CopyOptions(
         recursive: true,
@@ -231,10 +235,11 @@ Future<List<File>> deployConfigListFiles(Config config) async {
         tryToLinkFile: true,
         exclude: config.exclude);
 
-    TopSourceNode topSourceNode = new TopSourceNode(
-        fsTopEntity(config.src), options: options);
+    TopSourceNode topSourceNode =
+        new TopSourceNode(fsTopEntity(config.src), options: options);
     for (EntityConfig entityConfig in config.entities) {
-      files.addAll(await topSourceNode.runChild(null, entityConfig.src, entityConfig.dst));
+      files.addAll(await topSourceNode.runChild(
+          null, entityConfig.src, entityConfig.dst));
     }
   }
 

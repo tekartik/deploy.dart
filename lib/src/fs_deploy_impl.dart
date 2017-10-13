@@ -35,8 +35,6 @@ class FsDeployImpl {
           options: copyOptions);
       sum += await topCopy.run();
     } else {
-
-
       TopCopy topCopy = new TopCopy(
           fsTopEntity(config.src), fsTopEntity(config.dst),
           options: copyOptions);

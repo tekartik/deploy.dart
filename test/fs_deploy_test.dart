@@ -123,8 +123,6 @@ void defineTests(FileSystemTestContext ctx) {
       // clearOutFolderSync();
     });
 
-
-
     test('exclude', () async {
       await _prepare();
       await writeString(childFile(src, "file1"), "test");
@@ -186,8 +184,6 @@ void defineTests(FileSystemTestContext ctx) {
           "test");
           */
     });
-
-
 
     test('simple entity', () async {
       //fsCopyDebug = true;

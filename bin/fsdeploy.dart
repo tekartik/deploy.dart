@@ -130,7 +130,9 @@ Future main(List<String> arguments) async {
           //print("gitFile $gitFile: ${containsDotGit}");
           if (containsDeployYaml) {
             //gitPull(dir);
-            return await new File(deployYamlPath).readAsString().then((content) async {
+            return await new File(deployYamlPath)
+                .readAsString()
+                .then((content) async {
               var doc = loadYaml(content);
               if (doc is YamlMap) {
                 await _deploy(doc, relative(dir, from: srcDir));
@@ -171,6 +173,7 @@ Future main(List<String> arguments) async {
 
     return await deployConfig(config);
   }
+
   // int argIndex = 0;
   // Handle direct yaml file
   if (_argsResult.rest.length > 0) {
@@ -210,14 +213,29 @@ Future main(List<String> arguments) async {
         ? Directory.current.path
         : _argsResult.rest[0];
 
-    srcDir = join(dir, 'build');
+    // try root
+    srcDir = dir;
     dstDir = join(srcDir, 'deploy');
+    int count = await _handleDir(srcDir);
 
-    _handleDir(srcDir).then((count) {
-      if (count == 0) {
-        print('no deploy.yaml file found in ${srcDir}');
+    if (count == 0) {
+      print('no deploy.yaml file found in ${srcDir}');
+      srcDir = join(dir, 'build');
+      dstDir = join(srcDir, 'deploy');
+
+      // check where build exists first
+      if (await new Directory(srcDir).exists()) {
+        int count = await _handleDir(srcDir);
+        if (count == 0) {
+          // Try to handle root
+          // what is runned when using fsdeploy in a folder
+          count = await _handleDir(dir);
+          if (count == 0) {
+            print('no deploy.yaml file found in ${srcDir} nor ${dir}');
+          }
+        }
       }
-    });
+    }
   } else {
 //    String firstArg = _argsResult.rest[0];
 

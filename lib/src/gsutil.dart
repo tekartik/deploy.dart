@@ -16,8 +16,8 @@ void findGsUtilSync() {
     if (findRawGsUtilSync()) {
       gsUtilExecutable = 'gsutil';
     } else {
-      String gloudSdkDir = Platform
-          .environment['TEKARTIK_GOOGLE_CLOUD_SDK_DIR'];
+      String gloudSdkDir =
+          Platform.environment['TEKARTIK_GOOGLE_CLOUD_SDK_DIR'];
       if (gloudSdkDir != null) {
         gsUtilExecutable = join(gloudSdkDir, 'bin', 'gsutil');
       } else {
@@ -35,10 +35,10 @@ void findGsUtilSync() {
 }
 
 class GsUtilCmd extends ProcessCmd {
-  GsUtilCmd(String executable, List<String> arguments) : super(executable, arguments);
+  GsUtilCmd(String executable, List<String> arguments)
+      : super(executable, arguments);
   @override
   String toString() => executableArgumentsToString('gsutil', arguments);
-
 }
 
 String get gsUtilExecutable {
@@ -50,8 +50,6 @@ bool findRawGsUtilSync() {
   try {
     rawGsUtilVersionSync();
     return true;
-  } catch (_) {
-
-  }
+  } catch (_) {}
   return false;
 }

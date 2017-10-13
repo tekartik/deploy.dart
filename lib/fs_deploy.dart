@@ -10,7 +10,11 @@ export 'fs/fs_deploy.dart' show FsDeployOptions, fsDeployOptionsNoSymLink;
 /// [settings] can be set (files and exclude keys)
 ///
 Future<int> fsDeploy(
-    {fs.FsDeployOptions options, Map settings, File yaml, Directory src, Directory dst}) {
+    {fs.FsDeployOptions options,
+    Map settings,
+    File yaml,
+    Directory src,
+    Directory dst}) {
   fs.File fsYaml;
   fs.Directory fsSrc;
   fs.Directory fsDst;
@@ -23,7 +27,12 @@ Future<int> fsDeploy(
   if (dst != null) {
     fsDst = fs.wrapIoDirectory(dst);
   }
-  return fs.fsDeploy(options: options, settings: settings, yaml: fsYaml, src: fsSrc, dst:fsDst);
+  return fs.fsDeploy(
+      options: options,
+      settings: settings,
+      yaml: fsYaml,
+      src: fsSrc,
+      dst: fsDst);
 }
 
 ///
@@ -41,7 +50,8 @@ Future<List<File>> fsDeployListFiles(
   if (src != null) {
     fsSrc = fs.wrapIoDirectory(src);
   }
-  List<fs.File> fsFiles = await fs.fsDeployListFiles(settings: settings, yaml: fsYaml, src: fsSrc);
+  List<fs.File> fsFiles =
+      await fs.fsDeployListFiles(settings: settings, yaml: fsYaml, src: fsSrc);
   return new List.generate(fsFiles.length, (int index) {
     return fs.unwrapIoFile(fsFiles[index]);
   });

@@ -25,7 +25,7 @@ Future aeDeployEmpty(String applicationId, String module) async {
 
   //Directory dir = new Directory(_aeEmptyAppTemplateDir);
   Directory out = new Directory((await Directory.systemTemp
-      .createTemp('empty_app $applicationId $module'))
+          .createTemp('empty_app $applicationId $module'))
       .path);
 
   await emptyOrCreateDirectory(out);
@@ -58,7 +58,7 @@ Future aeDeployEmpty(String applicationId, String module) async {
         mustache.Template t = mustache.parse(input, lenient: true);
 
         String output =
-        t.renderString(settings, lenient: true, htmlEscapeValues: false);
+            t.renderString(settings, lenient: true, htmlEscapeValues: false);
 
         //devPrint(output);
         // file path
@@ -84,9 +84,11 @@ Future aeDeployEmpty(String applicationId, String module) async {
     ]);
     //ProcessCmd cmd = new ProcessCmd('gcloud', ['help']);
     print(processCmdToDebugString(cmd));
-    await runCmd(cmd
-      ..runInShell = true
-      ..includeParentEnvironment = true, verbose: true);
+    await runCmd(
+        cmd
+          ..runInShell = true
+          ..includeParentEnvironment = true,
+        verbose: true);
   }
 
   print(out);

@@ -48,6 +48,22 @@ Future<int> copyFilesIfNewer(String input, String output,
 }
 
 Future<int> copyFileIfNewer(String input, String output) async {
+  FileStat inputStat = await FileStat.stat(input);
+  FileStat outputStat = await FileStat.stat(output);
+  try {
+    if ((inputStat.size != outputStat.size) ||
+        (inputStat.modified.isAfter(outputStat.modified))) {
+      await copyFile(input, output);
+      return 1;
+    } else {
+      return 0;
+    }
+  } catch (e) {
+    await copyFile(input, output);
+    return 1;
+  }
+
+  /*
   return await FileStat.stat(input).then((FileStat inputStat) {
     return FileStat.stat(output).then((FileStat outputStat) {
       if ((inputStat.size != outputStat.size) ||
@@ -64,6 +80,7 @@ Future<int> copyFileIfNewer(String input, String output) async {
       });
     });
   });
+  */
 }
 
 bool dirIsSymlink(Directory dir) {

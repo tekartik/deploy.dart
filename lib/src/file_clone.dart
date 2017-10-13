@@ -22,6 +22,21 @@ Future _copyFile(String input, String output) {
 }
 
 Future<int> _copyFileIfNewer(String input, String output) async {
+  FileStat inputStat = await FileStat.stat(input);
+  FileStat outputStat = await FileStat.stat(output);
+  try {
+    if ((inputStat.size != outputStat.size) ||
+        (inputStat.modified.isAfter(outputStat.modified))) {
+      await _copyFile(input, output);
+      return 1;
+    } else {
+      return 0;
+    }
+  } catch (e) {
+    await _copyFile(input, output);
+    return 1;
+  }
+  /*
   return await FileStat.stat(input).then((FileStat inputStat) {
     return FileStat.stat(output).then((FileStat outputStat) {
       if ((inputStat.size != outputStat.size) ||
@@ -38,6 +53,7 @@ Future<int> _copyFileIfNewer(String input, String output) async {
       });
     });
   });
+  */
 }
 
 Directory emptyOrCreateDirSync(String path) {

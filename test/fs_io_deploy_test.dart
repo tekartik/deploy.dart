@@ -11,16 +11,16 @@ import 'package:fs_shim/fs_io.dart' show unwrapIoDirectory;
 import 'package:fs_shim/utils/io/read_write.dart';
 import 'package:fs_shim/utils/io/entity.dart';
 
-import 'package:fs_shim_test/test_io.dart' show newIoFileSystemContext, Script, getScriptPath, FileSystemTestContext, FileSystem;
-
+import 'package:fs_shim_test/test_io.dart'
+    show newIoFileSystemContext, Script, getScriptPath, FileSystemTestContext;
 
 class TestScript extends Script {}
 
 String get testScriptPath => getScriptPath(TestScript);
 
 void main() {
-
-  FileSystemTestContext ctx = newIoFileSystemContext(join(dirname(testScriptPath), 'out'));
+  FileSystemTestContext ctx =
+      newIoFileSystemContext(join(dirname(testScriptPath), 'out'));
 
   group('io_deploy', () {
     setUp(() {
@@ -49,6 +49,5 @@ void main() {
       expect(files, hasLength(1));
       expect(relative(files[0].path, from: src.path), "file");
     });
-
   });
 }

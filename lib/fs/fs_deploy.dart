@@ -136,8 +136,8 @@ class Config {
             _entities.add(new EntityConfig(fileOrDir));
           } else if (fileOrDir is Map) {
             // - fileName: dstFileName
-            String src = fileOrDir.keys.first;
-            String dst = fileOrDir[src];
+            var src = fileOrDir.keys.first as String;
+            var dst = fileOrDir[src] as String;
 
             _entities.add(new EntityConfig.withDst(src, dst));
           }

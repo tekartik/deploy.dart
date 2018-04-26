@@ -43,7 +43,7 @@ Future aeDeployEmpty(String applicationId, String module) async {
     Uri listUri = uri.resolve(listUrlPath);
     String text = await ResourceLoader.defaultLoader.readAsString(listUri);
     print(text);
-    Map list = yaml.loadYaml(text);
+    var list = yaml.loadYaml(text) as Map;
 
     List<String> files = list["files"] as List<String>;
     if (files != null) {

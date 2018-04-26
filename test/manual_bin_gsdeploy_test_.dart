@@ -26,7 +26,7 @@ main() {
   //useVMConfiguration();
   group('bin_gsdeploy', () {
     test('deploy_1_file', () async {
-      Directory top = await ctx.prepare();
+      var top = await ctx.prepare() as Directory;
       //Directory
       Directory dir = new Directory(join(top.path, 'dir'));
       File file = new File(join(dir.path, "file"));

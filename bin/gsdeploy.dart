@@ -30,7 +30,7 @@ Future main(List<String> arguments) async {
     stdout.writeln(parser.usage);
   }
 
-  bool help = _argsResult[_HELP];
+  var help = _argsResult[_HELP] as bool;
   if (help) {
     _usage();
     return null;

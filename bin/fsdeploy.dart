@@ -62,7 +62,7 @@ Future main(List<String> arguments) async {
     stdout.writeln(parser.usage);
   }
 
-  bool help = _argsResult[_HELP];
+  var help = _argsResult[_HELP] as bool;
   if (help) {
     _usage();
     return null;
@@ -78,7 +78,7 @@ Future main(List<String> arguments) async {
     return null;
   }
 
-  bool dirOnly = _argsResult["dir"];
+  var dirOnly = _argsResult["dir"] as bool;
 
   String srcDir;
   String dstDir;
@@ -194,7 +194,7 @@ Future main(List<String> arguments) async {
 
       String content = await new File(yamlFilePath).readAsString();
 
-      Map settings = loadYaml(content);
+      var settings = loadYaml(content) as Map;
       return await _newDeploy(settings);
     }
 

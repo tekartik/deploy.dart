@@ -4,10 +4,7 @@
 set -e
 
 # dartanalyzer --fatal-warnings \
-dartanalyzer \
-  lib/ae_deploy.dart \
-  lib/fs_deploy.dart \
-  lib/gs_deploy.dart \
+dartanalyzer --fatal-warnings bin lib test
 
 pub run test -p vm
 pub run test -p chrome,firefox

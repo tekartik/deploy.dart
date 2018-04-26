@@ -5,14 +5,11 @@ import 'dart:io';
 
 import 'package:fs_shim/utils/io/entity.dart';
 import 'package:fs_shim/utils/io/read_write.dart';
-import 'package:logging/logging.dart';
 import 'package:mustache_no_mirror/mustache.dart' as mustache;
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:resource/resource.dart';
 import 'package:yaml/yaml.dart' as yaml;
-
-Logger _log = new Logger("tekartik.aedeploy");
 
 ///
 /// Deploy between 2 folders with an option config file

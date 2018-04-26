@@ -68,7 +68,7 @@ Future main(List<String> arguments) async {
     return null;
   }
 
-  if (_argsResult['version']) {
+  if (_argsResult['version'] as bool) {
     stdout.writeln('${currentScriptName} ${version}');
     return null;
   }

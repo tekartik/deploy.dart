@@ -64,9 +64,7 @@ void defineTests(FileSystemTestContext ctx) {
       File _fileChild = childFile(src, "file");
       await writeString(_fileChild, "test");
       File yaml = childFile(src, "pubspec.yaml");
-      await writeString(
-          yaml,
-          '''
+      await writeString(yaml, '''
       files:
        - file''');
       int count = await fsDeploy(yaml: yaml);
@@ -87,9 +85,7 @@ void defineTests(FileSystemTestContext ctx) {
       File _fileChild = childFile(src, "file");
       await writeString(_fileChild, "test");
       File yaml = childFile(src, "pubspec.yaml");
-      await writeString(
-          yaml,
-          '''
+      await writeString(yaml, '''
       files:
        - file''');
       int count = await fsDeploy(options: fsDeployOptionsNoSymLink, yaml: yaml);
@@ -108,9 +104,7 @@ void defineTests(FileSystemTestContext ctx) {
       await _prepare();
       await writeString(childFile(src, "file"), "test");
       File yaml = childFile(src, "pubspec.yaml");
-      await writeString(
-          yaml,
-          '''
+      await writeString(yaml, '''
       files:
        - file''');
       int count = await fsDeploy(yaml: yaml, dst: dst);

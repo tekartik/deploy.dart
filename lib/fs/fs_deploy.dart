@@ -33,7 +33,7 @@ Future<int> fsDeploy(
   if (settings == null) {
     if (yaml != null) {
       String content = await yaml.readAsString();
-      settings = loadYaml(content);
+      settings = loadYaml(content) as Map;
     }
     settings ??= {};
   }
@@ -55,7 +55,7 @@ Future<List<File>> fsDeployListFiles(
   if (settings == null) {
     if (yaml != null) {
       String content = await yaml.readAsString();
-      settings = loadYaml(content);
+      settings = loadYaml(content) as Map;
     }
     settings ??= {};
   }
@@ -143,9 +143,9 @@ class Config {
           }
         }
       } else if (files is Map) {
-        files.forEach((String key, var value) {
+        files.forEach((var key, var value) {
           //devPrint('$key => $value');
-          _entities.add(new EntityConfig(key));
+          _entities.add(new EntityConfig(key as String));
         });
       }
 
@@ -227,7 +227,8 @@ Future<List<File>> deployConfigListFiles(Config config) async {
         tryToLinkFile: true,
         exclude: config.exclude);
 
-    files.addAll(await copyDirectoryListFiles(config.src, options: options));
+    files.addAll(await copyDirectoryListFiles(config.src as Directory,
+        options: options));
   } else {
     CopyOptions options = new CopyOptions(
         recursive: true,

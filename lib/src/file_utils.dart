@@ -354,7 +354,8 @@ Future<int> createSymlink(
 
     // Windows has a special implementation that will copy the files
     if (Platform.isWindows) {
-      return await copyFile(target, link);
+      await copyFile(target, link);
+      return 1;
     } else {
       // print("${target} ${new Directory.fromPath(target).existsSync()}");
       Link ioLink = new Link(link);

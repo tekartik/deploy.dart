@@ -325,7 +325,7 @@ Future<int> createSymlink(
   String target = join(targetDir.path, targetSubPath);
   String link = join(linkDir.path, linkSubPath);
 
-  if (FileSystemEntity.typeSync(target) == FileSystemEntityType.NOT_FOUND) {
+  if (FileSystemEntity.typeSync(target) == FileSystemEntityType.notFound) {
     print("$target not found from ${Directory.current}");
     return new Future.value(0);
   }

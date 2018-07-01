@@ -5,31 +5,26 @@ import 'package:path/path.dart';
 import 'package:dev_test/test.dart';
 //import 'package:fs_shim/fs.dart';
 //import 'package:fs_shim_test/test.dart';
-import 'dart:io';
+import 'dart:io' as io;
 import 'dart:async';
 import 'package:fs_shim/fs_io.dart' show unwrapIoDirectory;
 import 'package:fs_shim/utils/io/read_write.dart';
 import 'package:fs_shim/utils/io/entity.dart';
+import 'package:tekartik_fs_test/test_common.dart';
 
-import 'package:fs_shim_test/test_io.dart'
-    show newIoFileSystemContext, Script, getScriptPath, FileSystemTestContext;
-
-class TestScript extends Script {}
-
-String get testScriptPath => getScriptPath(TestScript);
+import 'fs_test_common_io.dart';
 
 void main() {
-  FileSystemTestContext ctx =
-      newIoFileSystemContext(join(dirname(testScriptPath), 'out'));
+  FileSystemTestContext ctx = new FileSystemTestContextIo();
 
   group('io_deploy', () {
     setUp(() {
       // clearOutFolderSync();
     });
 
-    Directory top;
-    Directory src;
-    Directory dst;
+    io.Directory top;
+    io.Directory src;
+    io.Directory dst;
 
     Future _prepare() async {
       top = unwrapIoDirectory(await ctx.prepare());

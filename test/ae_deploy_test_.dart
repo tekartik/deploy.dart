@@ -4,7 +4,7 @@ import 'package:tekartik_deploy/ae_deploy.dart';
 //import 'package:path/path.dart';
 import 'package:dev_test/test.dart';
 //import 'package:fs_shim/fs.dart';
-import 'package:fs_shim_test/test.dart';
+import 'package:tekartik_fs_test/test_common.dart';
 
 //<editor-fold desc="Description">
 //import 'package:fs_shim/utils/read_write.dart';

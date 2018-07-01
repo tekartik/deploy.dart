@@ -5,11 +5,11 @@ import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
 import 'package:path/path.dart';
 import 'package:dev_test/test.dart';
 //import 'package:fs_shim/fs.dart';
-import 'package:fs_shim_test/test.dart';
 
 import 'package:fs_shim/utils/read_write.dart';
 import 'package:fs_shim/utils/entity.dart';
 import 'package:fs_shim/utils/copy.dart';
+import 'package:tekartik_fs_test/test_common.dart';
 
 void main() {
   //debugQuickLogging(Level.FINEST);
@@ -160,7 +160,7 @@ void defineTests(FileSystemTestContext ctx) {
         String target = await link.target();
         expect(target, _fileChild.path);
         expect(_fileChild.isAbsolute, isTrue);
-        expect(fs.pathContext.isAbsolute(_fileChild.path), isTrue);
+        expect(fs.path.isAbsolute(_fileChild.path), isTrue);
         //expect(await readString(fs.newFile(link.path)), "test");
       }
     });
@@ -271,13 +271,13 @@ void defineTests(FileSystemTestContext ctx) {
         } on ArgumentError catch (_) {}
 
         Directory src = getDeploySrc(
-            yaml: fs.newFile(fs.pathContext.join('yaml_dir', 'toc.yaml')));
+            yaml: fs.newFile(fs.path.join('yaml_dir', 'toc.yaml')));
 
         expect(isAbsolute(src.path), isTrue);
         expect(src.path, endsWith('yaml_dir'));
 
         src = getDeploySrc(
-            yaml: fs.newFile(fs.pathContext.join('yaml_dir', 'toc.yaml')),
+            yaml: fs.newFile(fs.path.join('yaml_dir', 'toc.yaml')),
             src: fs.newDirectory("src"));
 
         expect(isAbsolute(src.path), isTrue);

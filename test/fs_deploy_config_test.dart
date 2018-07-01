@@ -3,7 +3,6 @@ import 'package:tekartik_deploy/fs/fs_deploy.dart';
 import 'package:yaml/yaml.dart';
 import 'package:dev_test/test.dart';
 //import 'package:fs_shim/fs.dart';
-import 'package:fs_shim_test/test.dart';
 
 void main() {
   group('config', () {

@@ -8,7 +8,7 @@ import 'package:tekartik_pub/io.dart';
 import 'package:fs_shim_test/test_io.dart';
 import 'io_test_common.dart';
 
-String get _pubPackageRoot => getPubPackageRootSync(testDirPath);
+String get _pubPackageRoot => '.';
 
 String get gsdeployDartScript {
   PubPackage pkg = new PubPackage(_pubPackageRoot);

@@ -14,16 +14,24 @@ dependencies:
   process_run: '>=0.5.0+1'
   yaml: any
   tekartik_io_utils:
-    git: git://github.com/tekartik/io_utils.dart
+    git:
+      url: git://github.com/tekartik/io_utils.dart
+      ref: dart1
 dev_dependencies:
   test: any
   dev_test: any
   fs_shim_test:
-    git: git://github.com/tekartik/fs_shim_test.dart
+    git:
+      url: git://github.com/tekartik/fs_shim_test.dart
+      ref: dart1
   tekartik_pub:
-    git: git://github.com/tekartik/pub.dart
+    git:
+      url: git://github.com/tekartik/pub.dart
+      ref: dart1
   chrome_travis:
-    git: git://github.com/tekartik/chrome_travis.dart
+    git:
+      url: git://github.com/tekartik/chrome_travis.dart
+      ref: dart1
     version: '>=0.1.3'
 dependency_overrides:
 #  process_run:

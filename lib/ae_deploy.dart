@@ -1,16 +1,6 @@
 library tekartik.deploy.aedeploy;
 
-import 'dart:async';
-import 'dart:io';
-
-import 'package:fs_shim/utils/io/entity.dart';
-import 'package:fs_shim/utils/io/read_write.dart';
-import 'package:mustache_no_mirror/mustache.dart' as mustache;
-import 'package:path/path.dart';
-import 'package:process_run/cmd_run.dart';
-import 'package:resource/resource.dart';
-import 'package:yaml/yaml.dart' as yaml;
-
+/*
 ///
 /// Deploy between 2 folders with an option config file
 ///
@@ -91,3 +81,4 @@ Future aeDeployEmpty(String applicationId, String module) async {
   print(out);
   await deploy(applicationId, module);
 }
+*/

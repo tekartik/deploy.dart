@@ -1,13 +1,14 @@
 #!/usr/bin/env dart
-import 'package:fs_shim/fs_io.dart';
 import 'dart:async';
+
 import 'package:args/args.dart';
+import 'package:fs_shim/fs_io.dart';
 import 'package:path/path.dart';
-//import 'package:yaml/yaml.dart';
 import 'package:tekartik_deploy/src/bin_version.dart';
+
+//import 'package:yaml/yaml.dart';
 //import 'package:tekartik_core/log_utils.dart';
 //import 'package:tekartik_deploy/deploy_io.dart' hide Config, deployConfig;
-import 'package:tekartik_deploy/ae_deploy.dart';
 
 const String _HELP = 'help';
 
@@ -57,7 +58,7 @@ Future main(List<String> arguments) async {
 
   //bool debug = true;
 
-  await aeDeployEmpty('tekartik-dev', 'default');
+  // await aeDeployEmpty('tekartik-dev', 'default');
   /*
   bool dirOnly = _argsResult["dir"];
 

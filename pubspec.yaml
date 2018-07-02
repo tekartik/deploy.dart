@@ -1,5 +1,5 @@
 name: tekartik_deploy
-version: 0.3.0
+version: 0.3.1
 description: File deployment helper
 homepage: https://github.com/tekartik/deploy.dart
 environment:
@@ -8,7 +8,6 @@ dependencies:
   args: '>=1.4.3'
   path: '>=1.6.1'
   pub_semver: '>=1.3.0'
-  mustache_no_mirror: any
   fs_shim: '>=0.9.0-dev.1'
   resource: '>=2.1.4'
   process_run: '>=0.6.0-dev.1'

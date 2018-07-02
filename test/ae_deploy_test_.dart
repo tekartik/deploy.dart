@@ -1,10 +1,12 @@
 @TestOn("vm")
-import 'package:tekartik_deploy/ae_deploy.dart';
+library tekartik_deploy.ae_deploy_test_;
+
+import 'package:dev_test/test.dart';
+import 'package:tekartik_fs_test/test_common.dart';
+
 //import 'package:tekartik_core/log_utils.dart';
 //import 'package:path/path.dart';
-import 'package:dev_test/test.dart';
 //import 'package:fs_shim/fs.dart';
-import 'package:tekartik_fs_test/test_common.dart';
 
 //<editor-fold desc="Description">
 //import 'package:fs_shim/utils/read_write.dart';
@@ -22,7 +24,7 @@ void defineTests(FileSystemTestContext ctx) {
 
   group('ae_deploy', () {
     test('test', () async {
-      await aeDeployEmpty('tekartik-dev', 'test');
+      // await aeDeployEmpty('tekartik-dev', 'test');
     }, timeout: new Timeout(new Duration(minutes: 5)));
   });
 }

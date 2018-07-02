@@ -21,7 +21,6 @@ String get dirdeployDartScript {
   return join(pkg.path, 'bin', 'gsdeploy.dart');
 }
 
-
 main() {
   //defineTests(ctx);
   //useVMConfiguration();

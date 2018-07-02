@@ -1,7 +1,7 @@
 @TestOn("vm")
 library tekartik_deploy.test.bin_dirdeploy_test;
 
-import 'dart:io' hide File, Directory;
+import 'dart:io' hide File, Directory, FileSystemEntityType;
 
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
@@ -56,7 +56,7 @@ main() {
     });
 
     test('deploy.yaml_exclude', () async {
-      var top = await ctx.prepare() as Directory;
+      var top = await ctx.prepare();
       //Directory
       Directory dir = fs.directory(join(top.path, 'dir'));
       File file = fs.file(join(dir.path, "file"));
@@ -79,12 +79,12 @@ main() {
           [dirdeployDartScript, deployYamlFile.path, dir.path, dst.path]));
       //await runCmd(dartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //print(processResultToDebugString(result));
-      expect(await fs.newFile(join(dst.path, "file2")).readAsString(), "test");
-      expect(await fs.newFile(join(dst.path, "file")).exists(), isFalse);
+      expect(await fs.file(join(dst.path, "file2")).readAsString(), "test");
+      expect(await fs.file(join(dst.path, "file")).exists(), isFalse);
     });
 
     test('dir', () async {
-      var top = await ctx.prepare() as Directory;
+      var top = await ctx.prepare();
       //Directory
       Directory dir = fs.directory(join(top.path, 'dir'));
       File file = fs.file(join(dir.path, "file"));
@@ -102,7 +102,8 @@ main() {
       expect(await fs.file(filePath).readAsString(), "test");
 
       if (fs.supportsFileLink) {
-        expect(await fs.type(filePath), FileSystemEntityType.link);
+        expect(await fs.type(filePath, followLinks: false),
+            FileSystemEntityType.link);
       }
     });
   });

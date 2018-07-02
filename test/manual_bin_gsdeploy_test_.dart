@@ -5,8 +5,10 @@ import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:dev_test/test.dart';
 import 'package:tekartik_pub/io.dart';
-import 'package:fs_shim_test/test_io.dart';
-import 'io_test_common.dart';
+
+import 'fs_test_common_io.dart'
+    show FileSystemTestContext, fileSystemTestContextIo, FileSystem;
+import 'dart:io';
 
 String get _pubPackageRoot => '.';
 
@@ -15,11 +17,7 @@ String get gsdeployDartScript {
   return join(pkg.path, 'bin', 'gsdeploy.dart');
 }
 
-class TestScript extends Script {}
-
-String get testScriptPath => getScriptPath(TestScript);
-String top = join(dirname(testScriptPath), 'out');
-FileSystemTestContext ctx = newIoFileSystemContext(top);
+FileSystemTestContext ctx = fileSystemTestContextIo;
 FileSystem fs = ctx.fs;
 main() {
   //defineTests(ctx);

@@ -124,8 +124,7 @@ Future main(List<String> arguments) async {
       if (isDir) {
         String deployYamlPath = join(dir, deployYaml);
         //devPrint(dir);
-        return FileSystemEntity
-            .isFile(deployYamlPath)
+        return FileSystemEntity.isFile(deployYamlPath)
             .then((bool containsDeployYaml) async {
           //print("gitFile $gitFile: ${containsDotGit}");
           if (containsDeployYaml) {

@@ -1,5 +1,5 @@
 name: tekartik_deploy
-version: 0.4.0
+version: 0.5.0
 description: File deployment helper
 homepage: https://github.com/tekartik/deploy.dart
 environment:
@@ -41,7 +41,7 @@ dev_dependencies:
       ref: dart2
   build_runner: '>=0.9.0'
   build_test: '>=0.10.2'
-dependency_overrides:
+#dependency_overrides:
 #  tekartik_common_utils:
 #    git:
 #      url: git://github.com/tekartik/common_utils.dart
@@ -55,7 +55,3 @@ dependency_overrides:
 #  fs_shim:
 #    git: git://github.com/tekartik/fs_shim.dart
 
-executables:
-  fsdeploy:
-  gsdeploy:
-  gswebdeploy:

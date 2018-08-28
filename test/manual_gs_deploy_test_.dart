@@ -5,16 +5,13 @@ import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:dev_test/test.dart';
 import 'package:tekartik_deploy/gs_deploy.dart';
-import 'package:fs_shim_test/test_io.dart';
-import 'io_test_common.dart';
+import 'fs_test_common_io.dart'
+    show fileSystemTestContextIo, FileSystem, FileSystemTestContext;
+import 'package:fs_shim/fs_io.dart';
 
 //String get _pubPackageRoot => getPubPackageRootSync(testDirPath);
 
-class TestScript extends Script {}
-
-String get testScriptPath => getScriptPath(TestScript);
-String top = join(dirname(testScriptPath), 'out');
-FileSystemTestContext ctx = newIoFileSystemContext(top);
+FileSystemTestContext ctx = fileSystemTestContextIo;
 FileSystem fs = ctx.fs;
 main() {
   //defineTests(ctx);

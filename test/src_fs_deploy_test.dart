@@ -5,7 +5,7 @@ import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
 import 'package:path/path.dart';
 import 'package:dev_test/test.dart';
 //import 'package:fs_shim/fs.dart';
-import 'package:fs_shim_test/test.dart';
+import 'package:tekartik_fs_test/test_common.dart';
 
 import 'package:fs_shim/utils/read_write.dart';
 import 'package:fs_shim/utils/entity.dart';
@@ -130,9 +130,7 @@ void defineTests(FileSystemTestContext ctx) {
       File _fileChild = childFile(src, "file");
       await writeString(_fileChild, "test");
       File yaml = childFile(src, "pubspec.yaml");
-      await writeString(
-          yaml,
-          '''
+      await writeString(yaml, '''
       files:
        - file''');
       int count = await fsDeploy(yaml: yaml);
@@ -152,9 +150,7 @@ void defineTests(FileSystemTestContext ctx) {
       await _prepare();
       await writeString(childFile(src, "file"), "test");
       File yaml = childFile(src, "pubspec.yaml");
-      await writeString(
-          yaml,
-          '''
+      await writeString(yaml, '''
       files:
        - file''');
       int count = await fsDeploy(yaml: yaml, dst: dst);

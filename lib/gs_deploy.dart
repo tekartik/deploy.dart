@@ -127,7 +127,7 @@ Future _gzip(String src) async {
       if (await FileSystemEntity.isFile(fse.path)) {
         //print(fse.path);
         File file = new File(fse.path);
-        List<int> data = GZIP.encode(await file.readAsBytes());
+        List<int> data = gzip.encode(await file.readAsBytes());
         await file.delete();
         await file.writeAsBytes(data);
       }

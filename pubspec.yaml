@@ -1,31 +1,51 @@
 name: tekartik_deploy
-version: 0.2.2
+version: 0.5.0
 description: File deployment helper
 homepage: https://github.com/tekartik/deploy.dart
 environment:
-  sdk: '>=1.20.1 <2.0.0'
+  sdk: '>=2.0.0-dev.58 <3.0.0'
 dependencies:
-  args: '>=0.13.7'
-  path: '>=1.4.0'
+  args: '>=1.4.3'
+  path: '>=1.6.1'
   pub_semver: '>=1.3.0'
-  mustache_no_mirror: any
-  fs_shim: '>=0.6.7'
-  resource: '>=2.0.2'
-  process_run: '>=0.5.0+1'
-  yaml: any
+  fs_shim: '>=0.9.0'
+  resource: '>=2.1.4'
+  process_run: '>=0.6.0'
+  yaml: '>=2.1.15'
   tekartik_io_utils:
-    git: git://github.com/tekartik/io_utils.dart
+    git:
+      url: git://github.com/tekartik/io_utils.dart
+      ref: dart2
 dev_dependencies:
   test: any
   dev_test: any
-  fs_shim_test:
-    git: git://github.com/tekartik/fs_shim_test.dart
+  tekartik_fs_test:
+    git:
+      url: git://github.com/tekartik/fs_shim.dart
+      path: fs_test
+      ref: dart2
+    version: '>=0.1.0'
   tekartik_pub:
-    git: git://github.com/tekartik/pub.dart
+    git:
+      url: git://github.com/tekartik/pub.dart
+      ref: dart2
   chrome_travis:
-    git: git://github.com/tekartik/chrome_travis.dart
+    git:
+      url: git://github.com/tekartik/chrome_travis.dart
+      ref: dart2
     version: '>=0.1.3'
-dependency_overrides:
+  tekartik_platform_io:
+    git:
+      url: git://github.com/tekartik/platform.dart
+      path: platform_io
+      ref: dart2
+  build_runner: '>=0.9.0'
+  build_test: '>=0.10.2'
+#dependency_overrides:
+#  tekartik_common_utils:
+#    git:
+#      url: git://github.com/tekartik/common_utils.dart
+#      ref: dart2
 #  process_run:
 #    path: /opt/devx/git/github.com/tekartik/process_run.dart
 #  fs_shim_test:
@@ -35,7 +55,3 @@ dependency_overrides:
 #  fs_shim:
 #    git: git://github.com/tekartik/fs_shim.dart
 
-executables:
-  fsdeploy:
-  gsdeploy:
-  gswebdeploy:

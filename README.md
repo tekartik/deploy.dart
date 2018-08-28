@@ -2,7 +2,15 @@
 
 File deployment helper (file system, google storage)
 
+## Install
 
+````
+tekartik_deploy:
+    git:
+      url: git://github.com/tekartik/deploy.dart
+      ref: dart2
+    version: ">=0.5.0"
+````
 
 ## Usage
 

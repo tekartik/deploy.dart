@@ -50,8 +50,8 @@ Future<List<File>> fsDeployListFiles(
   if (src != null) {
     fsSrc = fs.wrapIoDirectory(src);
   }
-  var fsFiles = await fs.fsDeployListFiles(
-      settings: settings, yaml: fsYaml, src: fsSrc) as List<fs.File>;
+  var fsFiles =
+      await fs.fsDeployListFiles(settings: settings, yaml: fsYaml, src: fsSrc);
   return new List.generate(fsFiles.length, (int index) {
     return fs.unwrapIoFile(fsFiles[index]);
   });

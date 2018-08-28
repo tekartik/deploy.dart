@@ -4,17 +4,12 @@
 library fs_shim.fs_io_test;
 
 import 'package:dev_test/test.dart';
-import 'package:fs_shim_test/test_io.dart';
-
+import 'package:tekartik_fs_test/test_common.dart';
+import 'fs_test_common_io.dart';
 import 'src_fs_deploy_test.dart' as fs_deploy;
 
-class TestScript extends Script {}
-
-String get testScriptPath => getScriptPath(TestScript);
-
 void main() {
-  FileSystemTestContext ctx =
-      newIoFileSystemContext(join(dirname(testScriptPath), 'out'));
+  FileSystemTestContext ctx = fileSystemTestContextIo;
 
   group('io', () {
     // All tests

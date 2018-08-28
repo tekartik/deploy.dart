@@ -7,14 +7,9 @@ import 'package:path/path.dart';
 import 'package:dev_test/test.dart';
 export 'package:dev_test/test.dart';
 import 'dart:io';
-import 'package:tekartik_pub/script.dart';
-
-// This script resolver
-class TestScript extends Script {}
 
 // Test directory
-String get testDirPath => dirname(getScriptPath(TestScript));
-String get testOutTopPath => join(testDirPath, outFolder);
+String get testOutTopPath => join('.dart_tool', 'tekartik_deploy', outFolder);
 String get testOutPath => getTestOutPath(testDescriptions);
 
 String getTestOutPath([List<String> parts]) {

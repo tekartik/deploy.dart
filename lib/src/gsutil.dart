@@ -4,8 +4,9 @@ import 'package:path/path.dart';
 import 'package:tekartik_io_utils/io_utils_import.dart';
 import 'package:process_run/cmd_run.dart';
 
+String get _gsUtilBinName => 'gsutil${Platform.isWindows ? '.cmd' : ''}';
 void rawGsUtilVersionSync() {
-  Process.runSync('gsutil', ['--version']);
+  Process.runSync(_gsUtilBinName, ['--version']);
 }
 
 String _gsUtilExecutable;
@@ -14,7 +15,7 @@ void findGsUtilSync() {
   if (_gsUtilExecutable == null) {
     String gsUtilExecutable;
     if (findRawGsUtilSync()) {
-      gsUtilExecutable = 'gsutil';
+      gsUtilExecutable = _gsUtilBinName;
     } else {
       String gloudSdkDir =
           Platform.environment['TEKARTIK_GOOGLE_CLOUD_SDK_DIR'];

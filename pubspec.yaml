@@ -1,5 +1,5 @@
 name: tekartik_deploy
-version: 0.5.0
+version: 0.5.1
 description: File deployment helper
 homepage: https://github.com/tekartik/deploy.dart
 environment:

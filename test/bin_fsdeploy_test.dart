@@ -18,11 +18,11 @@ import 'dart:convert';
 String get _pubPackageRoot => '.';
 
 String get dirdeployDartScript {
-  PubPackage pkg = new PubPackage(_pubPackageRoot);
+  PubPackage pkg = PubPackage(_pubPackageRoot);
   return join(pkg.path, 'bin', 'fsdeploy.dart');
 }
 
-FileSystemTestContext ctx = new FileSystemTestContextIo();
+FileSystemTestContext ctx = FileSystemTestContextIo();
 FileSystem fs = ctx.fs;
 main() {
   //defineTests(ctx);
@@ -34,7 +34,7 @@ main() {
       List<String> parts =
           LineSplitter.split(result.stdout as String).first.split(' ');
       expect(parts.first, 'fsdeploy');
-      expect(new Version.parse(parts.last), version);
+      expect(Version.parse(parts.last), version);
     });
 
     test('deploy.yaml', () async {

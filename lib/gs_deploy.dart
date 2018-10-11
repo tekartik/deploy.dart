@@ -15,8 +15,7 @@ final ARG_OUT = 'out';
 @deprecated
 ProcessCmd gsutilCmd(List<String> args) => gsUtilCmd(args);
 
-ProcessCmd gsUtilCmd(List<String> args) =>
-    new GsUtilCmd(gsUtilExecutable, args);
+ProcessCmd gsUtilCmd(List<String> args) => GsUtilCmd(gsUtilExecutable, args);
 
 /// synchronize from src to dst (no delete)
 ProcessCmd gsutilRsyncCmd(String src, String dst,
@@ -81,7 +80,7 @@ const encodingNoneFolder = 'none';
 // gsutil setwebcfg -m index.html gs://gstest.tekartik.com
 //ProcessCmd gsDeployCmd(String src, String dst) => gsutilRsyncCmd(src, dst);
 ProcessCmd gsDeployCmd(String src, String dst,
-        {bool recursive: true, bool parallel: true}) =>
+        {bool recursive = true, bool parallel = true}) =>
     gsutilRsyncCmd(src, dst, recursive: recursive, parallel: parallel);
 
 List<ProcessCmd> gsWebDeployCmds(String src, String dst) {
@@ -110,23 +109,21 @@ Future gsWebPrepareForRsync(String src, String dst) async {
     '*.css',
     '*.txt'
   ];
-  await copyDirectory(
-      new Directory(src), new Directory(join(dst, encodingGZipFolder)),
+  await copyDirectory(Directory(src), Directory(join(dst, encodingGZipFolder)),
       options: recursiveLinkOrCopyNewerOptions..include = gzipFilter);
-  await copyDirectory(
-      new Directory(src), new Directory(join(dst, encodingNoneFolder)),
+  await copyDirectory(Directory(src), Directory(join(dst, encodingNoneFolder)),
       options: recursiveLinkOrCopyNewerOptions..exclude = gzipFilter);
 }
 
 // gzip in place
 Future _gzip(String src) async {
   List<Future> futures = [];
-  futures.add(
-      new Directory(src).list(recursive: true).listen((FileSystemEntity fse) {
+  futures
+      .add(Directory(src).list(recursive: true).listen((FileSystemEntity fse) {
     futures.add(() async {
       if (await FileSystemEntity.isFile(fse.path)) {
         //print(fse.path);
-        File file = new File(fse.path);
+        File file = File(fse.path);
         List<int> data = gzip.encode(await file.readAsBytes());
         await file.delete();
         await file.writeAsBytes(data);

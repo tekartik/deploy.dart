@@ -22,10 +22,10 @@ String getTestOutPath([List<String> parts]) {
 String clearTestOutPath([List<String> parts]) {
   String outPath = getTestOutPath(parts);
   try {
-    new Directory(outPath).deleteSync(recursive: true);
+    Directory(outPath).deleteSync(recursive: true);
   } catch (e) {}
   try {
-    new Directory(outPath).createSync(recursive: true);
+    Directory(outPath).createSync(recursive: true);
   } catch (e) {}
   return outPath;
 }

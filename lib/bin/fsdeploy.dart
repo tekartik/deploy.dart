@@ -34,7 +34,7 @@ String get currentScriptName => basenameWithoutExtension(Platform.script.path);
 Future main(List<String> arguments) async {
   //debugQuickLogging(Level.FINE);
 
-  ArgParser parser = new ArgParser(allowTrailingOptions: true);
+  ArgParser parser = ArgParser(allowTrailingOptions: true);
   parser.addFlag(_HELP, abbr: 'h', help: 'Usage help', negatable: false);
   parser.addFlag("dir",
       abbr: 'd',
@@ -129,7 +129,7 @@ Future main(List<String> arguments) async {
           //print("gitFile $gitFile: ${containsDotGit}");
           if (containsDeployYaml) {
             //gitPull(dir);
-            return await new File(deployYamlPath)
+            return await File(deployYamlPath)
                 .readAsString()
                 .then((content) async {
               var doc = loadYaml(content);
@@ -142,7 +142,7 @@ Future main(List<String> arguments) async {
           } else {
             List<Future<int>> sub = [];
 
-            return new Directory(dir)
+            return Directory(dir)
                 .list()
                 .listen((FileSystemEntity fse) {
                   sub.add(_handleDir(fse.path));
@@ -166,9 +166,8 @@ Future main(List<String> arguments) async {
 
   // new implementation
   Future _newDeploy(Map settings) async {
-    Config config = new Config(settings,
-        src: new Directory(srcDir),
-        dst: dstDir == null ? null : new Directory(dstDir));
+    Config config = Config(settings,
+        src: Directory(srcDir), dst: dstDir == null ? null : Directory(dstDir));
 
     return await deployConfig(config);
   }
@@ -191,7 +190,7 @@ Future main(List<String> arguments) async {
         }
       }
 
-      String content = await new File(yamlFilePath).readAsString();
+      String content = await File(yamlFilePath).readAsString();
 
       var settings = loadYaml(content) as Map;
       return await _newDeploy(settings);
@@ -223,7 +222,7 @@ Future main(List<String> arguments) async {
       dstDir = join(srcDir, 'deploy');
 
       // check where build exists first
-      if (await new Directory(srcDir).exists()) {
+      if (await Directory(srcDir).exists()) {
         int count = await _handleDir(srcDir);
         if (count == 0) {
           // Try to handle root

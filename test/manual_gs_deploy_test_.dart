@@ -20,8 +20,8 @@ main() {
     test('deploy_1_file', () async {
       var top = await ctx.prepare() as Directory;
       //Directory
-      Directory dir = new Directory(join(top.path, 'dir'));
-      File file = new File(join(dir.path, "file"));
+      Directory dir = Directory(join(top.path, 'dir'));
+      File file = File(join(dir.path, "file"));
       await file.create(recursive: true);
       await file.writeAsString("test", flush: true);
 
@@ -34,8 +34,8 @@ main() {
     test('rsync_1_dir', () async {
       var top = await ctx.prepare() as Directory;
       //Directory
-      Directory dir = new Directory(join(top.path, 'dir'));
-      File file = new File(join(dir.path, "file"));
+      Directory dir = Directory(join(top.path, 'dir'));
+      File file = File(join(dir.path, "file"));
       await file.create(recursive: true);
       await file.writeAsString("test", flush: true);
 

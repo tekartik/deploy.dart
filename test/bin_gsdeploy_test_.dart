@@ -17,7 +17,7 @@ import 'dart:convert';
 String get _pubPackageRoot => '.';
 
 String get dirdeployDartScript {
-  PubPackage pkg = new PubPackage(_pubPackageRoot);
+  PubPackage pkg = PubPackage(_pubPackageRoot);
   return join(pkg.path, 'bin', 'gsdeploy.dart');
 }
 
@@ -31,7 +31,7 @@ main() {
       List<String> parts =
           LineSplitter.split(result.stdout as String).first.split(' ');
       expect(parts.first, 'gsdeploy');
-      expect(new Version.parse(parts.last), version);
+      expect(Version.parse(parts.last), version);
     });
 
     /*

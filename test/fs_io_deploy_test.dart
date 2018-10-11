@@ -17,7 +17,7 @@ import 'package:tekartik_fs_test/test_common.dart' show FileSystemTestContext;
 import 'fs_test_common_io.dart';
 
 void main() {
-  FileSystemTestContext ctx = new FileSystemTestContextIo();
+  FileSystemTestContext ctx = FileSystemTestContextIo();
 
   group('io_deploy', () {
     setUp(() {
@@ -30,13 +30,13 @@ void main() {
 
     Future _prepare() async {
       top = unwrapIoDirectory(await ctx.prepare());
-      src = new io.Directory(join(top.path, "src"));
-      dst = new io.Directory(join(top.path, "dst"));
+      src = io.Directory(join(top.path, "src"));
+      dst = io.Directory(join(top.path, "dst"));
     }
 
     test('fs_deploy', () async {
       await _prepare();
-      await writeString(new io.File(join(src.path, "file")), "test");
+      await writeString(io.File(join(src.path, "file")), "test");
 
       int count = await fsDeploy(src: src, dst: dst);
       expect(count, 1);

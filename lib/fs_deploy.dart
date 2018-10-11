@@ -52,7 +52,7 @@ Future<List<File>> fsDeployListFiles(
   }
   var fsFiles =
       await fs.fsDeployListFiles(settings: settings, yaml: fsYaml, src: fsSrc);
-  return new List.generate(fsFiles.length, (int index) {
+  return List.generate(fsFiles.length, (int index) {
     return fs.unwrapIoFile(fsFiles[index]);
   });
 }

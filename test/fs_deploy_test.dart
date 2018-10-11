@@ -121,8 +121,8 @@ void defineTests(FileSystemTestContext ctx) {
       await _prepare();
       await writeString(childFile(src, "file1"), "test");
       await writeString(childFile(src, "file2"), "test");
-      TopCopy copy = new TopCopy(fsTopEntity(src), fsTopEntity(dst),
-          options: new CopyOptions(recursive: true, exclude: ["file1"]));
+      TopCopy copy = TopCopy(fsTopEntity(src), fsTopEntity(dst),
+          options: CopyOptions(recursive: true, exclude: ["file1"]));
       await copy.run();
       expect(await entityExists(childFile(dst, "file1")), isFalse);
       expect(await readString(childFile(dst, "file2")), "test");
@@ -131,7 +131,7 @@ void defineTests(FileSystemTestContext ctx) {
     test('simple entity', () async {
       await _prepare();
       await writeString(childFile(src, "file"), "test");
-      Config config = new Config({})
+      Config config = Config({})
         ..src = src
         ..dst = dst;
       int count = await deployConfigEntity(config, "file");
@@ -143,7 +143,7 @@ void defineTests(FileSystemTestContext ctx) {
       await _prepare();
       File _fileChild = childFile(src, "file");
       await writeString(_fileChild, "test");
-      Config config = new Config({})
+      Config config = Config({})
         ..src = src
         ..dst = dst;
       int count = await deployConfigEntity(config, "file");
@@ -162,7 +162,7 @@ void defineTests(FileSystemTestContext ctx) {
     test('empty_config', () async {
       await _prepare();
       await writeString(childFile(src, "file"), "test");
-      Config config = new Config({}, src: src, dst: dst);
+      Config config = Config({}, src: src, dst: dst);
       int count = await deployConfig(config);
       expect(count, 1);
       expect(await readString(childFile(dst, "file")), "test");
@@ -183,12 +183,12 @@ void defineTests(FileSystemTestContext ctx) {
       //fsCopyDebug = true;
       Directory top = await ctx.prepare();
       Directory dir = fs.newDirectory(join(top.path, "dir"));
-      Config config = new Config({});
+      Config config = Config({});
       File file = fs.newFile(join(dir.path, "data"));
       config.src = dir;
       await file.create(recursive: true);
       await file.writeAsString("test");
-      EntityConfig entityConfig = new EntityConfig("data");
+      EntityConfig entityConfig = EntityConfig("data");
       int count = await deployEntity(config, entityConfig);
       expect(count, 1);
       expect(
@@ -201,12 +201,12 @@ void defineTests(FileSystemTestContext ctx) {
     test('simple entity_rename', () async {
       Directory top = await ctx.prepare();
       Directory dir = fs.newDirectory(join(top.path, "dir"));
-      Config config = new Config({});
+      Config config = Config({});
       File file = fs.newFile(join(dir.path, "data"));
       config.src = dir;
       await file.create(recursive: true);
       await file.writeAsString("test");
-      EntityConfig entityConfig = new EntityConfig.withDst("data", "data2");
+      EntityConfig entityConfig = EntityConfig.withDst("data", "data2");
       int count = await deployEntity(config, entityConfig);
       expect(count, 1);
       expect(await fs.newFile(join(top.path, "deploy", "dir", "data")).exists(),
@@ -222,7 +222,7 @@ void defineTests(FileSystemTestContext ctx) {
       Directory top = await ctx.prepare();
       Directory dir = fs.newDirectory(join(top.path, "dir"));
       await dir.create();
-      Config config = new Config({}, src: dir);
+      Config config = Config({}, src: dir);
 //              config.src = dir;
       // file
       File file = fs.newFile(join(dir.path, "file.txt"));
@@ -245,7 +245,7 @@ void defineTests(FileSystemTestContext ctx) {
       Directory dir = fs.newDirectory(join(top.path, "dir"));
       await dir.create();
       Directory dst = fs.newDirectory(join(top.path, "new_dir"));
-      Config config = new Config({}, src: dir, dst: dst);
+      Config config = Config({}, src: dir, dst: dst);
 //              config.src = dir;
       // file
       File file = fs.newFile(join(dir.path, "file.txt"));

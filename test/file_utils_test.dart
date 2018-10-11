@@ -20,7 +20,7 @@ String outDataFilenamePath(String filename) => join(testOutPath, filename);
 //String inDataFilenamePath(String filename) => join(dataPath, filename);
 
 void writeStringContentSync(String path, String content) {
-  File file = new File(path);
+  File file = File(path);
   try {
     file.writeAsStringSync(content);
   } on FileSystemException {
@@ -43,7 +43,7 @@ void defineTests() {
       writeStringContentSync(path1, simpleContent);
 
       return copyFileIfNewer(path1, path2).then((int copied) {
-        expect(new File(path2).readAsStringSync(), equals(simpleContent));
+        expect(File(path2).readAsStringSync(), equals(simpleContent));
         expect(copied, equals(1));
         return copyFileIfNewer(path1, path2).then((int copied) {
           expect(copied, equals(0));
@@ -62,7 +62,7 @@ void defineTests() {
         if (!Platform.isWindows) {
           expect(FileSystemEntity.isFileSync(path2), isTrue);
         }
-        expect(new File(path2).readAsStringSync(), equals(simpleContent));
+        expect(File(path2).readAsStringSync(), equals(simpleContent));
         expect(copied, equals(1));
         return linkOrCopyFileIfNewer(path1, path2).then((int copied) {
           expect(copied, equals(0));
@@ -85,13 +85,13 @@ void defineTests() {
 
       return copyFilesIfNewer(sub1, sub2).then((int copied) {
         // check sub
-        expect(new File(join(sub2, simpleFileName)).readAsStringSync(),
+        expect(File(join(sub2, simpleFileName)).readAsStringSync(),
             equals(simpleContent + "1"));
-        expect(new File(join(sub2, simpleFileName2)).readAsStringSync(),
+        expect(File(join(sub2, simpleFileName2)).readAsStringSync(),
             equals(simpleContent + "2"));
 
         // and subSub
-        expect(new File(join(sub2, 'sub1', simpleFileName)).readAsStringSync(),
+        expect(File(join(sub2, 'sub1', simpleFileName)).readAsStringSync(),
             equals(simpleContent + "3"));
         return copyFilesIfNewer(sub1, sub2).then((int copied) {
           expect(copied, equals(0));
@@ -106,7 +106,7 @@ void defineTests() {
       writeStringContentSync(path1, simpleContent);
 
       return linkOrCopyIfNewer(path1, path2).then((int copied) {
-        expect(new File(path2).readAsStringSync(), equals(simpleContent));
+        expect(File(path2).readAsStringSync(), equals(simpleContent));
         expect(copied, equals(1));
         return linkOrCopyIfNewer(path1, path2).then((int copied) {
           expect(copied, equals(0));
@@ -125,7 +125,7 @@ void defineTests() {
       return linkOrCopyIfNewer(sub1, sub2).then((int copied) {
         expect(copied, equals(1));
         // check sub
-        expect(new File(join(sub2, simpleFileName)).readAsStringSync(),
+        expect(File(join(sub2, simpleFileName)).readAsStringSync(),
             equals(simpleContent + "1"));
 
         return linkOrCopyIfNewer(sub1, sub2).then((int copied) {
@@ -146,7 +146,7 @@ void defineTests() {
 
       await deployEntitiesIfNewer(
           sub1, sub2, [simpleFileName, simpleFileName2]);
-      expect(new File(join(sub2, simpleFileName)).readAsStringSync(),
+      expect(File(join(sub2, simpleFileName)).readAsStringSync(),
           equals(simpleContent + "1"));
 
       int copied = await deployEntitiesIfNewer(
@@ -190,7 +190,7 @@ void defineTests() {
 
       await linkFile(path1, path2).then((int result) {
         expect(result, 1);
-        expect(new File(path2).readAsStringSync(), equals(simpleContent));
+        expect(File(path2).readAsStringSync(), equals(simpleContent));
       });
     });
 //

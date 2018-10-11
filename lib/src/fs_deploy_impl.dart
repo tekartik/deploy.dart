@@ -21,7 +21,7 @@ class FsDeployImpl {
 
     int sum = 0;
 
-    CopyOptions copyOptions = new CopyOptions(
+    CopyOptions copyOptions = CopyOptions(
         recursive: true,
         checkSizeAndModifiedDate: true,
         tryToLinkFile: tryToLinkFile,
@@ -30,12 +30,12 @@ class FsDeployImpl {
     if (config.entities.isEmpty) {
       // default copy all
       // recursiveLinkOrCopyNewerOptions);
-      TopCopy topCopy = new TopCopy(
+      TopCopy topCopy = TopCopy(
           fsTopEntity(config.src), fsTopEntity(config.dst),
           options: copyOptions);
       sum += await topCopy.run();
     } else {
-      TopCopy topCopy = new TopCopy(
+      TopCopy topCopy = TopCopy(
           fsTopEntity(config.src), fsTopEntity(config.dst),
           options: copyOptions);
       for (EntityConfig entityConfig in config.entities) {
@@ -50,7 +50,7 @@ Directory getDeploySrc({File yaml, Directory src}) {
   // default src?
   if (src == null) {
     if (yaml == null) {
-      throw new ArgumentError("need src or yaml specified");
+      throw ArgumentError("need src or yaml specified");
     }
     src = yaml.parent;
   }

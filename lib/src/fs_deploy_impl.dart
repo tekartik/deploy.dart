@@ -9,7 +9,7 @@ class FsDeployImpl {
   FsDeployImpl(this.options);
 
   Future<int> deployConfig(Config config) async {
-    Directory dst = config.dst.fs.newDirectory(config.dst.path);
+    Directory dst = config.dst.fs.directory(config.dst.path);
     try {
       await dst.delete(recursive: true);
     } catch (_) {}

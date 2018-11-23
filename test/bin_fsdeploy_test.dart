@@ -30,7 +30,7 @@ main() {
   group('fsdeploy', () {
     test('version', () async {
       ProcessResult result =
-          await runCmd(dartCmd([dirdeployDartScript, '--version']));
+          await runCmd(DartCmd([dirdeployDartScript, '--version']));
       List<String> parts =
           LineSplitter.split(result.stdout as String).first.split(' ');
       expect(parts.first, 'fsdeploy');
@@ -50,8 +50,8 @@ main() {
       Directory dst = fs.directory(join(top.path, 'dst'));
 
       await runCmd(
-          dartCmd([dirdeployDartScript, deployYamlFile.path, dst.path]));
-      //await runCmd(dartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
+          DartCmd([dirdeployDartScript, deployYamlFile.path, dst.path]));
+      //await runCmd(DartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //print(processResultToDebugString(result));
     });
 
@@ -75,9 +75,9 @@ main() {
 
       Directory dst = fs.directory(join(top.path, 'dst'));
 
-      await runCmd(dartCmd(
+      await runCmd(DartCmd(
           [dirdeployDartScript, deployYamlFile.path, dir.path, dst.path]));
-      //await runCmd(dartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
+      //await runCmd(DartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //print(processResultToDebugString(result));
       expect(await fs.file(join(dst.path, "file2")).readAsString(), "test");
       expect(await fs.file(join(dst.path, "file")).exists(), isFalse);
@@ -93,8 +93,8 @@ main() {
 
       Directory dst = fs.directory(join(top.path, 'dst'));
 
-      await runCmd(dartCmd([dirdeployDartScript, "--dir", dir.path, dst.path]));
-      //await runCmd(dartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
+      await runCmd(DartCmd([dirdeployDartScript, "--dir", dir.path, dst.path]));
+      //await runCmd(DartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //print(processResultToDebugString(result));
 
       String filePath = join(dst.path, 'file');

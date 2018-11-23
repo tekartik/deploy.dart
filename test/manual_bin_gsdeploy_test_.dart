@@ -33,7 +33,7 @@ main() {
 
       String gsDst =
           "gs://gstest.tekartik.com/dev/tekartik_deploy/test/deploy_1_file";
-      ProcessCmd cmd = dartCmd([gsdeployDartScript, dir.path, gsDst]);
+      ProcessCmd cmd = DartCmd([gsdeployDartScript, dir.path, gsDst]);
       await runCmd(cmd, verbose: true);
     });
 
@@ -51,8 +51,8 @@ main() {
       Directory dst = new Directory(join(top.path, 'dst'));
 
       await runCmd(
-          dartCmd([dirdeployDartScript, deployYamlFile.path, dst.path]));
-      //await runCmd(dartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
+          DartCmd([dirdeployDartScript, deployYamlFile.path, dst.path]));
+      //await runCmd(DartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //print(processResultToDebugString(result));
     });
 
@@ -66,8 +66,8 @@ main() {
 
       Directory dst = new Directory(join(top.path, 'dst'));
 
-      await runCmd(dartCmd([dirdeployDartScript, "--dir", dir.path, dst.path]));
-      //await runCmd(dartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
+      await runCmd(DartCmd([dirdeployDartScript, "--dir", dir.path, dst.path]));
+      //await runCmd(DartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //print(processResultToDebugString(result));
 
       String filePath = join(dst.path, 'file');

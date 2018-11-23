@@ -245,7 +245,7 @@ Future<List<File>> deployConfigListFiles(Config config) async {
 }
 
 Future<int> deployConfig(Config config) async {
-  Directory dst = config.dst.fs.newDirectory(config.dst.path);
+  Directory dst = config.dst.fs.directory(config.dst.path);
   try {
     await dst.delete(recursive: true);
   } catch (_) {}

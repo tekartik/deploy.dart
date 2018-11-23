@@ -59,8 +59,8 @@ main() {
       Directory dst = new Directory(join(top.path, 'dst'));
 
       await runCmd(
-          dartCmd([dirdeployDartScript, deployYamlFile.path, dst.path]));
-      //await runCmd(dartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
+          DartCmd([dirdeployDartScript, deployYamlFile.path, dst.path]));
+      //await runCmd(DartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //print(processResultToDebugString(result));
     });
 
@@ -74,8 +74,8 @@ main() {
 
       Directory dst = new Directory(join(top.path, 'dst'));
 
-      await runCmd(dartCmd([dirdeployDartScript, "--dir", dir.path, dst.path]));
-      //await runCmd(dartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
+      await runCmd(DartCmd([dirdeployDartScript, "--dir", dir.path, dst.path]));
+      //await runCmd(DartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //print(processResultToDebugString(result));
 
       String filePath = join(dst.path, 'file');

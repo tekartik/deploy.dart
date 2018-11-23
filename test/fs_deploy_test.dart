@@ -192,9 +192,7 @@ void defineTests(FileSystemTestContext ctx) {
       int count = await deployEntity(config, entityConfig);
       expect(count, 1);
       expect(
-          await fs
-              .file(join(top.path, "deploy", "dir", "data"))
-              .readAsString(),
+          await fs.file(join(top.path, "deploy", "dir", "data")).readAsString(),
           "test");
     });
 
@@ -253,8 +251,7 @@ void defineTests(FileSystemTestContext ctx) {
       ;
       int count = await deployConfig(config);
       expect(count, 1);
-      expect(
-          await fs.file(join(dst.path, "file.txt")).readAsString(), "test");
+      expect(await fs.file(join(dst.path, "file.txt")).readAsString(), "test");
     });
 
     group('impl', () {
@@ -264,8 +261,8 @@ void defineTests(FileSystemTestContext ctx) {
           fail('should fail');
         } on ArgumentError catch (_) {}
 
-        Directory src = getDeploySrc(
-            yaml: fs.file(fs.path.join('yaml_dir', 'toc.yaml')));
+        Directory src =
+            getDeploySrc(yaml: fs.file(fs.path.join('yaml_dir', 'toc.yaml')));
 
         expect(isAbsolute(src.path), isTrue);
         expect(src.path, endsWith('yaml_dir'));

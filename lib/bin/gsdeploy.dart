@@ -6,10 +6,12 @@ import 'package:path/path.dart';
 import 'package:tekartik_deploy/gs_deploy.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:tekartik_deploy/src/bin_version.dart';
+import 'package:tekartik_deploy/src/gsutil.dart';
 
 const String _HELP = 'help';
 
 String get currentScriptName => basenameWithoutExtension(Platform.script.path);
+String checkFlag = 'check';
 
 Future main(List<String> arguments) async {
   //debugQuickLogging(Level.FINE);
@@ -18,6 +20,8 @@ Future main(List<String> arguments) async {
   parser.addFlag(_HELP, abbr: 'h', help: 'Usage help', negatable: false);
   parser.addFlag("version",
       help: 'Display the script version', negatable: false);
+  parser.addFlag(checkFlag,
+      help: 'Check if gsutil is installed', negatable: false);
 
   ArgResults _argsResult = parser.parse(arguments);
 
@@ -39,6 +43,16 @@ Future main(List<String> arguments) async {
   if (_argsResult['version'] as bool) {
     stdout.writeln('${currentScriptName} ${version}');
     return null;
+  }
+
+  bool check = _argsResult[checkFlag];
+  if (check) {
+    try {
+      findGsUtilSync();
+    } catch (_) {
+      exit(1);
+    }
+    exit(0);
   }
 
   if (_argsResult.rest.length != 2) {

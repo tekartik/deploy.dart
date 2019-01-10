@@ -16,9 +16,9 @@ import 'dart:convert';
 
 String get _pubPackageRoot => '.';
 
-String get dirdeployDartScript {
+String get gswebdeployDartScript {
   PubPackage pkg = PubPackage(_pubPackageRoot);
-  return join(pkg.path, 'bin', 'gsdeploy.dart');
+  return join(pkg.path, 'bin', 'gswebdeploy.dart');
 }
 
 main() {
@@ -27,11 +27,22 @@ main() {
   group('gsdeploy', () {
     test('version', () async {
       ProcessResult result =
-          await runCmd(DartCmd([dirdeployDartScript, '--version']));
+          await runCmd(DartCmd([gswebdeployDartScript, '--version']));
       List<String> parts =
           LineSplitter.split(result.stdout as String).first.split(' ');
+      expect(parts.first, 'gswebdeploy');
+      expect(Version.parse(parts.last), version);
+    });
+    test('check', () async {
+      var result = await runCmd(DartCmd([gswebdeployDartScript, '--check']),
+          verbose: true);
+      assert(result.exitCode == 0 || result.exitCode == 1);
+      /*
+      List<String> parts =
+      LineSplitter.split(result.stdout as String).first.split(' ');
       expect(parts.first, 'gsdeploy');
       expect(Version.parse(parts.last), version);
+      */
     });
 
     /*

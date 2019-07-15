@@ -1,14 +1,15 @@
 @TestOn("vm")
 library tekartik_deploy.test.bin_dirdeploy_test;
 
+import 'dart:io';
+
+import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
-import 'package:dev_test/test.dart';
 import 'package:tekartik_pub/io.dart';
 
 import 'fs_test_common_io.dart'
     show FileSystemTestContext, fileSystemTestContextIo, FileSystem;
-import 'dart:io';
 
 String get _pubPackageRoot => '.';
 
@@ -19,7 +20,8 @@ String get gsdeployDartScript {
 
 FileSystemTestContext ctx = fileSystemTestContextIo;
 FileSystem fs = ctx.fs;
-main() {
+
+void main() {
   //defineTests(ctx);
   //useVMConfiguration();
   group('bin_gsdeploy', () {

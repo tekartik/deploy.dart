@@ -9,7 +9,7 @@ import 'package:tekartik_io_utils/io_utils_import.dart';
 
 import 'src/gsutil.dart';
 
-final ARG_OUT = 'out';
+final argOut = 'out';
 
 // User [gsUtilCmd]
 @deprecated
@@ -121,6 +121,7 @@ Future _gzip(String src) async {
   futures
       .add(Directory(src).list(recursive: true).listen((FileSystemEntity fse) {
     futures.add(() async {
+      // ignore: avoid_slow_async_io
       if (await FileSystemEntity.isFile(fse.path)) {
         //print(fse.path);
         File file = File(fse.path);

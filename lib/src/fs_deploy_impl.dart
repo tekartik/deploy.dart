@@ -1,7 +1,8 @@
 import 'package:fs_shim/fs.dart';
-import '../fs/fs_deploy.dart';
-import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:fs_shim/utils/copy.dart';
+import 'package:tekartik_common_utils/common_utils_import.dart';
+
+import '../fs/fs_deploy.dart';
 
 class FsDeployImpl {
   FsDeployOptions options;

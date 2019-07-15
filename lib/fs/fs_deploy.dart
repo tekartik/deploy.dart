@@ -1,14 +1,15 @@
 library tekartik.deploy.yaml;
 
-import 'package:path/path.dart';
 import 'dart:async';
+
 import 'package:fs_shim/fs.dart';
 import 'package:fs_shim/utils/copy.dart';
-
 import 'package:logging/logging.dart';
-import 'package:yaml/yaml.dart';
-import '../src/fs_deploy_impl.dart';
+import 'package:path/path.dart';
 import 'package:tekartik_common_utils/common_utils_import.dart';
+import 'package:yaml/yaml.dart';
+
+import '../src/fs_deploy_impl.dart';
 
 Logger _log = Logger("tekartik.deploy");
 
@@ -80,8 +81,11 @@ class Config {
   // Either from the yaml file or specified
   FileSystemEntity _src;
   FileSystemEntity _dst;
+
   FileSystemEntity get dst => _dst;
+
   FileSystemEntity get src => _src;
+
   set src(FileSystemEntity src) {
     if (src != null) {
       _src = src;
@@ -116,6 +120,7 @@ class Config {
 //  }
 
   Map settings;
+
   Config(this.settings, {FileSystemEntity src, FileSystemEntity dst}) {
     if (src != null) {
       this.src = src;
@@ -154,6 +159,7 @@ class Config {
   }
 
   List<EntityConfig> _entities = [];
+
   List<EntityConfig> get entities => _entities;
 
   List<String> exclude = [];
@@ -168,13 +174,17 @@ class Config {
 class EntityConfig {
   String _path;
   String _dst;
+
   String get src => _path;
+
   String get dst => (_dst == null) ? src : _dst;
 
   EntityConfig.withDst(this._path, this._dst);
+
   EntityConfig(this._path);
 
   bool get hasDst => _dst != null;
+
   @override
   String toString() {
     if (_dst == null) {

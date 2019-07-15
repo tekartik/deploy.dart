@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-import 'fs/fs_deploy.dart' as fs;
+
 import 'package:fs_shim/fs_io.dart' as fs;
+
+import 'fs/fs_deploy.dart' as fs;
+
 export 'fs/fs_deploy.dart' show FsDeployOptions, fsDeployOptionsNoSymLink;
 
 ///

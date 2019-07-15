@@ -1,12 +1,12 @@
 library tekartik_deploy.src.file_clone;
 
-import 'dart:io';
 import 'dart:async';
-//import 'package:logging/logging.dart' as log;
+import 'dart:io';
+
 import 'package:path/path.dart';
 
 Future _copyFile(String input, String output) {
-  var inStream = File(input).openRead();
+  var inStream = File(input).openRead().cast<List<int>>();
   IOSink outSink;
   File outFile = File(output);
   outSink = outFile.openWrite();
@@ -90,7 +90,7 @@ Future<int> _link(String target, String link) async {
     target = Link(target).targetSync();
   }
 
-  String existingLink = null;
+  String existingLink;
   if (ioLink.existsSync()) {
     existingLink = ioLink.targetSync();
     //print(ioLink.resolveSymbolicLinksSync());
@@ -131,7 +131,7 @@ Future<int> _linkOrCopyFileIfNewer(String input, String output) {
 /// create the dirs but copy or link the files
 Future<int> _linkOrCopyFilesInDirIfNewer(String input, String output,
     {bool recursive = true, List<String> but}) async {
-  List<Future<int>> futures = List();
+  var futures = <Future<int>>[];
 
   List<FileSystemEntity> entities =
       Directory(input).listSync(recursive: false, followLinks: true);
@@ -172,10 +172,12 @@ Future<int> _linkOrCopyFilesInDirIfNewer(String input, String output,
 
 /// Helper to copy recursively a source to a destination
 Future<int> cloneFiles(String src, String dst) async {
+  // ignore: avoid_slow_async_io
   return await FileSystemEntity.isDirectory(src).then((bool isDir) {
     if (isDir) {
       return _linkOrCopyFilesInDirIfNewer(src, dst, recursive: true);
     } else {
+      // ignore: avoid_slow_async_io
       return FileSystemEntity.isFile(src).then((bool isFile) {
         if (isFile) {
           return _linkOrCopyFileIfNewer(src, dst);

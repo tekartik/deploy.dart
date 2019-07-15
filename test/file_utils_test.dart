@@ -1,11 +1,12 @@
 @TestOn("vm")
 library tekartik_deploy.test.file_utils_tests;
 
-import 'package:tekartik_deploy/src/file_utils.dart';
-import 'package:path/path.dart' hide equals;
-import 'io_test_common.dart';
-
 import 'dart:io';
+
+import 'package:path/path.dart' hide equals;
+import 'package:tekartik_deploy/src/file_utils.dart';
+
+import 'io_test_common.dart';
 
 String simpleFileName = "filename.txt";
 String simpleFileName2 = "filename_2.txt";

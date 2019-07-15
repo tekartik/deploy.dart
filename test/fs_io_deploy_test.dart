@@ -1,17 +1,15 @@
 @TestOn("vm")
 library tekartik_deploy.fs_io_deploy_test;
 
-import 'package:tekartik_deploy/fs_deploy.dart';
-//import 'package:tekartik_core/log_utils.dart';
-import 'package:path/path.dart';
-import 'package:dev_test/test.dart';
-//import 'package:fs_shim/fs.dart';
-//import 'package:fs_shim_test/test.dart';
-import 'dart:io' as io;
 import 'dart:async';
+import 'dart:io' as io;
+
+import 'package:dev_test/test.dart';
 import 'package:fs_shim/fs_io.dart' show unwrapIoDirectory;
-import 'package:fs_shim/utils/io/read_write.dart';
 import 'package:fs_shim/utils/io/entity.dart';
+import 'package:fs_shim/utils/io/read_write.dart';
+import 'package:path/path.dart';
+import 'package:tekartik_deploy/fs_deploy.dart';
 import 'package:tekartik_fs_test/test_common.dart' show FileSystemTestContext;
 
 import 'fs_test_common_io.dart';

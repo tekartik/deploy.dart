@@ -1,12 +1,12 @@
 library tekartik_deploy.src.file_utils;
 
-import 'dart:io';
 import 'dart:async';
-//import 'package:logging/logging.dart' as log;
+import 'dart:io';
+
 import 'package:path/path.dart';
 
 Future copyFile(String input, String output) {
-  var inStream = File(input).openRead();
+  var inStream = File(input).openRead().cast<List<int>>();
   IOSink outSink;
   File outFile = File(output);
   outSink = outFile.openWrite();
@@ -26,7 +26,7 @@ Future<int> copyFilesIfNewer(String input, String output,
     {bool recursive = true, bool followLinks = false}) {
   int count = 0;
   Completer<int> completer = Completer();
-  List<Future> futures = List();
+  var futures = <Future>[];
   Directory(input).list(recursive: recursive, followLinks: followLinks).listen(
       (FileSystemEntity fse) {
     //print("# ${fse.path}");
@@ -124,25 +124,22 @@ Future<int> dirSize(String path) async {
   int size = 0;
   List<Future> futures = [];
 
-  return await Directory(path)
+  await Directory(path)
       .list(recursive: true, followLinks: true)
       .listen((FileSystemEntity fse) {
-        //devPrint(FileSystemEntity.type(fse.path));
-        futures.add(FileSystemEntity.isFile(fse.path).then((bool isFile) {
-          if (isFile) {
-            return fse.stat().then((FileStat stat) {
-              //devPrint("${stat.size} ${fse}");
-              size += stat.size;
-            });
-          }
-        }));
-      })
-      .asFuture()
-      .then((_) {
-        return Future.wait(futures).then((_) {
-          return size;
-        });
-      });
+    //devPrint(FileSystemEntity.type(fse.path));
+
+    // ignore: avoid_slow_async_io
+    futures.add(FileSystemEntity.isFile(fse.path).then((bool isFile) async {
+      if (isFile) {
+        var stat = await fse.stat();
+        //devPrint("${stat.size} ${fse}");
+        size += stat.size;
+      }
+    }));
+  }).asFuture();
+  await Future.wait(futures);
+  return size;
 }
 
 /// link dir (work on all platforms)
@@ -170,7 +167,7 @@ Future<int> _link(String target, String link) async {
     target = Link(target).targetSync();
   }
 
-  String existingLink = null;
+  String existingLink;
   if (ioLink.existsSync()) {
     existingLink = ioLink.targetSync();
     //print(ioLink.resolveSymbolicLinksSync());
@@ -224,7 +221,7 @@ Future<int> linkOrCopyFileIfNewer(String input, String output) {
 /// create the dirs but copy or link the files
 Future<int> linkOrCopyFilesInDirIfNewer(String input, String output,
     {bool recursive = true, List<String> but}) async {
-  List<Future<int>> futures = List();
+  var futures = <Future<int>>[];
 
   List<FileSystemEntity> entities =
       Directory(input).listSync(recursive: false, followLinks: true);
@@ -264,10 +261,12 @@ Future<int> linkOrCopyFilesInDirIfNewer(String input, String output,
 
 /// Helper to copy recursively a source to a destination
 Future<int> linkOrCopyIfNewer(String src, String dst) async {
+  // ignore: avoid_slow_async_io
   return await FileSystemEntity.isDirectory(src).then((bool isDir) {
     if (isDir) {
       return linkOrCopyFilesInDirIfNewer(src, dst, recursive: true);
     } else {
+      // ignore: avoid_slow_async_io
       return FileSystemEntity.isFile(src).then((bool isFile) {
         if (isFile) {
           return linkOrCopyFileIfNewer(src, dst);
@@ -314,7 +313,7 @@ Future<int> createSymlink(
     Directory inDir = Directory(target);
     Directory outDir = Directory(link);
     List<FileSystemEntity> list = inDir.listSync();
-    List<Future<int>> futures = List();
+    var futures = <Future<int>>[];
     for (FileSystemEntity entity in list) {
       //Path path = new Path(entity.path);
       //print(path);

@@ -10,7 +10,7 @@ import 'package:tekartik_deploy/src/bin_version.dart';
 //import 'package:tekartik_core/log_utils.dart';
 //import 'package:tekartik_deploy/deploy_io.dart' hide Config, deployConfig;
 
-const String _HELP = 'help';
+const String flagHelp = 'help';
 
 String get currentScriptName => basenameWithoutExtension(Platform.script.path);
 
@@ -18,7 +18,7 @@ Future main(List<String> arguments) async {
   //debugQuickLogging(Level.FINE);
 
   ArgParser parser = ArgParser(allowTrailingOptions: true);
-  parser.addFlag(_HELP, abbr: 'h', help: 'Usage help', negatable: false);
+  parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
   parser.addFlag("dir",
       abbr: 'd',
       help: 'Deploy a directory as is, even if no deploy.yaml is present',
@@ -28,7 +28,7 @@ Future main(List<String> arguments) async {
 
   ArgResults _argsResult = parser.parse(arguments);
 
-  _usage() {
+  void _usage() {
     stdout.writeln('Deploy from build to deploy folder from a top pub package');
     stdout.writeln('');
     stdout.writeln(
@@ -40,7 +40,7 @@ Future main(List<String> arguments) async {
     stdout.writeln(parser.usage);
   }
 
-  var help = _argsResult[_HELP] as bool;
+  var help = _argsResult[flagHelp] as bool;
   if (help) {
     _usage();
     return null;

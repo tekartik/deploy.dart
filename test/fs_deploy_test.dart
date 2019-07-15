@@ -248,7 +248,6 @@ void defineTests(FileSystemTestContext ctx) {
       // file
       File file = fs.file(join(dir.path, "file.txt"));
       await file.writeAsString("test", flush: true);
-      ;
       int count = await deployConfig(config);
       expect(count, 1);
       expect(await fs.file(join(dst.path, "file.txt")).readAsString(), "test");

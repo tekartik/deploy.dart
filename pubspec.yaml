@@ -1,5 +1,5 @@
 name: tekartik_deploy
-version: 0.6.0
+version: 0.6.1
 description: File deployment helper
 homepage: https://github.com/tekartik/deploy.dart
 environment:
@@ -10,13 +10,13 @@ dependencies:
   pub_semver: '>=1.4.2'
   fs_shim: '>=0.10.0'
   resource: '>=2.1.5'
-  process_run: '>=0.8.0+1'
+  process_run: '>=0.10.1'
   yaml: '>=2.1.15'
   tekartik_io_utils:
     git:
       url: git://github.com/tekartik/io_utils.dart
       ref: dart2
-    version: '>=0.4.3'
+    version: '>=0.5.2'
 dev_dependencies:
   test: any
   dev_test: any

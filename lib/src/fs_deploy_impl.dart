@@ -1,7 +1,8 @@
 import 'package:fs_shim/fs.dart';
-import '../fs/fs_deploy.dart';
-import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:fs_shim/utils/copy.dart';
+import 'package:tekartik_common_utils/common_utils_import.dart';
+
+import '../fs/fs_deploy.dart';
 
 class FsDeployImpl {
   FsDeployOptions options;
@@ -9,7 +10,7 @@ class FsDeployImpl {
   FsDeployImpl(this.options);
 
   Future<int> deployConfig(Config config) async {
-    Directory dst = config.dst.fs.newDirectory(config.dst.path);
+    Directory dst = config.dst.fs.directory(config.dst.path);
     try {
       await dst.delete(recursive: true);
     } catch (_) {}
@@ -21,7 +22,7 @@ class FsDeployImpl {
 
     int sum = 0;
 
-    CopyOptions copyOptions = new CopyOptions(
+    CopyOptions copyOptions = CopyOptions(
         recursive: true,
         checkSizeAndModifiedDate: true,
         tryToLinkFile: tryToLinkFile,
@@ -30,12 +31,12 @@ class FsDeployImpl {
     if (config.entities.isEmpty) {
       // default copy all
       // recursiveLinkOrCopyNewerOptions);
-      TopCopy topCopy = new TopCopy(
+      TopCopy topCopy = TopCopy(
           fsTopEntity(config.src), fsTopEntity(config.dst),
           options: copyOptions);
       sum += await topCopy.run();
     } else {
-      TopCopy topCopy = new TopCopy(
+      TopCopy topCopy = TopCopy(
           fsTopEntity(config.src), fsTopEntity(config.dst),
           options: copyOptions);
       for (EntityConfig entityConfig in config.entities) {
@@ -50,7 +51,7 @@ Directory getDeploySrc({File yaml, Directory src}) {
   // default src?
   if (src == null) {
     if (yaml == null) {
-      throw new ArgumentError("need src or yaml specified");
+      throw ArgumentError("need src or yaml specified");
     }
     src = yaml.parent;
   }

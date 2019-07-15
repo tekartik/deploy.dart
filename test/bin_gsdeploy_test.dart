@@ -1,37 +1,48 @@
 @TestOn("vm")
 library tekartik_deploy.test.bin_dirdeploy_test;
 
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
-import 'package:dev_test/test.dart';
-import 'package:tekartik_pub/io.dart';
-//import 'package:tekartik_pub/script.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:tekartik_deploy/src/bin_version.dart';
+import 'package:tekartik_pub/io.dart';
+
 import 'fs_test_common_io.dart';
 import 'io_test_common.dart';
-import 'dart:convert';
 
 String get _pubPackageRoot => '.';
 
-String get dirdeployDartScript {
-  PubPackage pkg = new PubPackage(_pubPackageRoot);
+String get gsdeployDartScript {
+  PubPackage pkg = PubPackage(_pubPackageRoot);
   return join(pkg.path, 'bin', 'gsdeploy.dart');
 }
 
-main() {
+void main() {
   //defineTests(ctx);
   //useVMConfiguration();
   group('gsdeploy', () {
     test('version', () async {
       ProcessResult result =
-          await runCmd(dartCmd([dirdeployDartScript, '--version']));
+          await runCmd(DartCmd([gsdeployDartScript, '--version']));
       List<String> parts =
           LineSplitter.split(result.stdout as String).first.split(' ');
       expect(parts.first, 'gsdeploy');
-      expect(new Version.parse(parts.last), version);
+      expect(Version.parse(parts.last), version);
+    });
+    test('check', () async {
+      var result =
+          await runCmd(DartCmd([gsdeployDartScript, '--check']), verbose: true);
+      assert(result.exitCode == 0 || result.exitCode == 1);
+      /*
+      List<String> parts =
+      LineSplitter.split(result.stdout as String).first.split(' ');
+      expect(parts.first, 'gsdeploy');
+      expect(Version.parse(parts.last), version);
+      */
     });
 
     /*
@@ -48,8 +59,8 @@ main() {
       Directory dst = new Directory(join(top.path, 'dst'));
 
       await runCmd(
-          dartCmd([dirdeployDartScript, deployYamlFile.path, dst.path]));
-      //await runCmd(dartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
+          DartCmd([dirdeployDartScript, deployYamlFile.path, dst.path]));
+      //await runCmd(DartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //print(processResultToDebugString(result));
     });
 
@@ -63,8 +74,8 @@ main() {
 
       Directory dst = new Directory(join(top.path, 'dst'));
 
-      await runCmd(dartCmd([dirdeployDartScript, "--dir", dir.path, dst.path]));
-      //await runCmd(dartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
+      await runCmd(DartCmd([dirdeployDartScript, "--dir", dir.path, dst.path]));
+      //await runCmd(DartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //print(processResultToDebugString(result));
 
       String filePath = join(dst.path, 'file');

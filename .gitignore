@@ -15,8 +15,9 @@ packages
 # Include when developing application packages.
 pubspec.lock
 
-# webstorm
+# webstorm/intellig
 .idea/
+*.iml
 
 # out
 test/out

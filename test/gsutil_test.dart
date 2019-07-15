@@ -14,7 +14,7 @@ import 'package:tekartik_io_utils/io_utils_import.dart';
 
 //String get _pubPackageRoot => getPubPackageRootSync(testDirPath);
 
-main() {
+void main() {
   //defineTests(ctx);
   //useVMConfiguration();
   bool gsUtilAvailable = false;

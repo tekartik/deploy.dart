@@ -1,26 +1,31 @@
 #!/usr/bin/env dart
-import 'package:fs_shim/fs_io.dart';
 import 'dart:async';
+
 import 'package:args/args.dart';
+import 'package:fs_shim/fs_io.dart';
 import 'package:path/path.dart';
 import 'package:tekartik_deploy/gs_deploy.dart';
 import 'package:tekartik_deploy/src/bin_version.dart';
+import 'package:tekartik_deploy/src/gsutil.dart';
 
-const String _HELP = 'help';
+const String flagHelp = 'help';
 
 String get currentScriptName => basenameWithoutExtension(Platform.script.path);
+String checkFlag = 'check';
 
 Future main(List<String> arguments) async {
   //debugQuickLogging(Level.FINE);
 
-  ArgParser parser = new ArgParser(allowTrailingOptions: true);
-  parser.addFlag(_HELP, abbr: 'h', help: 'Usage help', negatable: false);
+  ArgParser parser = ArgParser(allowTrailingOptions: true);
+  parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
   parser.addFlag("version",
       help: 'Display the script version', negatable: false);
+  parser.addFlag(checkFlag,
+      help: 'Check if gsutil is installed', negatable: false);
 
   ArgResults _argsResult = parser.parse(arguments);
 
-  _usage() {
+  void _usage() {
     stdout.writeln('Deploy from source (local) to remote destination (gs://');
     stdout.writeln('');
     print('  ${currentScriptName} /my/folder gs://my.bucket/my_folder');
@@ -29,7 +34,7 @@ Future main(List<String> arguments) async {
     stdout.writeln(parser.usage);
   }
 
-  var help = _argsResult[_HELP] as bool;
+  var help = _argsResult[flagHelp] as bool;
   if (help) {
     _usage();
     return null;
@@ -38,6 +43,16 @@ Future main(List<String> arguments) async {
   if (_argsResult['version'] as bool) {
     stdout.writeln('${currentScriptName} ${version}');
     return null;
+  }
+
+  var check = _argsResult[checkFlag] as bool;
+  if (check) {
+    try {
+      findGsUtilSync();
+    } catch (_) {
+      exit(1);
+    }
+    exit(0);
   }
 
   if (_argsResult.rest.length != 2) {

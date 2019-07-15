@@ -1,42 +1,48 @@
 @TestOn("vm")
 library tekartik_deploy.test.bin_dirdeploy_test;
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:pub_semver/pub_semver.dart';
+import 'package:tekartik_deploy/src/bin_version.dart';
 import 'package:tekartik_pub/io.dart';
 
-import 'fs_test_common_io.dart'
-    show FileSystemTestContext, fileSystemTestContextIo, FileSystem;
+import 'fs_test_common_io.dart';
+import 'io_test_common.dart';
 
 String get _pubPackageRoot => '.';
 
-String get gsdeployDartScript {
+String get gswebdeployDartScript {
   PubPackage pkg = PubPackage(_pubPackageRoot);
-  return join(pkg.path, 'bin', 'gsdeploy.dart');
+  return join(pkg.path, 'bin', 'gswebdeploy.dart');
 }
-
-FileSystemTestContext ctx = fileSystemTestContextIo;
-FileSystem fs = ctx.fs;
 
 void main() {
   //defineTests(ctx);
   //useVMConfiguration();
-  group('bin_gsdeploy', () {
-    test('deploy_1_file', () async {
-      var top = await ctx.prepare() as Directory;
-      //Directory
-      Directory dir = Directory(join(top.path, 'dir'));
-      File file = File(join(dir.path, "file"));
-      await file.create(recursive: true);
-      await file.writeAsString("test", flush: true);
-
-      String gsDst =
-          "gs://gstest.tekartik.com/dev/tekartik_deploy/test/deploy_1_file";
-      ProcessCmd cmd = DartCmd([gsdeployDartScript, dir.path, gsDst]);
-      await runCmd(cmd, verbose: true);
+  group('gsdeploy', () {
+    test('version', () async {
+      ProcessResult result =
+          await runCmd(DartCmd([gswebdeployDartScript, '--version']));
+      List<String> parts =
+          LineSplitter.split(result.stdout as String).first.split(' ');
+      expect(parts.first, 'gswebdeploy');
+      expect(Version.parse(parts.last), version);
+    });
+    test('check', () async {
+      var result = await runCmd(DartCmd([gswebdeployDartScript, '--check']),
+          verbose: true);
+      assert(result.exitCode == 0 || result.exitCode == 1);
+      /*
+      List<String> parts =
+      LineSplitter.split(result.stdout as String).first.split(' ');
+      expect(parts.first, 'gsdeploy');
+      expect(Version.parse(parts.last), version);
+      */
     });
 
     /*

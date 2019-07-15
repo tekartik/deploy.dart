@@ -1,6 +1,6 @@
 #!/usr/bin/env dart
 library tekartik_script.bin.fsdeploy;
 
-import 'package:tekartik_deploy/bin/fsdeploy.dart' as _;
+import 'package:tekartik_deploy/bin/fsdeploy.dart' as fsdeploy;
 
-main(List<String> arguments) => _.main(arguments);
+Future main(List<String> arguments) => fsdeploy.main(arguments);

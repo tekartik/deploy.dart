@@ -9,17 +9,20 @@ export 'package:dev_test/test.dart';
 export 'package:fs_shim/fs.dart';
 
 final FileSystemTestContextIo fileSystemTestContextIo =
-    new FileSystemTestContextIo();
+    FileSystemTestContextIo();
 
 class FileSystemTestContextIo extends FileSystemTestContext {
+  @override
   final PlatformContext platform = platformContextIo;
-  final FileSystemIo fs = new FileSystemIo();
+  @override
+  final FileSystemIo fs = FileSystemIo();
   String outTopPath;
 
   FileSystemTestContextIo() {
     outTopPath = testOutTopPath;
   }
 
+  @override
   String get outPath => join(outTopPath, super.outPath);
 }
 

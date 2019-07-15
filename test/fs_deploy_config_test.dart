@@ -7,7 +7,7 @@ import 'package:dev_test/test.dart';
 void main() {
   group('config', () {
     test('empty', () {
-      Config config = new Config({});
+      Config config = Config({});
       expect(config.entities, isEmpty);
       expect(config.src, isNull);
       expect(config.dst, isNull);
@@ -19,7 +19,7 @@ void main() {
       - file1
       - file2
 ''';
-      Config config = new Config(loadYaml(list) as Map);
+      Config config = Config(loadYaml(list) as Map);
       expect(config.entities.length, 2);
       expect(config.entities[0].src, "file1");
       expect(config.entities[1].src, "file2");
@@ -31,7 +31,7 @@ void main() {
       file1:
       file2:
 ''';
-      Config config = new Config(loadYaml(list) as Map);
+      Config config = Config(loadYaml(list) as Map);
       expect(config.entities.length, 2);
       // order not respected here
       if (config.entities[0].src == "file1") {
@@ -47,7 +47,7 @@ void main() {
     files:
       - file1: file1dst
 ''';
-      Config config = new Config(loadYaml(list) as Map);
+      Config config = Config(loadYaml(list) as Map);
       expect(config.entities.length, 1);
       expect(config.entities[0].src, "file1");
       expect(config.entities[0].dst, "file1dst");
@@ -59,7 +59,7 @@ void main() {
       - file1
       - file2
 ''';
-      Config config = new Config(loadYaml(list) as Map);
+      Config config = Config(loadYaml(list) as Map);
       expect(config.exclude, ['file1', 'file2']);
     });
   });

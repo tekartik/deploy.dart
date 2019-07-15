@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-import 'fs/fs_deploy.dart' as fs;
+
 import 'package:fs_shim/fs_io.dart' as fs;
+
+import 'fs/fs_deploy.dart' as fs;
+
 export 'fs/fs_deploy.dart' show FsDeployOptions, fsDeployOptionsNoSymLink;
 
 ///
@@ -52,7 +55,7 @@ Future<List<File>> fsDeployListFiles(
   }
   var fsFiles =
       await fs.fsDeployListFiles(settings: settings, yaml: fsYaml, src: fsSrc);
-  return new List.generate(fsFiles.length, (int index) {
+  return List.generate(fsFiles.length, (int index) {
     return fs.unwrapIoFile(fsFiles[index]);
   });
 }

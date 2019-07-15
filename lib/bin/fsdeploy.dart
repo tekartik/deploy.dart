@@ -1,32 +1,30 @@
-import 'package:fs_shim/fs_io.dart';
 import 'dart:async';
+
 import 'package:args/args.dart';
+import 'package:fs_shim/fs_io.dart';
 import 'package:path/path.dart';
-import 'package:yaml/yaml.dart';
-import 'package:tekartik_deploy/src/file_utils.dart';
-import 'package:tekartik_deploy/src/bin_version.dart';
-//import 'package:tekartik_core/log_utils.dart';
-//import 'package:tekartik_deploy/deploy_io.dart' hide Config, deployConfig;
 import 'package:tekartik_deploy/fs/fs_deploy.dart';
+import 'package:tekartik_deploy/src/bin_version.dart';
+import 'package:tekartik_deploy/src/file_utils.dart';
+import 'package:yaml/yaml.dart';
 
-const String _HELP = 'help';
+const String flagHelp = 'help';
+// ignore_for_file: avoid_slow_async_io
 
-Future _deployEntity(String src, String dst) {
-  return FileSystemEntity.isDirectory(src).then((bool isDir) {
-    if (isDir) {
-      //fu.copyFilesIfNewer(src_, dst_);
-      //return fu.linkDir(src_, dst_);
-      return linkOrCopyFilesInDirIfNewer(src, dst, recursive: true);
+Future _deployEntity(String src, String dst) async {
+  var isDir = await FileSystemEntity.isDirectory(src);
+  if (isDir) {
+    //fu.copyFilesIfNewer(src_, dst_);
+    //return fu.linkDir(src_, dst_);
+    return linkOrCopyFilesInDirIfNewer(src, dst, recursive: true);
+  } else {
+    var isFile = await FileSystemEntity.isFile(src);
+    if (isFile) {
+      return linkOrCopyFileIfNewer(src, dst);
     } else {
-      return FileSystemEntity.isFile(src).then((bool isFile) {
-        if (isFile) {
-          return linkOrCopyFileIfNewer(src, dst);
-        } else {
-          throw "${src} entity not found";
-        }
-      });
+      throw "${src} entity not found";
     }
-  });
+  }
 }
 
 String get currentScriptName => basenameWithoutExtension(Platform.script.path);
@@ -34,8 +32,8 @@ String get currentScriptName => basenameWithoutExtension(Platform.script.path);
 Future main(List<String> arguments) async {
   //debugQuickLogging(Level.FINE);
 
-  ArgParser parser = new ArgParser(allowTrailingOptions: true);
-  parser.addFlag(_HELP, abbr: 'h', help: 'Usage help', negatable: false);
+  ArgParser parser = ArgParser(allowTrailingOptions: true);
+  parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
   parser.addFlag("dir",
       abbr: 'd',
       help: 'Deploy a directory as is, even if no deploy.yaml is present',
@@ -45,7 +43,7 @@ Future main(List<String> arguments) async {
 
   ArgResults _argsResult = parser.parse(arguments);
 
-  _usage() {
+  void _usage() {
     stdout.writeln('Deploy from build to deploy folder from a top pub package');
     stdout.writeln('');
     stdout.writeln('  ${currentScriptName} [project_dir]');
@@ -62,7 +60,7 @@ Future main(List<String> arguments) async {
     stdout.writeln(parser.usage);
   }
 
-  var help = _argsResult[_HELP] as bool;
+  var help = _argsResult[flagHelp] as bool;
   if (help) {
     _usage();
     return null;
@@ -129,7 +127,7 @@ Future main(List<String> arguments) async {
           //print("gitFile $gitFile: ${containsDotGit}");
           if (containsDeployYaml) {
             //gitPull(dir);
-            return await new File(deployYamlPath)
+            return await File(deployYamlPath)
                 .readAsString()
                 .then((content) async {
               var doc = loadYaml(content);
@@ -142,7 +140,7 @@ Future main(List<String> arguments) async {
           } else {
             List<Future<int>> sub = [];
 
-            return new Directory(dir)
+            return Directory(dir)
                 .list()
                 .listen((FileSystemEntity fse) {
                   sub.add(_handleDir(fse.path));
@@ -166,16 +164,15 @@ Future main(List<String> arguments) async {
 
   // new implementation
   Future _newDeploy(Map settings) async {
-    Config config = new Config(settings,
-        src: new Directory(srcDir),
-        dst: dstDir == null ? null : new Directory(dstDir));
+    Config config = Config(settings,
+        src: Directory(srcDir), dst: dstDir == null ? null : Directory(dstDir));
 
     return await deployConfig(config);
   }
 
   // int argIndex = 0;
   // Handle direct yaml file
-  if (_argsResult.rest.length > 0) {
+  if (_argsResult.rest.isNotEmpty) {
     String firstArg = _argsResult.rest[0];
 
     // First arg can specify a file and the default src directory
@@ -191,7 +188,7 @@ Future main(List<String> arguments) async {
         }
       }
 
-      String content = await new File(yamlFilePath).readAsString();
+      String content = await File(yamlFilePath).readAsString();
 
       var settings = loadYaml(content) as Map;
       return await _newDeploy(settings);
@@ -208,9 +205,8 @@ Future main(List<String> arguments) async {
 
   // Regular dart build
   if (_argsResult.rest.length < 2) {
-    String dir = _argsResult.rest.length == 0
-        ? Directory.current.path
-        : _argsResult.rest[0];
+    String dir =
+        _argsResult.rest.isEmpty ? Directory.current.path : _argsResult.rest[0];
 
     // try root
     srcDir = dir;
@@ -223,7 +219,7 @@ Future main(List<String> arguments) async {
       dstDir = join(srcDir, 'deploy');
 
       // check where build exists first
-      if (await new Directory(srcDir).exists()) {
+      if (await Directory(srcDir).exists()) {
         int count = await _handleDir(srcDir);
         if (count == 0) {
           // Try to handle root

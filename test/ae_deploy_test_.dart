@@ -25,6 +25,6 @@ void defineTests(FileSystemTestContext ctx) {
   group('ae_deploy', () {
     test('test', () async {
       // await aeDeployEmpty('tekartik-dev', 'test');
-    }, timeout: Timeout(Duration(minutes: 5)));
+    }, timeout: const Timeout(Duration(minutes: 5)));
   });
 }

@@ -90,7 +90,7 @@ class Config {
     if (src != null) {
       _src = src;
       String dstBasename = basename(src.path);
-      _dst = _src.fs.newLink(join(dirname(src.path), 'deploy', dstBasename));
+      _dst = _src.fs.link(join(dirname(src.path), 'deploy', dstBasename));
     }
   }
 

@@ -139,7 +139,7 @@ void defineTests(FileSystemTestContext ctx) {
       File _dstFile = childFile(top, join("deploy", "src", "file"));
       expect(await readString(_dstFile), "test");
       if (fs.supportsFileLink) {
-        Link link = fs.newLink(_dstFile.path);
+        Link link = fs.link(_dstFile.path);
         expect(await fs.isLink(link.path), isTrue);
         String target = await link.target();
         expect(target, _fileChild.path);

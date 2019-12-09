@@ -7,7 +7,7 @@ library tekartik.deploy.aedeploy;
 /// [settings] can be set (files and exclude keys)
 ///
 Future aeDeployEmpty(String applicationId, String module) async {
-  String baseUrl = "package:tekartik_deploy/ae/empty_app/";
+  String baseUrl = 'package:tekartik_deploy/ae/empty_app/';
   Uri uri = Uri.parse(baseUrl);
 
   //Directory dir = new Directory(_aeEmptyAppTemplateDir);
@@ -18,9 +18,9 @@ Future aeDeployEmpty(String applicationId, String module) async {
   await emptyOrCreateDirectory(out);
 
   Map settings = {
-    "applicationId": applicationId,
-    "module": module,
-    "date": new DateTime.now()
+    'applicationId': applicationId,
+    'module': module,
+    'date': new DateTime.now()
   };
 
   _enumerate([List<String> parts]) async {
@@ -28,14 +28,14 @@ Future aeDeployEmpty(String applicationId, String module) async {
       parts = [];
     }
 
-    String listUrlPath = join(url.joinAll(parts), ".list.yaml");
+    String listUrlPath = join(url.joinAll(parts), '.list.yaml');
 
     Uri listUri = uri.resolve(listUrlPath);
     String text = await ResourceLoader.defaultLoader.readAsString(listUri);
     print(text);
     var list = yaml.loadYaml(text) as Map;
 
-    List<String> files = list["files"] as List<String>;
+    List<String> files = list['files'] as List<String>;
     if (files != null) {
       for (String file in files) {
         Uri fileUri = listUri.resolve(file);
@@ -61,13 +61,13 @@ Future aeDeployEmpty(String applicationId, String module) async {
   deploy(String applicationId, String module) async {
     ProcessCmd cmd = new ProcessCmd('gcloud', [
       'preview',
-      "app",
-      "deploy",
-      join(out.path, "app.yaml"),
-      "--project",
+      'app',
+      'deploy',
+      join(out.path, 'app.yaml'),
+      '--project',
       applicationId,
       //   Force deploying, overriding any previous in-progress deployments to this version
-      "--quiet", // No prompt
+      '--quiet', // No prompt
     ]);
     //ProcessCmd cmd = new ProcessCmd('gcloud', ['help']);
     print(processCmdToDebugString(cmd));

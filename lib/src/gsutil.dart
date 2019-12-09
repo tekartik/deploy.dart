@@ -17,8 +17,7 @@ void findGsUtilSync() {
     if (findRawGsUtilSync()) {
       gsUtilExecutable = _gsUtilBinName;
     } else {
-      String gloudSdkDir =
-          Platform.environment['TEKARTIK_GOOGLE_CLOUD_SDK_DIR'];
+      final gloudSdkDir = Platform.environment['TEKARTIK_GOOGLE_CLOUD_SDK_DIR'];
       if (gloudSdkDir != null) {
         gsUtilExecutable = join(gloudSdkDir, 'bin', 'gsutil');
       } else {

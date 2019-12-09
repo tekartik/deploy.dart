@@ -1,4 +1,4 @@
-@TestOn("vm")
+@TestOn('vm')
 library tekartik_deploy.ae_deploy_test_;
 
 import 'package:dev_test/test.dart';
@@ -8,7 +8,7 @@ import 'package:tekartik_fs_test/test_common.dart';
 //import 'package:path/path.dart';
 //import 'package:fs_shim/fs.dart';
 
-//<editor-fold desc="Description">
+//<editor-fold desc='Description'>
 //import 'package:fs_shim/utils/read_write.dart';
 //import 'package:fs_shim/utils/entity.dart';
 //import 'package:fs_shim/utils/copy.dart';

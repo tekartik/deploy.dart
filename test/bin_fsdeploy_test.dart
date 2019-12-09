@@ -1,8 +1,7 @@
-@TestOn("vm")
+@TestOn('vm')
 library tekartik_deploy.test.bin_dirdeploy_test;
 
 import 'dart:convert';
-import 'dart:io' hide File, Directory, FileSystemEntityType;
 
 import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
@@ -18,7 +17,7 @@ import 'io_test_common.dart';
 String get _pubPackageRoot => '.';
 
 String get dirdeployDartScript {
-  PubPackage pkg = PubPackage(_pubPackageRoot);
+  final pkg = PubPackage(_pubPackageRoot);
   return join(pkg.path, 'bin', 'fsdeploy.dart');
 }
 
@@ -30,9 +29,8 @@ void main() {
   //useVMConfiguration();
   group('fsdeploy', () {
     test('version', () async {
-      ProcessResult result =
-          await runCmd(DartCmd([dirdeployDartScript, '--version']));
-      List<String> parts =
+      final result = await runCmd(DartCmd([dirdeployDartScript, '--version']));
+      final parts =
           LineSplitter.split(result.stdout as String).first.split(' ');
       expect(parts.first, 'fsdeploy');
       expect(Version.parse(parts.last), version);
@@ -41,14 +39,14 @@ void main() {
     test('deploy.yaml', () async {
       var top = await ctx.prepare();
       //Directory
-      Directory dir = fs.directory(join(top.path, 'dir'));
-      File file = fs.file(join(dir.path, "file"));
+      final dir = fs.directory(join(top.path, 'dir'));
+      final file = fs.file(join(dir.path, 'file'));
       await file.create(recursive: true);
-      await file.writeAsString("test", flush: true);
-      File deployYamlFile = fs.file(join(dir.path, "deploy.yaml"));
+      await file.writeAsString('test', flush: true);
+      final deployYamlFile = fs.file(join(dir.path, 'deploy.yaml'));
       await deployYamlFile.create();
 
-      Directory dst = fs.directory(join(top.path, 'dst'));
+      final dst = fs.directory(join(top.path, 'dst'));
 
       await runCmd(
           DartCmd([dirdeployDartScript, deployYamlFile.path, dst.path]));
@@ -59,48 +57,48 @@ void main() {
     test('deploy.yaml_exclude', () async {
       var top = await ctx.prepare();
       //Directory
-      Directory dir = fs.directory(join(top.path, 'dir'));
-      File file = fs.file(join(dir.path, "file"));
+      final dir = fs.directory(join(top.path, 'dir'));
+      final file = fs.file(join(dir.path, 'file'));
       await file.create(recursive: true);
-      await file.writeAsString("test", flush: true);
-      File file2 = fs.file(join(dir.path, "file2"));
+      await file.writeAsString('test', flush: true);
+      final file2 = fs.file(join(dir.path, 'file2'));
       await file2.create(recursive: true);
-      await file2.writeAsString("test", flush: true);
+      await file2.writeAsString('test', flush: true);
 
-      File deployYamlFile = fs.file(join(dir.path, "deploy.yaml"));
+      final deployYamlFile = fs.file(join(dir.path, 'deploy.yaml'));
       await deployYamlFile.create();
       await deployYamlFile.writeAsString('''
       exclude:
         - file
       ''');
 
-      Directory dst = fs.directory(join(top.path, 'dst'));
+      final dst = fs.directory(join(top.path, 'dst'));
 
       await runCmd(DartCmd(
           [dirdeployDartScript, deployYamlFile.path, dir.path, dst.path]));
       //await runCmd(DartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //print(processResultToDebugString(result));
-      expect(await fs.file(join(dst.path, "file2")).readAsString(), "test");
-      expect(await fs.file(join(dst.path, "file")).exists(), isFalse);
+      expect(await fs.file(join(dst.path, 'file2')).readAsString(), 'test');
+      expect(await fs.file(join(dst.path, 'file')).exists(), isFalse);
     });
 
     test('dir', () async {
       var top = await ctx.prepare();
       //Directory
-      Directory dir = fs.directory(join(top.path, 'dir'));
-      File file = fs.file(join(dir.path, "file"));
+      final dir = fs.directory(join(top.path, 'dir'));
+      final file = fs.file(join(dir.path, 'file'));
       await file.create(recursive: true);
-      await file.writeAsString("test", flush: true);
+      await file.writeAsString('test', flush: true);
 
-      Directory dst = fs.directory(join(top.path, 'dst'));
+      final dst = fs.directory(join(top.path, 'dst'));
 
-      await runCmd(DartCmd([dirdeployDartScript, "--dir", dir.path, dst.path]));
+      await runCmd(DartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //await runCmd(DartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //print(processResultToDebugString(result));
 
-      String filePath = join(dst.path, 'file');
+      final filePath = join(dst.path, 'file');
 
-      expect(await fs.file(filePath).readAsString(), "test");
+      expect(await fs.file(filePath).readAsString(), 'test');
 
       if (fs.supportsFileLink) {
         expect(await fs.type(filePath, followLinks: false),

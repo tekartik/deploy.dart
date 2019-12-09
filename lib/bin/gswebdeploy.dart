@@ -16,14 +16,14 @@ String checkFlag = 'check';
 Future main(List<String> arguments) async {
   //debugQuickLogging(Level.FINE);
 
-  ArgParser parser = ArgParser(allowTrailingOptions: true);
+  final parser = ArgParser(allowTrailingOptions: true);
   parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
-  parser.addFlag("version",
+  parser.addFlag('version',
       help: 'Display the script version', negatable: false);
   parser.addFlag(checkFlag,
       help: 'Check if gsutil is installed', negatable: false);
 
-  ArgResults _argsResult = parser.parse(arguments);
+  final _argsResult = parser.parse(arguments);
 
   void _usage() {
     stdout.writeln('Deploy from source (local) to remote destination (gs://');
@@ -60,8 +60,8 @@ Future main(List<String> arguments) async {
     return null;
   }
 
-  String src = _argsResult.rest[0];
-  String dst = _argsResult.rest[1];
+  final src = _argsResult.rest[0];
+  final dst = _argsResult.rest[1];
 //  String DST_FOLDER = 'gs://gstest.tekartik.com/milomedy/';
 //
 //  setupQuickLogging(Level.FINE);

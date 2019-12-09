@@ -22,7 +22,7 @@ Future _deployEntity(String src, String dst) async {
     if (isFile) {
       return linkOrCopyFileIfNewer(src, dst);
     } else {
-      throw "${src} entity not found";
+      throw '${src} entity not found';
     }
   }
 }
@@ -32,16 +32,16 @@ String get currentScriptName => basenameWithoutExtension(Platform.script.path);
 Future main(List<String> arguments) async {
   //debugQuickLogging(Level.FINE);
 
-  ArgParser parser = ArgParser(allowTrailingOptions: true);
+  final parser = ArgParser(allowTrailingOptions: true);
   parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
-  parser.addFlag("dir",
+  parser.addFlag('dir',
       abbr: 'd',
       help: 'Deploy a directory as is, even if no deploy.yaml is present',
       negatable: false);
-  parser.addFlag("version",
+  parser.addFlag('version',
       help: 'Display the script version', negatable: false);
 
-  ArgResults _argsResult = parser.parse(arguments);
+  final _argsResult = parser.parse(arguments);
 
   void _usage() {
     stdout.writeln('Deploy from build to deploy folder from a top pub package');
@@ -76,7 +76,7 @@ Future main(List<String> arguments) async {
     return null;
   }
 
-  var dirOnly = _argsResult["dir"] as bool;
+  var dirOnly = _argsResult['dir'] as bool;
 
   String srcDir;
   String dstDir;
@@ -86,11 +86,11 @@ Future main(List<String> arguments) async {
     print(settings);
 
     // first delete destination
-    String buildDir = normalize(join(srcDir, dir));
-    String deployDir = normalize(join(dstDir, dir));
+    final buildDir = normalize(join(srcDir, dir));
+    final deployDir = normalize(join(dstDir, dir));
 
     emptyOrCreateDirSync(deployDir);
-    List<Future> futures = [];
+    final futures = <Future>[];
     for (String fileOrDir in settings['files']) {
       print(fileOrDir);
       futures.add(
@@ -115,16 +115,16 @@ Future main(List<String> arguments) async {
 
   Future<int> _handleDir(String dir) async {
     // this is a directoru
-    String deployYaml = "deploy.yaml";
+    final deployYaml = 'deploy.yaml';
 
     return await (FileSystemEntity.isDirectory(dir)).then((bool isDir) {
-      //print("dir $dir: ${isDir}");
+      //print('dir $dir: ${isDir}');
       if (isDir) {
-        String deployYamlPath = join(dir, deployYaml);
+        final deployYamlPath = join(dir, deployYaml);
         //devPrint(dir);
         return FileSystemEntity.isFile(deployYamlPath)
             .then((bool containsDeployYaml) async {
-          //print("gitFile $gitFile: ${containsDotGit}");
+          //print('gitFile $gitFile: ${containsDotGit}');
           if (containsDeployYaml) {
             //gitPull(dir);
             return await File(deployYamlPath)
@@ -138,7 +138,7 @@ Future main(List<String> arguments) async {
               return 0;
             });
           } else {
-            List<Future<int>> sub = [];
+            final sub = <Future<int>>[];
 
             return Directory(dir)
                 .list()
@@ -148,7 +148,7 @@ Future main(List<String> arguments) async {
                 .asFuture()
                 .then((_) {
                   return Future.wait(sub).then((List<int> results) {
-                    int count = 0;
+                    var count = 0;
                     results.forEach((int value) {
                       count += value;
                     });
@@ -164,7 +164,7 @@ Future main(List<String> arguments) async {
 
   // new implementation
   Future _newDeploy(Map settings) async {
-    Config config = Config(settings,
+    final config = Config(settings,
         src: Directory(srcDir), dst: dstDir == null ? null : Directory(dstDir));
 
     return await deployConfig(config);
@@ -173,12 +173,12 @@ Future main(List<String> arguments) async {
   // int argIndex = 0;
   // Handle direct yaml file
   if (_argsResult.rest.isNotEmpty) {
-    String firstArg = _argsResult.rest[0];
+    final firstArg = _argsResult.rest[0];
 
     // First arg can specify a file and the default src directory
-    if (firstArg.endsWith(".yaml")) {
-      String yamlFileName = firstArg;
-      String yamlFilePath = normalize(absolute(yamlFileName));
+    if (firstArg.endsWith('.yaml')) {
+      final yamlFileName = firstArg;
+      final yamlFilePath = normalize(absolute(yamlFileName));
       srcDir = dirname(yamlFilePath);
 
       if (_argsResult.rest.length > 1) {
@@ -188,7 +188,7 @@ Future main(List<String> arguments) async {
         }
       }
 
-      String content = await File(yamlFilePath).readAsString();
+      final content = await File(yamlFilePath).readAsString();
 
       var settings = loadYaml(content) as Map;
       return await _newDeploy(settings);
@@ -205,13 +205,13 @@ Future main(List<String> arguments) async {
 
   // Regular dart build
   if (_argsResult.rest.length < 2) {
-    String dir =
+    final dir =
         _argsResult.rest.isEmpty ? Directory.current.path : _argsResult.rest[0];
 
     // try root
     srcDir = dir;
     dstDir = join(srcDir, 'deploy');
-    int count = await _handleDir(srcDir);
+    final count = await _handleDir(srcDir);
 
     if (count == 0) {
       print('no deploy.yaml file found in ${srcDir}');
@@ -220,7 +220,7 @@ Future main(List<String> arguments) async {
 
       // check where build exists first
       if (await Directory(srcDir).exists()) {
-        int count = await _handleDir(srcDir);
+        var count = await _handleDir(srcDir);
         if (count == 0) {
           // Try to handle root
           // what is runned when using fsdeploy in a folder
@@ -235,7 +235,7 @@ Future main(List<String> arguments) async {
 //    String firstArg = _argsResult.rest[0];
 
 //    // First arg can specify a file and the default src directory
-//    if (firstArg.endsWith(".yaml")) {
+//    if (firstArg.endsWith('.yaml')) {
 //      String yamlFileName = firstArg;
 //      //srcDir
 //      srcDir = _argsResult.rest[1];

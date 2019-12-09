@@ -1,4 +1,4 @@
-@TestOn("vm")
+@TestOn('vm')
 library tekartik_deploy.fs_io_deploy_test;
 
 import 'dart:async';
@@ -28,21 +28,21 @@ void main() {
 
     Future _prepare() async {
       top = unwrapIoDirectory(await ctx.prepare());
-      src = io.Directory(join(top.path, "src"));
-      dst = io.Directory(join(top.path, "dst"));
+      src = io.Directory(join(top.path, 'src'));
+      dst = io.Directory(join(top.path, 'dst'));
     }
 
     test('fs_deploy', () async {
       await _prepare();
-      await writeString(io.File(join(src.path, "file")), "test");
+      await writeString(io.File(join(src.path, 'file')), 'test');
 
-      int count = await fsDeploy(src: src, dst: dst);
+      final count = await fsDeploy(src: src, dst: dst);
       expect(count, 1);
-      expect(await readString(childFile(dst, "file")), "test");
+      expect(await readString(childFile(dst, 'file')), 'test');
 
-      List<io.File> files = await fsDeployListFiles(src: src);
+      final files = await fsDeployListFiles(src: src);
       expect(files, hasLength(1));
-      expect(relative(files[0].path, from: src.path), "file");
+      expect(relative(files[0].path, from: src.path), 'file');
     });
   });
 }

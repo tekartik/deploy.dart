@@ -26,7 +26,7 @@ ProcessCmd gsutilRsyncCmd(String src, String dst,
     // This option increases local disk I/O and run time if either src_url or dst_url are on the local file system.
     bool useChecksum,
     Map<String, String> header}) {
-  List<String> args = [];
+  final args = <String>[];
 
   // run operation in parallel, good when src or dest is is a bucket
   if (parallel == true) {
@@ -53,7 +53,7 @@ ProcessCmd gsutilRsyncCmd(String src, String dst,
 }
 
 ProcessCmd gsutilCopyCmd(String src, String dst, {bool recursive}) {
-  List<String> gsutilArgs = [];
+  final gsutilArgs = <String>[];
 
   // Assume a log of files
   if (recursive == true) {
@@ -84,12 +84,12 @@ ProcessCmd gsDeployCmd(String src, String dst,
     gsutilRsyncCmd(src, dst, recursive: recursive, parallel: parallel);
 
 List<ProcessCmd> gsWebDeployCmds(String src, String dst) {
-  ProcessCmd gzipCmd = gsutilRsyncCmd(join(src, encodingGZipFolder), join(dst),
+  final gzipCmd = gsutilRsyncCmd(join(src, encodingGZipFolder), join(dst),
       recursive: true,
       parallel: true,
       useChecksum: true,
       header: {'Content-Encoding': 'gzip'});
-  ProcessCmd noneCmd = gsutilRsyncCmd(
+  final noneCmd = gsutilRsyncCmd(
     join(src, encodingNoneFolder),
     join(dst),
     recursive: true,
@@ -101,7 +101,7 @@ List<ProcessCmd> gsWebDeployCmds(String src, String dst) {
 
 // Create a gzip and none folder in a gs folder
 Future gsWebPrepareForRsync(String src, String dst) async {
-  List<String> gzipFilter = [
+  final gzipFilter = <String>[
     '*.html',
     '*.js',
     '*.json',
@@ -117,15 +117,15 @@ Future gsWebPrepareForRsync(String src, String dst) async {
 
 // gzip in place
 Future _gzip(String src) async {
-  List<Future> futures = [];
+  final futures = <Future>[];
   futures
       .add(Directory(src).list(recursive: true).listen((FileSystemEntity fse) {
     futures.add(() async {
       // ignore: avoid_slow_async_io
       if (await FileSystemEntity.isFile(fse.path)) {
         //print(fse.path);
-        File file = File(fse.path);
-        List<int> data = gzip.encode(await file.readAsBytes());
+        final file = File(fse.path);
+        final data = gzip.encode(await file.readAsBytes());
         await file.delete();
         await file.writeAsBytes(data);
       }
@@ -135,16 +135,16 @@ Future _gzip(String src) async {
 }
 
 Future gsWebDeploy(String src, String gsDst) async {
-  String name = basename(src);
-  String srcParent = dirname(src);
-  String gsSrc = join(srcParent, "gs", name);
+  final name = basename(src);
+  final srcParent = dirname(src);
+  final gsSrc = join(srcParent, 'gs', name);
   await gsWebPrepareForRsync(src, gsSrc);
 
-  String gzipFolder = join(gsSrc, encodingGZipFolder);
-  stdout.writeln("Zipping $gzipFolder");
+  final gzipFolder = join(gsSrc, encodingGZipFolder);
+  stdout.writeln('Zipping $gzipFolder');
   await _gzip(gzipFolder);
 
-  for (ProcessCmd cmd in gsWebDeployCmds(gsSrc, gsDst)) {
+  for (final cmd in gsWebDeployCmds(gsSrc, gsDst)) {
     await runCmd(cmd, verbose: true);
   }
 }

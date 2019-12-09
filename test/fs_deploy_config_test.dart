@@ -7,59 +7,59 @@ import 'package:dev_test/test.dart';
 void main() {
   group('config', () {
     test('empty', () {
-      Config config = Config({});
+      final config = Config({});
       expect(config.entities, isEmpty);
       expect(config.src, isNull);
       expect(config.dst, isNull);
     });
 
     test('list', () {
-      String list = '''
+      final list = '''
     files:
       - file1
       - file2
 ''';
-      Config config = Config(loadYaml(list) as Map);
+      final config = Config(loadYaml(list) as Map);
       expect(config.entities.length, 2);
-      expect(config.entities[0].src, "file1");
-      expect(config.entities[1].src, "file2");
+      expect(config.entities[0].src, 'file1');
+      expect(config.entities[1].src, 'file2');
     });
 
     test('map', () {
-      String list = '''
+      final list = '''
     files:
       file1:
       file2:
 ''';
-      Config config = Config(loadYaml(list) as Map);
+      final config = Config(loadYaml(list) as Map);
       expect(config.entities.length, 2);
       // order not respected here
-      if (config.entities[0].src == "file1") {
-        expect(config.entities[1].src, "file2");
+      if (config.entities[0].src == 'file1') {
+        expect(config.entities[1].src, 'file2');
       } else {
-        expect(config.entities[1].src, "file1");
-        expect(config.entities[0].src, "file2");
+        expect(config.entities[1].src, 'file1');
+        expect(config.entities[0].src, 'file2');
       }
     });
 
     test('dst', () {
-      String list = '''
+      final list = '''
     files:
       - file1: file1dst
 ''';
-      Config config = Config(loadYaml(list) as Map);
+      final config = Config(loadYaml(list) as Map);
       expect(config.entities.length, 1);
-      expect(config.entities[0].src, "file1");
-      expect(config.entities[0].dst, "file1dst");
+      expect(config.entities[0].src, 'file1');
+      expect(config.entities[0].dst, 'file1dst');
     });
 
     test('exclude', () {
-      String list = '''
+      final list = '''
     exclude:
       - file1
       - file2
 ''';
-      Config config = Config(loadYaml(list) as Map);
+      final config = Config(loadYaml(list) as Map);
       expect(config.exclude, ['file1', 'file2']);
     });
   });

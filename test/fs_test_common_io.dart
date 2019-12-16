@@ -26,6 +26,6 @@ class FileSystemTestContextIo extends FileSystemTestContext {
   String get outPath => join(outTopPath, super.outPath);
 }
 
-String get testOutTopPath => join(".dart_tool", "deploy", "test");
+String get testOutTopPath => join('.dart_tool', 'deploy', 'test');
 
 String get testOutPath => join(testOutTopPath, joinAll(testDescriptions));

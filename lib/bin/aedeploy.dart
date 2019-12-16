@@ -17,16 +17,16 @@ String get currentScriptName => basenameWithoutExtension(Platform.script.path);
 Future main(List<String> arguments) async {
   //debugQuickLogging(Level.FINE);
 
-  ArgParser parser = ArgParser(allowTrailingOptions: true);
+  final parser = ArgParser(allowTrailingOptions: true);
   parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
-  parser.addFlag("dir",
+  parser.addFlag('dir',
       abbr: 'd',
       help: 'Deploy a directory as is, even if no deploy.yaml is present',
       negatable: false);
-  parser.addFlag("version",
+  parser.addFlag('version',
       help: 'Display the script version', negatable: false);
 
-  ArgResults _argsResult = parser.parse(arguments);
+  final _argsResult = parser.parse(arguments);
 
   void _usage() {
     stdout.writeln('Deploy from build to deploy folder from a top pub package');
@@ -60,7 +60,7 @@ Future main(List<String> arguments) async {
 
   // await aeDeployEmpty('tekartik-dev', 'default');
   /*
-  bool dirOnly = _argsResult["dir"];
+  bool dirOnly = _argsResult['dir'];
 
   String srcDir;
   String dstDir;
@@ -99,17 +99,17 @@ Future main(List<String> arguments) async {
 
   Future _handleDir(String dir) async {
     // this is a directoru
-    String deployYaml = "deploy.yaml";
+    String deployYaml = 'deploy.yaml';
 
     return (FileSystemEntity.isDirectory(dir)).then((bool isDir) {
-      //print("dir $dir: ${isDir}");
+      //print('dir $dir: ${isDir}');
       if (isDir) {
         String deployYamlPath = join(dir, deployYaml);
         //devPrint(dir);
         return FileSystemEntity
             .isFile(deployYamlPath)
             .then((bool containsDeployYaml) {
-          //print("gitFile $gitFile: ${containsDotGit}");
+          //print('gitFile $gitFile: ${containsDotGit}');
           if (containsDeployYaml) {
             //gitPull(dir);
             return new File(deployYamlPath).readAsString().then((content) {
@@ -156,7 +156,7 @@ Future main(List<String> arguments) async {
     String firstArg = _argsResult.rest[0];
 
     // First arg can specify a file and the default src directory
-    if (firstArg.endsWith(".yaml")) {
+    if (firstArg.endsWith('.yaml')) {
       String yamlFileName = firstArg;
       String yamlFilePath = normalize(absolute(yamlFileName));
       srcDir = dirname(yamlFilePath);
@@ -201,7 +201,7 @@ Future main(List<String> arguments) async {
 //    String firstArg = _argsResult.rest[0];
 
 //    // First arg can specify a file and the default src directory
-//    if (firstArg.endsWith(".yaml")) {
+//    if (firstArg.endsWith('.yaml')) {
 //      String yamlFileName = firstArg;
 //      //srcDir
 //      srcDir = _argsResult.rest[1];

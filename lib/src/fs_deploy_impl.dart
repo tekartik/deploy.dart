@@ -10,7 +10,7 @@ class FsDeployImpl {
   FsDeployImpl(this.options);
 
   Future<int> deployConfig(Config config) async {
-    Directory dst = config.dst.fs.directory(config.dst.path);
+    final dst = config.dst.fs.directory(config.dst.path);
     try {
       await dst.delete(recursive: true);
     } catch (_) {}
@@ -18,11 +18,11 @@ class FsDeployImpl {
 
     //devPrint(config.entities);
 
-    bool tryToLinkFile = !(this.options?.noSymLink == true);
+    final tryToLinkFile = !(options?.noSymLink == true);
 
-    int sum = 0;
+    var sum = 0;
 
-    CopyOptions copyOptions = CopyOptions(
+    final copyOptions = CopyOptions(
         recursive: true,
         checkSizeAndModifiedDate: true,
         tryToLinkFile: tryToLinkFile,
@@ -31,15 +31,13 @@ class FsDeployImpl {
     if (config.entities.isEmpty) {
       // default copy all
       // recursiveLinkOrCopyNewerOptions);
-      TopCopy topCopy = TopCopy(
-          fsTopEntity(config.src), fsTopEntity(config.dst),
+      final topCopy = TopCopy(fsTopEntity(config.src), fsTopEntity(config.dst),
           options: copyOptions);
       sum += await topCopy.run();
     } else {
-      TopCopy topCopy = TopCopy(
-          fsTopEntity(config.src), fsTopEntity(config.dst),
+      final topCopy = TopCopy(fsTopEntity(config.src), fsTopEntity(config.dst),
           options: copyOptions);
-      for (EntityConfig entityConfig in config.entities) {
+      for (final entityConfig in config.entities) {
         sum += await topCopy.runChild(null, entityConfig.src, entityConfig.dst);
       }
     }
@@ -51,7 +49,7 @@ Directory getDeploySrc({File yaml, Directory src}) {
   // default src?
   if (src == null) {
     if (yaml == null) {
-      throw ArgumentError("need src or yaml specified");
+      throw ArgumentError('need src or yaml specified');
     }
     src = yaml.parent;
   }

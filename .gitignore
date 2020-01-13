@@ -21,3 +21,4 @@ pubspec.lock
 
 # out
 test/out
+/test/local_ftp_config.yaml

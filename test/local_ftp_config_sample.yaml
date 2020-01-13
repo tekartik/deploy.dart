@@ -1,0 +1,12 @@
+#
+# To copy as local_ftp_config.yaml
+#
+
+# true for regular ftp (false for sftp)
+allowUnsecure: <true>
+# Host
+host: <ftp.xxxx.com>
+# port: 2222 - if needed
+# username
+username: <ftpuser@xxxx.com>
+password: <ftppwd>

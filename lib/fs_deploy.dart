@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:fs_shim/fs_io.dart' as fs;
+import 'package:tekartik_io_utils/io_utils_import.dart';
 
 import 'fs/fs_deploy.dart' as fs;
 

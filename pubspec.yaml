@@ -1,5 +1,5 @@
 name: tekartik_deploy
-version: 0.6.2
+version: 0.6.3
 description: File deployment helper
 homepage: https://github.com/tekartik/deploy.dart
 environment:
@@ -8,7 +8,7 @@ dependencies:
   args: '>=1.5.1'
   path: '>=1.6.2'
   pub_semver: '>=1.4.2'
-  fs_shim: '>=0.11.0+3'
+  fs_shim: '>=0.12.0'
   resource: '>=2.1.5'
   process_run: '>=0.10.3'
   yaml: '>=2.1.15'
@@ -42,7 +42,8 @@ dev_dependencies:
       ref: dart2
   build_runner: '>=1.1.2'
   build_test: '>=0.10.3+3'
-#dependency_overrides:
+
+# dependency_overrides:
 #  tekartik_common_utils:
 #    git:
 #      url: git://github.com/tekartik/common_utils.dart
@@ -52,7 +53,7 @@ dev_dependencies:
 #  fs_shim_test:
 #    path: /media/ssd/devx/git/github.com/tekartik/fs_shim_test.dart
 #  fs_shim:
-#    path: /media/ssd/devx/git/github.com/tekartik/fs_shim.dart
+#    path: ../fs_shim.dart/fs
 #  fs_shim:
 #    git: git://github.com/tekartik/fs_shim.dart
 

@@ -1,4 +1,3 @@
-@TestOn('vm')
 import 'package:tekartik_deploy/fs/fs_deploy.dart';
 import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
 //import 'package:tekartik_core/log_utils.dart';
@@ -278,6 +277,27 @@ void defineTests(FileSystemTestContext ctx) {
 
         expect(isAbsolute(src.path), isTrue);
         expect(src.path, endsWith('src'));
+      });
+    });
+    group('FsDeployConfig', () async {
+      test('simple', () async {
+        final top = await ctx.prepare();
+        final dir = fs.directory(join(top.path, 'src'));
+        await dir.create();
+        final dst = fs.directory(join(top.path, 'dst'));
+
+        final config = FsDeployConfig(
+            entities: [EntityConfig.withDst('file.txt', 'file2.txt')],
+            src: dir,
+            dst: dst);
+//              config.src = dir;
+        // file
+        final file = fs.file(join(dir.path, 'file.txt'));
+        await file.writeAsString('test', flush: true);
+        final count = await deployConfig(config);
+        expect(count, 1);
+        expect(
+            await fs.file(join(dst.path, 'file2.txt')).readAsString(), 'test');
       });
     });
   });

@@ -100,10 +100,11 @@ void main() {
 
       expect(await fs.file(filePath).readAsString(), 'test');
 
-      if (fs.supportsFileLink) {
-        expect(await fs.type(filePath, followLinks: false),
-            FileSystemEntityType.link);
-      }
+      // 2020-01-20 used to be link
+      //if (fs.supportsFileLink) {
+      expect(await fs.type(filePath, followLinks: false),
+          FileSystemEntityType.file);
+      //}
     });
   });
 }

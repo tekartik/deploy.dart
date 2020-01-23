@@ -1,4 +1,5 @@
 import 'package:tekartik_deploy/fs/fs_deploy.dart';
+import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
 //import 'package:tekartik_core/log_utils.dart';
 import 'package:yaml/yaml.dart';
 import 'package:dev_test/test.dart';
@@ -61,6 +62,12 @@ void main() {
 ''';
       final config = Config(loadYaml(list) as Map);
       expect(config.exclude, ['file1', 'file2']);
+    });
+
+    test('explicit', () {
+      final config = FsDeployConfig(entities: [EntityConfig('file1')]);
+      expect(config.entities, [EntityConfig('file1')]);
+      //expect(config.entities)
     });
   });
 }

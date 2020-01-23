@@ -7,9 +7,8 @@ import 'package:fs_shim/utils/copy.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:tekartik_common_utils/common_utils_import.dart';
+import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
 import 'package:yaml/yaml.dart';
-
-import '../src/fs_deploy_impl.dart';
 
 Logger _log = Logger('tekartik.deploy');
 
@@ -68,6 +67,14 @@ Future<List<File>> fsDeployListFiles(
   return await deployConfigListFiles(config);
 }
 
+class ConfigSetting {
+  String src;
+}
+
+class ConfigTransformSettings {
+  String dst;
+}
+
 ///
 /// Config format
 ///
@@ -77,7 +84,7 @@ Future<List<File>> fsDeployListFiles(
 ///
 /// # default dest folder, compare to src
 /// dst: ${src}/../deploy
-class Config {
+abstract class Config {
   // Either from the yaml file or specified
   FileSystemEntity _src;
   FileSystemEntity _dst;
@@ -119,58 +126,33 @@ class Config {
 //
 //  }
 
-  Map settings;
+  Config.impl();
 
-  Config(this.settings, {FileSystemEntity src, FileSystemEntity dst}) {
-    if (src != null) {
-      this.src = src;
-    }
-    if (dst != null) {
-      this.dst = dst;
-    }
-    _init();
-  }
+  factory Config(Map settings, {FileSystemEntity src, FileSystemEntity dst}) =>
+      ConfigImpl(settings, src: src, dst: dst);
 
-  void _init() {
-    if (settings != null) {
-      var files = settings['files'];
-      if (files is List) {
-        for (var fileOrDir in files) {
-          if (fileOrDir is String) {
-            _entities.add(EntityConfig(fileOrDir));
-          } else if (fileOrDir is Map) {
-            // - fileName: dstFileName
-            var src = fileOrDir.keys.first as String;
-            var dst = fileOrDir[src] as String;
+  List<EntityConfig> get entities;
 
-            _entities.add(EntityConfig.withDst(src, dst));
-          }
-        }
-      } else if (files is Map) {
-        files.forEach((var key, var value) {
-          //devPrint('$key => $value');
-          _entities.add(EntityConfig(key as String));
-        });
-      }
-
-      // exclude
-      exclude = (settings['exclude'] as List)?.cast<String>();
-    }
-  }
-
-  final _entities = <EntityConfig>[];
-
-  List<EntityConfig> get entities => _entities;
-
-  List<String> exclude = [];
+  List<String> get exclude;
 
   @override
   String toString() {
     //return settings.toString() + '\n' +
-    return _entities.toString();
+    return entities.toString();
   }
 }
 
+/*
+///
+/// Simple IO config
+///
+class FsDeployConfig {
+  final Directory src;
+  final List<String> includes;
+
+  FsDeployConfig({@required this.src, this.includes});
+}
+*/
 class EntityConfig {
   final String _path;
   String _dst;
@@ -192,6 +174,23 @@ class EntityConfig {
     } else {
       return '$src => $dst';
     }
+  }
+
+  @override
+  int get hashCode => src?.hashCode ?? 0;
+
+  @override
+  bool operator ==(other) {
+    if (other is EntityConfig) {
+      if (other.src != src) {
+        return false;
+      }
+      if (other.dst != dst) {
+        return false;
+      }
+      return true;
+    }
+    return false;
   }
 }
 
@@ -224,72 +223,41 @@ Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
 Future<List<File>> deployConfigListFiles(Config config) async {
   final files = <File>[];
 
-  if (config.entities.isEmpty) {
+  // if null include all
+  List<String> include;
+
+  if (!(config.entities.isEmpty ?? false)) {
     // default copy all
     // recursiveLinkOrCopyNewerOptions);
-
-    final options = CopyOptions(
-        recursive: true,
-        checkSizeAndModifiedDate: true,
-        tryToLinkFile: true,
-        exclude: config.exclude);
-
-    files.addAll(await copyDirectoryListFiles(config.src as Directory,
-        options: options));
-  } else {
-    final options = CopyOptions(
-        recursive: true,
-        checkSizeAndModifiedDate: true,
-        tryToLinkFile: true,
-        exclude: config.exclude);
-
-    final topSourceNode =
-        TopSourceNode(fsTopEntity(config.src), options: options);
+    include = <String>[];
     for (final entityConfig in config.entities) {
-      files.addAll(await topSourceNode.runChild(
-          null, entityConfig.src, entityConfig.dst));
+      include.add(entityConfig.src);
     }
   }
+
+  final options = CopyOptions(
+      recursive: true,
+      checkSizeAndModifiedDate: true,
+      tryToLinkFile: true,
+      exclude: config.exclude,
+      include: include);
+
+  files.addAll(
+      await copyDirectoryListFiles(config.src as Directory, options: options));
 
   return files;
 }
 
+class FsDeployStatEntity {
+  String src;
+  String dst;
+}
+
+class FsDeployStat {
+  List<FsDeployStatEntity> entities;
+}
+
 Future<int> deployConfig(Config config) async {
-  final dst = config.dst.fs.directory(config.dst.path);
-  try {
-    await dst.delete(recursive: true);
-  } catch (_) {}
-  await dst.create(recursive: true);
-
-  //List<Future> futures = [];
-  _log.info(config.entities);
-
-  var sum = 0;
-  if (config.entities.isEmpty) {
-    // default copy all
-    // recursiveLinkOrCopyNewerOptions);
-
-    final options = CopyOptions(
-        recursive: true,
-        checkSizeAndModifiedDate: true,
-        tryToLinkFile: true,
-        exclude: config.exclude);
-
-    final topCopy = TopCopy(fsTopEntity(config.src), fsTopEntity(config.dst),
-        options: options);
-    sum += await topCopy.run();
-  } else {
-    final options = CopyOptions(
-        recursive: true,
-        checkSizeAndModifiedDate: true,
-        tryToLinkFile: true,
-        exclude: config.exclude);
-
-    final topCopy = TopCopy(fsTopEntity(config.src), fsTopEntity(config.dst),
-        options: options);
-    for (final entityConfig in config.entities) {
-      sum += await topCopy.runChild(null, entityConfig.src, entityConfig.dst);
-    }
-  }
-  return sum;
+  return await FsDeployImpl(FsDeployOptions()..noSymLink = true)
+      .deployConfig(config);
 }

@@ -91,7 +91,8 @@ Future main(List<String> arguments) async {
 
     emptyOrCreateDirSync(deployDir);
     final futures = <Future>[];
-    for (String fileOrDir in settings['files']) {
+    for (var fileOrDirRaw in settings['files'] as List) {
+      var fileOrDir = fileOrDirRaw.toString();
       print(fileOrDir);
       futures.add(
           _deployEntity(join(buildDir, fileOrDir), join(deployDir, fileOrDir)));

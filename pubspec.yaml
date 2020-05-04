@@ -1,5 +1,5 @@
 name: tekartik_deploy
-version: 0.6.3
+version: 0.6.4
 description: File deployment helper
 homepage: https://github.com/tekartik/deploy.dart
 environment:
@@ -19,7 +19,7 @@ dependencies:
     version: '>=0.5.2'
 dev_dependencies:
   test: any
-  dev_test: any
+  dev_test: '>=0.13.2-dev.3'
   tekartik_fs_test:
     git:
       url: git://github.com/tekartik/fs_shim.dart

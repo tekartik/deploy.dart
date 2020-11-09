@@ -2,6 +2,7 @@ name: tekartik_deploy
 version: 0.6.4
 description: File deployment helper
 homepage: https://github.com/tekartik/deploy.dart
+publish_to: none
 environment:
   sdk: '>=2.1.0-dev.0 <3.0.0'
 dependencies:

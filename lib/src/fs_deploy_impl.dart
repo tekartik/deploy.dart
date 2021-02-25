@@ -5,14 +5,14 @@ import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_deploy/fs/fs_deploy.dart';
 
 class FsDeployImpl {
-  FsDeployOptions options;
+  FsDeployOptions? options;
 
   FsDeployImpl(this.options);
 
   Future<int> deployConfig(Config config) async {
     try {
-      final dst = config.dst.fs.directory(config.dst.path);
-      final src = config.src.fs.directory(config.src.path);
+      final dst = config.dst!.fs.directory(config.dst!.path);
+      final src = config.src!.fs.directory(config.src!.path);
       try {
         await dst.delete(recursive: true);
       } catch (_) {}
@@ -79,7 +79,7 @@ class FsDeployImpl {
   }
 }
 
-Directory getDeploySrc({File yaml, Directory src}) {
+Directory getDeploySrc({File? yaml, Directory? src}) {
   // default src?
   if (src == null) {
     if (yaml == null) {
@@ -91,24 +91,24 @@ Directory getDeploySrc({File yaml, Directory src}) {
 }
 
 abstract class ConfigInternal implements Config {
-  List<EntityConfig> get entityConfigs;
+  List<EntityConfig>? get entityConfigs;
 }
 
 mixin ConfigMixin implements ConfigInternal {
-  Map settings;
+  Map? settings;
   @override
-  List<String> exclude = [];
+  List<String>? exclude = [];
   final _entities = <EntityConfig>[];
 
   @override
   List<EntityConfig> get entities => _entities;
 
-  void init({Map settings, FileSystemEntity src, FileSystemEntity dst}) {
+  void init({Map? settings, FileSystemEntity? src, FileSystemEntity? dst}) {
     this.src = src;
     this.dst = dst;
     this.settings = settings;
     if (entityConfigs != null) {
-      _entities.addAll(entityConfigs);
+      _entities.addAll(entityConfigs!);
     } else if (settings != null) {
       var files = settings['files'];
       if (files is List) {
@@ -118,7 +118,7 @@ mixin ConfigMixin implements ConfigInternal {
           } else if (fileOrDir is Map) {
             // - fileName: dstFileName
             var src = fileOrDir.keys.first as String;
-            var dst = fileOrDir[src] as String;
+            var dst = fileOrDir[src] as String?;
 
             _entities.add(EntityConfig.withDst(src, dst));
           }
@@ -131,30 +131,30 @@ mixin ConfigMixin implements ConfigInternal {
       }
 
       // exclude
-      exclude = (settings['exclude'] as List)?.cast<String>();
+      exclude = (settings['exclude'] as List?)?.cast<String>();
     }
   }
 }
 
 class ConfigImpl extends Config with ConfigMixin implements ConfigInternal {
-  ConfigImpl(Map settings, {FileSystemEntity src, FileSystemEntity dst})
+  ConfigImpl(Map? settings, {FileSystemEntity? src, FileSystemEntity? dst})
       : super.impl() {
     init(settings: settings, src: src, dst: dst);
   }
 
   @override
-  List<EntityConfig> get entityConfigs => null;
+  List<EntityConfig>? get entityConfigs => null;
 }
 
 class FsDeployConfig extends Config with ConfigMixin implements ConfigInternal {
-  final List<EntityConfig> _inputEntities;
+  final List<EntityConfig>? _inputEntities;
   FsDeployConfig(
-      {List<EntityConfig> entities, FileSystemEntity src, FileSystemEntity dst})
+      {List<EntityConfig>? entities, FileSystemEntity? src, FileSystemEntity? dst})
       : _inputEntities = entities,
         super.impl() {
     init(src: src, dst: dst);
   }
 
   @override
-  List<EntityConfig> get entityConfigs => _inputEntities;
+  List<EntityConfig>? get entityConfigs => _inputEntities;
 }

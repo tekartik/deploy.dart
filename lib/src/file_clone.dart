@@ -130,7 +130,7 @@ Future<int> _linkOrCopyFileIfNewer(String input, String output) {
 
 /// create the dirs but copy or link the files
 Future<int> _linkOrCopyFilesInDirIfNewer(String input, String output,
-    {bool recursive = true, List<String> but}) async {
+    {bool recursive = true, List<String>? but}) async {
   var futures = <Future<int>>[];
 
   final entities =

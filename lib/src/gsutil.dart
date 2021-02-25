@@ -9,7 +9,7 @@ void rawGsUtilVersionSync() {
   Process.runSync(_gsUtilBinName, ['--version']);
 }
 
-String _gsUtilExecutable;
+String? _gsUtilExecutable;
 
 void findGsUtilSync() {
   if (_gsUtilExecutable == null) {
@@ -35,13 +35,13 @@ void findGsUtilSync() {
 }
 
 class GsUtilCmd extends ProcessCmd {
-  GsUtilCmd(String executable, List<String> arguments)
+  GsUtilCmd(String? executable, List<String> arguments)
       : super(executable, arguments);
   @override
   String toString() => executableArgumentsToString('gsutil', arguments);
 }
 
-String get gsUtilExecutable {
+String? get gsUtilExecutable {
   findGsUtilSync();
   return _gsUtilExecutable;
 }

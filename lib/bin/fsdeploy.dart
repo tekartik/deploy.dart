@@ -76,18 +76,18 @@ Future main(List<String> arguments) async {
     return null;
   }
 
-  var dirOnly = _argsResult['dir'] as bool;
+  var dirOnly = _argsResult['dir'] as bool?;
 
-  String srcDir;
-  String dstDir;
+  String? srcDir;
+  String? dstDir;
 
   Future _deploy(Map settings, String dir) {
     print(dir);
     print(settings);
 
     // first delete destination
-    final buildDir = normalize(join(srcDir, dir));
-    final deployDir = normalize(join(dstDir, dir));
+    final buildDir = normalize(join(srcDir!, dir));
+    final deployDir = normalize(join(dstDir!, dir));
 
     emptyOrCreateDirSync(deployDir);
     final futures = <Future>[];
@@ -164,9 +164,9 @@ Future main(List<String> arguments) async {
   }
 
   // new implementation
-  Future _newDeploy(Map settings) async {
+  Future _newDeploy(Map? settings) async {
     final config = Config(settings,
-        src: Directory(srcDir), dst: dstDir == null ? null : Directory(dstDir));
+        src: Directory(srcDir!), dst: dstDir == null ? null : Directory(dstDir));
 
     return await deployConfig(config);
   }
@@ -191,11 +191,11 @@ Future main(List<String> arguments) async {
 
       final content = await File(yamlFilePath).readAsString();
 
-      var settings = loadYaml(content) as Map;
+      var settings = loadYaml(content) as Map?;
       return await _newDeploy(settings);
     }
 
-    if (dirOnly) {
+    if (dirOnly!) {
       srcDir = firstArg;
       if (_argsResult.rest.length > 1) {
         dstDir = normalize(absolute(_argsResult.rest[1]));

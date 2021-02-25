@@ -15,13 +15,13 @@ String get testOutTopPath => join('.dart_tool', 'tekartik_deploy', outFolder);
 
 String get testOutPath => getTestOutPath(testDescriptions);
 
-String getTestOutPath([List<String> parts]) {
+String getTestOutPath([List<String>? parts]) {
   parts ??= testDescriptions;
 
   return join(testOutTopPath, joinAll(parts));
 }
 
-String clearTestOutPath([List<String> parts]) {
+String clearTestOutPath([List<String>? parts]) {
   final outPath = getTestOutPath(parts);
   try {
     Directory(outPath).deleteSync(recursive: true);

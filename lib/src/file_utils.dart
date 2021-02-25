@@ -220,7 +220,7 @@ Future<int> linkOrCopyFileIfNewer(String input, String output) {
 
 /// create the dirs but copy or link the files
 Future<int> linkOrCopyFilesInDirIfNewer(String input, String output,
-    {bool recursive = true, List<String> but}) async {
+    {bool recursive = true, List<String>? but}) async {
   var futures = <Future<int>>[];
 
   final entities =
@@ -295,7 +295,7 @@ Future<int> deployEntitiesIfNewer(
 /// obsolete
 Future<int> createSymlink(
     Directory targetDir, Directory linkDir, String targetSubPath,
-    [String linkSubPath]) async {
+    [String? linkSubPath]) async {
   linkSubPath ??= targetSubPath;
 
   //linkDir.

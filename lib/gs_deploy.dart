@@ -19,13 +19,13 @@ ProcessCmd gsUtilCmd(List<String> args) => GsUtilCmd(gsUtilExecutable, args);
 
 /// synchronize from src to dst (no delete)
 ProcessCmd gsutilRsyncCmd(String src, String dst,
-    {bool recursive,
-    bool parallel,
+    {bool? recursive,
+    bool? parallel,
     // Causes the rsync command to compute and compare checksums (instead of comparing mtime) for files
     // if the size of source and destination as well as mtime (if available) match.
     // This option increases local disk I/O and run time if either src_url or dst_url are on the local file system.
-    bool useChecksum,
-    Map<String, String> header}) {
+    bool? useChecksum,
+    Map<String, String?>? header}) {
   final args = <String>[];
 
   // run operation in parallel, good when src or dest is is a bucket
@@ -33,7 +33,7 @@ ProcessCmd gsutilRsyncCmd(String src, String dst,
     args.add('-m');
   }
   if (header != null) {
-    header.forEach((String key, String value) {
+    header.forEach((String key, String? value) {
       if (value == null) {
         args.addAll(['-h', key]);
       } else {
@@ -52,7 +52,7 @@ ProcessCmd gsutilRsyncCmd(String src, String dst,
   return gsUtilCmd(args);
 }
 
-ProcessCmd gsutilCopyCmd(String src, String dst, {bool recursive}) {
+ProcessCmd gsutilCopyCmd(String src, String dst, {bool? recursive}) {
   final gsutilArgs = <String>[];
 
   // Assume a log of files

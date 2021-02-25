@@ -20,7 +20,7 @@ void main() {
       - file1
       - file2
 ''';
-      final config = Config(loadYaml(list) as Map);
+      final config = Config(loadYaml(list) as Map?);
       expect(config.entities.length, 2);
       expect(config.entities[0].src, 'file1');
       expect(config.entities[1].src, 'file2');
@@ -32,7 +32,7 @@ void main() {
       file1:
       file2:
 ''';
-      final config = Config(loadYaml(list) as Map);
+      final config = Config(loadYaml(list) as Map?);
       expect(config.entities.length, 2);
       // order not respected here
       if (config.entities[0].src == 'file1') {
@@ -48,7 +48,7 @@ void main() {
     files:
       - file1: file1dst
 ''';
-      final config = Config(loadYaml(list) as Map);
+      final config = Config(loadYaml(list) as Map?);
       expect(config.entities.length, 1);
       expect(config.entities[0].src, 'file1');
       expect(config.entities[0].dst, 'file1dst');
@@ -60,7 +60,7 @@ void main() {
       - file1
       - file2
 ''';
-      final config = Config(loadYaml(list) as Map);
+      final config = Config(loadYaml(list) as Map?);
       expect(config.exclude, ['file1', 'file2']);
     });
 

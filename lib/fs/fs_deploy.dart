@@ -15,7 +15,7 @@ Logger _log = Logger('tekartik.deploy');
 FsDeployOptions fsDeployOptionsNoSymLink = FsDeployOptions()..noSymLink = true;
 
 class FsDeployOptions {
-  bool noSymLink;
+  bool? noSymLink;
 }
 
 ///
@@ -24,15 +24,15 @@ class FsDeployOptions {
 /// [settings] can be set (files and exclude keys)
 ///
 Future<int> fsDeploy(
-    {FsDeployOptions options,
-    Map settings,
-    File yaml,
-    Directory src,
-    Directory dst}) async {
+    {FsDeployOptions? options,
+    Map? settings,
+    File? yaml,
+    Directory? src,
+    Directory? dst}) async {
   if (settings == null) {
     if (yaml != null) {
       final content = await yaml.readAsString();
-      settings = loadYaml(content) as Map;
+      settings = loadYaml(content) as Map?;
     }
     settings ??= {};
   }
@@ -50,11 +50,11 @@ Future<int> fsDeploy(
 /// List source files
 ///
 Future<List<File>> fsDeployListFiles(
-    {Map settings, File yaml, Directory src}) async {
+    {Map? settings, File? yaml, Directory? src}) async {
   if (settings == null) {
     if (yaml != null) {
       final content = await yaml.readAsString();
-      settings = loadYaml(content) as Map;
+      settings = loadYaml(content) as Map?;
     }
     settings ??= {};
   }
@@ -68,11 +68,11 @@ Future<List<File>> fsDeployListFiles(
 }
 
 class ConfigSetting {
-  String src;
+  String? src;
 }
 
 class ConfigTransformSettings {
-  String dst;
+  String? dst;
 }
 
 ///
@@ -86,22 +86,22 @@ class ConfigTransformSettings {
 /// dst: ${src}/../deploy
 abstract class Config {
   // Either from the yaml file or specified
-  FileSystemEntity _src;
-  FileSystemEntity _dst;
+  FileSystemEntity? _src;
+  FileSystemEntity? _dst;
 
-  FileSystemEntity get dst => _dst;
+  FileSystemEntity? get dst => _dst;
 
-  FileSystemEntity get src => _src;
+  FileSystemEntity? get src => _src;
 
-  set src(FileSystemEntity src) {
+  set src(FileSystemEntity? src) {
     if (src != null) {
       _src = src;
       final dstBasename = basename(src.path);
-      _dst = _src.fs.link(join(dirname(src.path), 'deploy', dstBasename));
+      _dst = _src!.fs.link(join(dirname(src.path), 'deploy', dstBasename));
     }
   }
 
-  set dst(FileSystemEntity dst) {
+  set dst(FileSystemEntity? dst) {
     // don't replace with null
     if (dst != null) {
       _dst = dst;
@@ -128,12 +128,13 @@ abstract class Config {
 
   Config.impl();
 
-  factory Config(Map settings, {FileSystemEntity src, FileSystemEntity dst}) =>
+  factory Config(Map? settings,
+          {FileSystemEntity? src, FileSystemEntity? dst}) =>
       ConfigImpl(settings, src: src, dst: dst);
 
   List<EntityConfig> get entities;
 
-  List<String> get exclude;
+  List<String>? get exclude;
 
   @override
   String toString() {
@@ -155,11 +156,11 @@ class FsDeployConfig {
 */
 class EntityConfig {
   final String _path;
-  String _dst;
+  String? _dst;
 
   String get src => _path;
 
-  String get dst => (_dst == null) ? src : _dst;
+  String? get dst => (_dst == null) ? src : _dst;
 
   EntityConfig.withDst(this._path, this._dst);
 
@@ -177,7 +178,7 @@ class EntityConfig {
   }
 
   @override
-  int get hashCode => src?.hashCode ?? 0;
+  int get hashCode => src.hashCode;
 
   @override
   bool operator ==(other) {
@@ -195,7 +196,7 @@ class EntityConfig {
 }
 
 Future<int> deployConfigEntity(Config config, String sub) async {
-  final topCopy = TopCopy(fsTopEntity(config.src), fsTopEntity(config.dst));
+  final topCopy = TopCopy(fsTopEntity(config.src!), fsTopEntity(config.dst!));
   final childCopy = ChildCopy(topCopy, null, sub);
   return await childCopy.run();
 }
@@ -211,10 +212,10 @@ Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
   //return _deployEntity(src, dst);
   // OLD
 
-  final topCopy = TopCopy(fsTopEntity(config.src), fsTopEntity(config.dst));
+  final topCopy = TopCopy(fsTopEntity(config.src!), fsTopEntity(config.dst!));
   //ChildCopy child = new ChildCopy()
   return await topCopy.runChild(
-      null, basename(entityConfig.src), basename(entityConfig.dst));
+      null, basename(entityConfig.src), basename(entityConfig.dst!));
   /*  return await copyFileSystemEntity(
       config.src.fs.newLink(src), config.src.fs.newLink(dst));
       */
@@ -224,9 +225,9 @@ Future<List<File>> deployConfigListFiles(Config config) async {
   final files = <File>[];
 
   // if null include all
-  List<String> include;
+  List<String>? include;
 
-  if (!(config.entities.isEmpty ?? false)) {
+  if (config.entities.isNotEmpty) {
     // default copy all
     // recursiveLinkOrCopyNewerOptions);
     include = <String>[];
@@ -249,12 +250,12 @@ Future<List<File>> deployConfigListFiles(Config config) async {
 }
 
 class FsDeployStatEntity {
-  String src;
-  String dst;
+  String? src;
+  String? dst;
 }
 
 class FsDeployStat {
-  List<FsDeployStatEntity> entities;
+  List<FsDeployStatEntity>? entities;
 }
 
 Future<int> deployConfig(Config config) async {

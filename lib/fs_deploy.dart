@@ -14,14 +14,14 @@ export 'fs/fs_deploy.dart' show FsDeployOptions, fsDeployOptionsNoSymLink;
 /// [settings] can be set (files and exclude keys)
 ///
 Future<int> fsDeploy(
-    {fs.FsDeployOptions options,
-    Map settings,
-    File yaml,
-    Directory src,
-    Directory dst}) {
-  fs.File fsYaml;
-  fs.Directory fsSrc;
-  fs.Directory fsDst;
+    {fs.FsDeployOptions? options,
+    Map? settings,
+    File? yaml,
+    Directory? src,
+    Directory? dst}) {
+  fs.File? fsYaml;
+  fs.Directory? fsSrc;
+  fs.Directory? fsDst;
   if (yaml != null) {
     fsYaml = fs.wrapIoFile(yaml);
   }
@@ -45,9 +45,9 @@ Future<int> fsDeploy(
 /// [settings] can be set (files and exclude keys)
 ///
 Future<List<File>> fsDeployListFiles(
-    {Map settings, File yaml, Directory src}) async {
-  fs.File fsYaml;
-  fs.Directory fsSrc;
+    {Map? settings, File? yaml, Directory? src}) async {
+  fs.File? fsYaml;
+  fs.Directory? fsSrc;
   if (yaml != null) {
     fsYaml = fs.wrapIoFile(yaml);
   }

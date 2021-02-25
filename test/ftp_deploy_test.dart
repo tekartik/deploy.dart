@@ -22,7 +22,7 @@ void main() {
   defineTests();
 }
 
-Future<FtpClient> load() async {
+Future<FtpClient?> load() async {
   var path = join('test', 'local_ftp_config.yaml');
   try {
     var content = await File(path).readAsString();
@@ -40,21 +40,21 @@ void defineTests() {
   //FileSystem fs = ctx.fs;
 
   group('ftp_deploy', () {
-    FtpClient ftpClient;
+    FtpClient? ftpClient;
 
     setUpAll(() async {
       ftpClient = await load();
     });
     test('quick', () async {
       if (ftpClient != null) {
-        await ftpClient.ls(remoteDir: '/');
-        await ftpClient.ls(remoteDir: '~');
+        await ftpClient!.ls(remoteDir: '/');
+        await ftpClient!.ls(remoteDir: '~');
       }
     }, timeout: const Timeout(Duration(minutes: 5)));
 
     test('deploy', () async {
       if (ftpClient != null) {
-        await ftpClient.lftpDeploy(
+        await ftpClient!.lftpDeploy(
             src: join('test', 'data'), dst: '/test/data');
       }
     }, timeout: const Timeout(Duration(minutes: 5)));

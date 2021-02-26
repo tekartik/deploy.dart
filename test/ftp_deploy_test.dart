@@ -54,8 +54,8 @@ void defineTests() {
 
     test('deploy', () async {
       if (ftpClient != null) {
-        await ftpClient!.lftpDeploy(
-            src: join('test', 'data'), dst: '/test/data');
+        await ftpClient!
+            .lftpDeploy(src: join('test', 'data'), dst: '/test/data');
       }
     }, timeout: const Timeout(Duration(minutes: 5)));
   }, skip: !isLftpSupported);

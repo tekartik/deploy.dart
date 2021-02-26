@@ -149,7 +149,9 @@ class ConfigImpl extends Config with ConfigMixin implements ConfigInternal {
 class FsDeployConfig extends Config with ConfigMixin implements ConfigInternal {
   final List<EntityConfig>? _inputEntities;
   FsDeployConfig(
-      {List<EntityConfig>? entities, FileSystemEntity? src, FileSystemEntity? dst})
+      {List<EntityConfig>? entities,
+      FileSystemEntity? src,
+      FileSystemEntity? dst})
       : _inputEntities = entities,
         super.impl() {
     init(src: src, dst: dst);

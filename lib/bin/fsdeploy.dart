@@ -166,7 +166,8 @@ Future main(List<String> arguments) async {
   // new implementation
   Future _newDeploy(Map? settings) async {
     final config = Config(settings,
-        src: Directory(srcDir!), dst: dstDir == null ? null : Directory(dstDir));
+        src: Directory(srcDir!),
+        dst: dstDir == null ? null : Directory(dstDir));
 
     return await deployConfig(config);
   }

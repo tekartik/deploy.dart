@@ -22,7 +22,7 @@ Future _deployEntity(String src, String dst) async {
     if (isFile) {
       return linkOrCopyFileIfNewer(src, dst);
     } else {
-      throw '${src} entity not found';
+      throw '$src entity not found';
     }
   }
 }
@@ -46,16 +46,15 @@ Future main(List<String> arguments) async {
   void _usage() {
     stdout.writeln('Deploy from build to deploy folder from a top pub package');
     stdout.writeln('');
-    stdout.writeln('  ${currentScriptName} [project_dir]');
+    stdout.writeln('  $currentScriptName [project_dir]');
     stdout.writeln('');
     stdout.writeln('or from a given folder to another one');
     stdout.writeln('');
     stdout.writeln(
-        '  ${currentScriptName} <dir_containing_deploy_yaml> destination_dir>');
-    stdout
-        .writeln('  ${currentScriptName} <deploy_file.yaml> <destination_dir>');
+        '  $currentScriptName <dir_containing_deploy_yaml> destination_dir>');
+    stdout.writeln('  $currentScriptName <deploy_file.yaml> <destination_dir>');
     stdout.writeln(
-        '  ${currentScriptName} <deploy_file.yaml> <source_dir> <destination_dir>');
+        '  $currentScriptName <deploy_file.yaml> <source_dir> <destination_dir>');
     stdout.writeln();
     stdout.writeln(parser.usage);
   }
@@ -67,7 +66,7 @@ Future main(List<String> arguments) async {
   }
 
   if (_argsResult['version'] as bool) {
-    stdout.writeln('${currentScriptName} ${version}');
+    stdout.writeln('$currentScriptName $version');
     return null;
   }
 
@@ -215,7 +214,7 @@ Future main(List<String> arguments) async {
     final count = await _handleDir(srcDir);
 
     if (count == 0) {
-      print('no deploy.yaml file found in ${srcDir}');
+      print('no deploy.yaml file found in $srcDir');
       srcDir = join(dir, 'build');
       dstDir = join(srcDir, 'deploy');
 
@@ -227,7 +226,7 @@ Future main(List<String> arguments) async {
           // what is runned when using fsdeploy in a folder
           count = await _handleDir(dir);
           if (count == 0) {
-            print('no deploy.yaml file found in ${srcDir} nor ${dir}');
+            print('no deploy.yaml file found in $srcDir nor $dir');
           }
         }
       }
@@ -253,7 +252,7 @@ Future main(List<String> arguments) async {
 
     await _handleDir(srcDir).then((count) {
       if (count == 0) {
-        print('no deploy.yaml file found in ${srcDir}');
+        print('no deploy.yaml file found in $srcDir');
       }
     });
   }

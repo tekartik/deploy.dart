@@ -33,7 +33,7 @@ Future main(List<String> arguments) async {
     stdout.writeln('Deploy from build to deploy folder from a top pub package');
     stdout.writeln('');
     stdout.writeln(
-        '  ${currentScriptName} <cmd> <applicationId> <module> <template_dir>');
+        '  $currentScriptName <cmd> <applicationId> <module> <template_dir>');
     stdout.writeln('');
     stdout.writeln('or from a given folder to another one');
 
@@ -48,7 +48,7 @@ Future main(List<String> arguments) async {
   }
 
   if (_argsResult['version'] as bool) {
-    stdout.writeln('${currentScriptName} ${version}');
+    stdout.writeln('$currentScriptName $version');
     return null;
   }
 

@@ -29,7 +29,7 @@ Future main(List<String> arguments) async {
   void _usage() {
     stdout.writeln('Deploy from source (local) to remote destination (gs://');
     stdout.writeln('');
-    print('  ${currentScriptName} /my/folder gs://my.bucket/my_folder');
+    print('  $currentScriptName /my/folder gs://my.bucket/my_folder');
     stdout.writeln('');
 
     stdout.writeln(parser.usage);
@@ -42,7 +42,7 @@ Future main(List<String> arguments) async {
   }
 
   if (_argsResult['version'] as bool) {
-    stdout.writeln('${currentScriptName} ${version}');
+    stdout.writeln('$currentScriptName $version');
     return null;
   }
 

@@ -271,7 +271,7 @@ Future<int> linkOrCopyIfNewer(String src, String dst) async {
         if (isFile) {
           return linkOrCopyFileIfNewer(src, dst);
         } else {
-          throw '${src} entity not found';
+          throw '$src entity not found';
         }
       });
     }

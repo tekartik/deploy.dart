@@ -182,7 +182,7 @@ Future<int> cloneFiles(String src, String dst) async {
         if (isFile) {
           return _linkOrCopyFileIfNewer(src, dst);
         } else {
-          throw '${src} entity not found';
+          throw '$src entity not found';
         }
       });
     }

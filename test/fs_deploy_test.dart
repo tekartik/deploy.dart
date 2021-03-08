@@ -1,9 +1,7 @@
 import 'package:tekartik_deploy/fs/fs_deploy.dart';
 import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
-//import 'package:tekartik_core/log_utils.dart';
-import 'package:path/path.dart';
+
 import 'package:dev_test/test.dart';
-//import 'package:fs_shim/fs.dart';
 
 import 'package:fs_shim/utils/read_write.dart';
 import 'package:fs_shim/utils/entity.dart';
@@ -44,7 +42,9 @@ void defineTests(FileSystemTestContext ctx) {
 
       final count = await fsDeploy(src: src);
       expect(count, 1);
-      expect(await readString(childFile(top, join('deploy', 'src', 'file'))),
+      expect(
+          await readString(
+              childFile(top, fs.path.join('deploy', 'src', 'file'))),
           'test');
     });
 
@@ -69,7 +69,7 @@ void defineTests(FileSystemTestContext ctx) {
       final count = await fsDeploy(yaml: yaml);
       expect(count, 1);
       // location deploy/src if not specified
-      final _dstFile = childFile(top, join('deploy', 'src', 'file'));
+      final _dstFile = childFile(top, fs.path.join('deploy', 'src', 'file'));
       expect(await readString(_dstFile), 'test');
       if (fs.supportsFileLink) {
         final link = fs.link(_dstFile.path);
@@ -91,7 +91,7 @@ void defineTests(FileSystemTestContext ctx) {
           await fsDeploy(options: fsDeployOptionsNoSymLink, yaml: yaml);
       expect(count, 1);
       // location deploy/src if not specified
-      final _dstFile = childFile(top, join('deploy', 'src', 'file'));
+      final _dstFile = childFile(top, fs.path.join('deploy', 'src', 'file'));
       expect(await readString(_dstFile), 'test');
       if (fs.supportsFileLink) {
         final path = _dstFile.path;
@@ -169,7 +169,7 @@ void defineTests(FileSystemTestContext ctx) {
 
       final files = await deployConfigListFiles(config);
       expect(files, hasLength(1));
-      expect(relative(files[0].path, from: src!.path), 'file');
+      expect(fs.path.relative(files[0].path, from: src!.path), 'file');
       /*
       expect(
           await fs
@@ -182,9 +182,9 @@ void defineTests(FileSystemTestContext ctx) {
     test('simple entity', () async {
       //fsCopyDebug = true;
       final top = await ctx.prepare();
-      final dir = fs.directory(join(top.path, 'dir'));
+      final dir = fs.directory(fs.path.join(top.path, 'dir'));
       final config = Config({});
-      final file = fs.file(join(dir.path, 'data'));
+      final file = fs.file(fs.path.join(dir.path, 'data'));
       config.src = dir;
       await file.create(recursive: true);
       await file.writeAsString('test');
@@ -192,38 +192,43 @@ void defineTests(FileSystemTestContext ctx) {
       final count = await deployEntity(config, entityConfig);
       expect(count, 1);
       expect(
-          await fs.file(join(top.path, 'deploy', 'dir', 'data')).readAsString(),
+          await fs
+              .file(fs.path.join(top.path, 'deploy', 'dir', 'data'))
+              .readAsString(),
           'test');
     });
 
     test('simple entity_rename', () async {
       final top = await ctx.prepare();
-      final dir = fs.directory(join(top.path, 'dir'));
+      final dir = fs.directory(fs.path.join(top.path, 'dir'));
       final config = Config({});
-      final file = fs.file(join(dir.path, 'data'));
+      final file = fs.file(fs.path.join(dir.path, 'data'));
       config.src = dir;
       await file.create(recursive: true);
       await file.writeAsString('test');
       final entityConfig = EntityConfig.withDst('data', 'data2');
       final count = await deployEntity(config, entityConfig);
       expect(count, 1);
-      expect(await fs.file(join(top.path, 'deploy', 'dir', 'data')).exists(),
+      expect(
+          await fs
+              .file(fs.path.join(top.path, 'deploy', 'dir', 'data'))
+              .exists(),
           isFalse);
       expect(
           await fs
-              .file(join(top.path, 'deploy', 'dir', 'data2'))
+              .file(fs.path.join(top.path, 'deploy', 'dir', 'data2'))
               .readAsString(),
           'test');
     });
 
     test('empty_config', () async {
       final top = await ctx.prepare();
-      final dir = fs.directory(join(top.path, 'dir'));
+      final dir = fs.directory(fs.path.join(top.path, 'dir'));
       await dir.create();
       final config = Config({}, src: dir);
 //              config.src = dir;
       // file
-      final file = fs.file(join(dir.path, 'file.txt'));
+      final file = fs.file(fs.path.join(dir.path, 'file.txt'));
       await file.writeAsString('test', flush: true);
       //  /media/ssd/devx/git/github.com/tekartik/tekartik_deploy.dart/test/out/io/deploy/empty_config/deploy/dir
       // /media/ssd/devx/git/github.com/tekartik/tekartik_deploy.dart/test/out/io/deploy/empty_config/dir/file.txt
@@ -233,24 +238,25 @@ void defineTests(FileSystemTestContext ctx) {
       expect(count, 1);
       expect(
           await fs
-              .file(join(top.path, 'deploy', 'dir', 'file.txt'))
+              .file(fs.path.join(top.path, 'deploy', 'dir', 'file.txt'))
               .readAsString(),
           'test');
     });
 
     test('with src and dst config', () async {
       final top = await ctx.prepare();
-      final dir = fs.directory(join(top.path, 'dir'));
+      final dir = fs.directory(fs.path.join(top.path, 'dir'));
       await dir.create();
-      final dst = fs.directory(join(top.path, 'new_dir'));
+      final dst = fs.directory(fs.path.join(top.path, 'new_dir'));
       final config = Config({}, src: dir, dst: dst);
 //              config.src = dir;
       // file
-      final file = fs.file(join(dir.path, 'file.txt'));
+      final file = fs.file(fs.path.join(dir.path, 'file.txt'));
       await file.writeAsString('test', flush: true);
       final count = await deployConfig(config);
       expect(count, 1);
-      expect(await fs.file(join(dst.path, 'file.txt')).readAsString(), 'test');
+      expect(await fs.file(fs.path.join(dst.path, 'file.txt')).readAsString(),
+          'test');
     });
 
     group('impl', () {
@@ -263,28 +269,28 @@ void defineTests(FileSystemTestContext ctx) {
         var src =
             getDeploySrc(yaml: fs.file(fs.path.join('yaml_dir', 'toc.yaml')));
 
-        expect(isAbsolute(src.path), isTrue);
+        expect(fs.path.isAbsolute(src.path), isTrue);
         expect(src.path, endsWith('yaml_dir'));
 
         src = getDeploySrc(
             yaml: fs.file(fs.path.join('yaml_dir', 'toc.yaml')),
             src: fs.directory('src'));
 
-        expect(isAbsolute(src.path), isTrue);
+        expect(fs.path.isAbsolute(src.path), isTrue);
         expect(src.path, endsWith('src'));
 
         src = getDeploySrc(src: fs.directory('src'));
 
-        expect(isAbsolute(src.path), isTrue);
+        expect(fs.path.isAbsolute(src.path), isTrue);
         expect(src.path, endsWith('src'));
       });
     });
     group('FsDeployConfig', () async {
       test('simple', () async {
         final top = await ctx.prepare();
-        final dir = fs.directory(join(top.path, 'src'));
+        final dir = fs.directory(fs.path.join(top.path, 'src'));
         await dir.create();
-        final dst = fs.directory(join(top.path, 'dst'));
+        final dst = fs.directory(fs.path.join(top.path, 'dst'));
 
         final config = FsDeployConfig(
             entities: [EntityConfig.withDst('file.txt', 'file2.txt')],
@@ -292,12 +298,13 @@ void defineTests(FileSystemTestContext ctx) {
             dst: dst);
 //              config.src = dir;
         // file
-        final file = fs.file(join(dir.path, 'file.txt'));
+        final file = fs.file(fs.path.join(dir.path, 'file.txt'));
         await file.writeAsString('test', flush: true);
         final count = await deployConfig(config);
         expect(count, 1);
         expect(
-            await fs.file(join(dst.path, 'file2.txt')).readAsString(), 'test');
+            await fs.file(fs.path.join(dst.path, 'file2.txt')).readAsString(),
+            'test');
       });
     });
   });

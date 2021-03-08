@@ -50,8 +50,8 @@ dependency_overrides:
 #      ref: dart2
 #  process_run:
 #    path: /opt/devx/git/github.com/tekartik/process_run.dart
-  tekartik_fs_test:
-    path: ../fs_shim.dart/fs_test
+#  tekartik_fs_test:
+#    path: ../fs_shim.dart/fs_test
 #  fs_shim:
 #    path: ../fs_shim.dart/fs
 #  fs_shim:

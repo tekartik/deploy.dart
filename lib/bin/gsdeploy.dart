@@ -6,9 +6,9 @@ import 'package:args/args.dart';
 import 'package:fs_shim/fs_io.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:process_run/shell.dart';
 import 'package:tekartik_deploy/gs_deploy.dart';
 import 'package:tekartik_deploy/src/bin_version.dart';
-import 'package:tekartik_deploy/src/gsutil.dart';
 
 const String flagHelp = 'help';
 
@@ -49,9 +49,7 @@ Future main(List<String> arguments) async {
 
   final check = _argsResult[checkFlag] as bool;
   if (check) {
-    try {
-      findGsUtilSync();
-    } catch (_) {
+    if (whichSync('gsutil') == null) {
       exit(1);
     }
     exit(0);

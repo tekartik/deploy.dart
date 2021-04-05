@@ -96,8 +96,10 @@ abstract class Config {
   set src(FileSystemEntity? src) {
     if (src != null) {
       _src = src;
-      final dstBasename = basename(src.path);
-      _dst = _src!.fs.link(join(dirname(src.path), 'deploy', dstBasename));
+      var fs = _src!.fs;
+      final dstBasename = fs.path.basename(src.path);
+      _dst = _src!.fs
+          .link(fs.path.join(fs.path.dirname(src.path), 'deploy', dstBasename));
     }
   }
 

@@ -43,15 +43,15 @@ dev_dependencies:
   build_runner: '>=1.1.2'
   build_test: '>=0.10.3+3'
 
-# dependency_overrides:
+dependency_overrides:
 #  tekartik_common_utils:
 #    git:
 #      url: git://github.com/tekartik/common_utils.dart
 #      ref: dart2
 #  process_run:
 #    path: /opt/devx/git/github.com/tekartik/process_run.dart
-#  fs_shim_test:
-#    path: /media/ssd/devx/git/github.com/tekartik/fs_shim_test.dart
+#  tekartik_fs_test:
+#    path: ../fs_shim.dart/fs_test
 #  fs_shim:
 #    path: ../fs_shim.dart/fs
 #  fs_shim:

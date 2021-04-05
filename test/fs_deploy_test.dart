@@ -2,7 +2,7 @@ import 'package:tekartik_deploy/fs/fs_deploy.dart';
 import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
 //import 'package:tekartik_core/log_utils.dart';
 import 'package:path/path.dart';
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 //import 'package:fs_shim/fs.dart';
 
 import 'package:fs_shim/utils/read_write.dart';
@@ -279,7 +279,7 @@ void defineTests(FileSystemTestContext ctx) {
         expect(src.path, endsWith('src'));
       });
     });
-    group('FsDeployConfig', () async {
+    group('FsDeployConfig', () {
       test('simple', () async {
         final top = await ctx.prepare();
         final dir = fs.directory(join(top.path, 'src'));

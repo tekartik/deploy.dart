@@ -3,7 +3,7 @@ import 'package:tekartik_deploy/fs/fs_deploy.dart';
 import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
 //import 'package:tekartik_core/log_utils.dart';
 import 'package:path/path.dart';
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 //import 'package:fs_shim/fs.dart';
 import 'package:tekartik_fs_test/test_common.dart';
 

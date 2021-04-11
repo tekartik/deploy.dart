@@ -20,5 +20,6 @@ pubspec.lock
 *.iml
 
 # out
+out/
 test/out
 /test/local_ftp_config.yaml

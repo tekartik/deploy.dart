@@ -3,13 +3,13 @@
 // is governed by a BSD-style license that can be found in the LICENSE file.
 library fs_shim.fs_io_test;
 
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 import 'package:tekartik_fs_test/test_common.dart';
 import 'fs_test_common_io.dart';
 import 'src_fs_deploy_test.dart' as fs_deploy;
 
 void main() {
-  FileSystemTestContext ctx = fileSystemTestContextIo;
+  var ctx = FileSystemTestContextIo('fs_io');
 
   group('io', () {
     // All tests

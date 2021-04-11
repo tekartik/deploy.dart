@@ -4,18 +4,17 @@ library tekartik_deploy.fs_io_deploy_test;
 import 'dart:async';
 import 'dart:io' as io;
 
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 import 'package:fs_shim/fs_io.dart' show unwrapIoDirectory;
 import 'package:fs_shim/utils/io/entity.dart';
 import 'package:fs_shim/utils/io/read_write.dart';
 import 'package:path/path.dart';
 import 'package:tekartik_deploy/fs_deploy.dart';
-import 'package:tekartik_fs_test/test_common.dart' show FileSystemTestContext;
 
 import 'fs_test_common_io.dart';
 
 void main() {
-  FileSystemTestContext ctx = FileSystemTestContextIo();
+  var ctx = FileSystemTestContextIo('fs_io_deploy');
 
   group('io_deploy', () {
     setUp(() {

@@ -3,7 +3,7 @@ library tekartik_deploy.test.bin_dirdeploy_test;
 
 import 'dart:convert';
 
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -21,10 +21,10 @@ String get dirdeployDartScript {
   return join(pkg.path, 'bin', 'fsdeploy.dart');
 }
 
-FileSystemTestContext ctx = FileSystemTestContextIo();
-FileSystem fs = ctx.fs;
-
 void main() {
+  var ctx = FileSystemTestContextIo('bin_fs_deploy');
+  var fs = ctx.fs;
+
   //defineTests(ctx);
   //useVMConfiguration();
   group('fsdeploy', () {

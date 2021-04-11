@@ -3,7 +3,7 @@ library tekartik_deploy.ftp_deploy_test;
 
 import 'dart:io';
 
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:tekartik_deploy/src/ftp/ftp_deploy_impl.dart';
 import 'package:yaml/yaml.dart';

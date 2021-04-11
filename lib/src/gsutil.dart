@@ -1,22 +1,16 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:process_run/shell.dart';
 import 'package:tekartik_io_utils/io_utils_import.dart';
 import 'package:process_run/cmd_run.dart';
-
-String get _gsUtilBinName => 'gsutil${Platform.isWindows ? '.cmd' : ''}';
-void rawGsUtilVersionSync() {
-  Process.runSync(_gsUtilBinName, ['--version']);
-}
 
 String? _gsUtilExecutable;
 
 void findGsUtilSync() {
   if (_gsUtilExecutable == null) {
-    String gsUtilExecutable;
-    if (findRawGsUtilSync()) {
-      gsUtilExecutable = _gsUtilBinName;
-    } else {
+    var gsUtilExecutable = whichSync('gsutil');
+    if (gsUtilExecutable == null) {
       final gloudSdkDir = Platform.environment['TEKARTIK_GOOGLE_CLOUD_SDK_DIR'];
       if (gloudSdkDir != null) {
         gsUtilExecutable = join(gloudSdkDir, 'bin', 'gsutil');
@@ -28,8 +22,6 @@ void findGsUtilSync() {
         throw 'gsutil not found';
       }
     }
-    // Validate the executable
-    Process.runSync(gsUtilExecutable, ['--version']);
     _gsUtilExecutable = gsUtilExecutable;
   }
 }
@@ -44,12 +36,4 @@ class GsUtilCmd extends ProcessCmd {
 String? get gsUtilExecutable {
   findGsUtilSync();
   return _gsUtilExecutable;
-}
-
-bool findRawGsUtilSync() {
-  try {
-    rawGsUtilVersionSync();
-    return true;
-  } catch (_) {}
-  return false;
 }

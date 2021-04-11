@@ -3,13 +3,12 @@ library tekartik_deploy.test.bin_dirdeploy_test;
 
 import 'dart:io';
 
-import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:tekartik_pub/io.dart';
+import 'package:test/test.dart';
 
-import 'fs_test_common_io.dart'
-    show FileSystemTestContext, fileSystemTestContextIo, FileSystem;
+import 'fs_test_common_io.dart' show FileSystemTestContextIo;
 
 String get _pubPackageRoot => '.';
 
@@ -18,12 +17,8 @@ String get gsdeployDartScript {
   return join(pkg.path, 'bin', 'gsdeploy.dart');
 }
 
-FileSystemTestContext ctx = fileSystemTestContextIo;
-FileSystem fs = ctx.fs;
-
 void main() {
-  //defineTests(ctx);
-  //useVMConfiguration();
+  var ctx = FileSystemTestContextIo('manual_bin_gsdeploy');
   group('bin_gsdeploy', () {
     test('deploy_1_file', () async {
       var top = await ctx.prepare() as Directory;

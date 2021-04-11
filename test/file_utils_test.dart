@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:path/path.dart' hide equals;
 import 'package:tekartik_deploy/src/file_utils.dart';
 
-import 'fs_test_common_io.dart' show fileSystemTestContextIo;
+import 'fs_test_common_io.dart' show FileSystemTestContextIo;
 import 'io_test_common.dart';
 
 String simpleFileName = 'filename.txt';
@@ -29,7 +29,8 @@ void writeStringContentSync(String path, String content) {
 void main() => defineTests();
 
 void defineTests() {
-  var context = fileSystemTestContextIo;
+  var context = FileSystemTestContextIo('file_utils');
+
   group('copy_file', () {
     test('copy_file_if_newer', () async {
       var dir = await context.prepare();

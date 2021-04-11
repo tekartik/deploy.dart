@@ -26,5 +26,5 @@ void main() {
       final result = await runCmd(gsUtilCmd(['--version']));
       expect(result.stdout, contains('gsutil version'));
     });
-  }, skip: !gsUtilAvailable);
+  }, skip: !gsUtilAvailable, timeout: const Timeout(Duration(minutes: 2)));
 }

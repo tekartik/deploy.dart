@@ -7,17 +7,13 @@ import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:tekartik_deploy/gs_deploy.dart';
 
-import 'fs_test_common_io.dart'
-    show fileSystemTestContextIo, FileSystem, FileSystemTestContext;
+import 'fs_test_common_io.dart' show FileSystemTestContextIo;
 
 //String get _pubPackageRoot => getPubPackageRootSync(testDirPath);
 
-FileSystemTestContext ctx = fileSystemTestContextIo;
-FileSystem fs = ctx.fs;
-
 void main() {
-  //defineTests(ctx);
-  //useVMConfiguration();
+  var ctx = FileSystemTestContextIo('manual_gs_deploy');
+
   group('gsdeploy', () {
     test('deploy_1_file', () async {
       var top = await ctx.prepare() as Directory;

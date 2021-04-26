@@ -1,11 +1,11 @@
 @TestOn('vm')
 library tekartik_deploy.test.bin_dirdeploy_test;
 
-import 'package:test/test.dart';
 import 'package:fs_shim/fs_io.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:tekartik_deploy/gs_deploy.dart';
+import 'package:test/test.dart';
 
 import 'fs_test_common_io.dart' show FileSystemTestContextIo;
 

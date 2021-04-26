@@ -3,10 +3,10 @@ library tekartik_deploy.test.bin_dirdeploy_test;
 
 import 'dart:core';
 
-import 'package:test/test.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:tekartik_deploy/gs_deploy.dart';
 import 'package:tekartik_deploy/src/gsutil.dart';
+import 'package:test/test.dart';
 
 //import 'package:fs_shim_test/test_io.dart';
 //import 'io_test_common.dart';

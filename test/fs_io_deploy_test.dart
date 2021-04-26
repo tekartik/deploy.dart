@@ -4,12 +4,12 @@ library tekartik_deploy.fs_io_deploy_test;
 import 'dart:async';
 import 'dart:io' as io;
 
-import 'package:test/test.dart';
 import 'package:fs_shim/fs_io.dart' show unwrapIoDirectory;
 import 'package:fs_shim/utils/io/entity.dart';
 import 'package:fs_shim/utils/io/read_write.dart';
 import 'package:path/path.dart';
 import 'package:tekartik_deploy/fs_deploy.dart';
+import 'package:test/test.dart';
 
 import 'fs_test_common_io.dart';
 

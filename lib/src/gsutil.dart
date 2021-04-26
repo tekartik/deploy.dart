@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:tekartik_io_utils/io_utils_import.dart';
-import 'package:process_run/cmd_run.dart';
 
 String? _gsUtilExecutable;
 
@@ -29,6 +29,7 @@ void findGsUtilSync() {
 class GsUtilCmd extends ProcessCmd {
   GsUtilCmd(String? executable, List<String> arguments)
       : super(executable, arguments);
+
   @override
   String toString() => executableArgumentsToString('gsutil', arguments);
 }

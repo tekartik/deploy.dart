@@ -3,12 +3,12 @@ library tekartik_deploy.test.bin_dirdeploy_test;
 
 import 'dart:convert';
 
-import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:tekartik_deploy/src/bin_version.dart';
 import 'package:tekartik_pub/io.dart';
+import 'package:test/test.dart';
 
 import 'fs_test_common_io.dart';
 import 'io_test_common.dart';

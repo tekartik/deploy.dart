@@ -1,8 +1,9 @@
 import 'package:tekartik_deploy/fs/fs_deploy.dart';
 import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
+import 'package:test/test.dart';
+
 //import 'package:tekartik_core/log_utils.dart';
 import 'package:yaml/yaml.dart';
-import 'package:test/test.dart';
 //import 'package:fs_shim/fs.dart';
 
 void main() {

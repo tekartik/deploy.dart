@@ -136,7 +136,7 @@ Future<int> _linkOrCopyFilesInDirIfNewer(String input, String output,
   final entities =
       Directory(input).listSync(recursive: false, followLinks: true);
   Directory(output).createSync(recursive: true);
-  entities.forEach((entity) {
+  for (var entity in entities) {
     var ignore = false;
     if (but != null) {
       if (but.contains(basename(entity.path))) {
@@ -159,13 +159,13 @@ Future<int> _linkOrCopyFilesInDirIfNewer(String input, String output,
         }
       }
     }
-  });
+  }
 
   return await Future.wait(futures).then((List<int> list) {
     var count = 0;
-    list.forEach((delta) {
+    for (var delta in list) {
       count += delta;
-    });
+    }
     return count;
   });
 }

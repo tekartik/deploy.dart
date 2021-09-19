@@ -209,7 +209,7 @@ Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
   if (entityConfig.hasDst) {
     _log.info('${entityConfig.src} => ${entityConfig.dst}');
   } else {
-    _log.info('${entityConfig.src}');
+    _log.info(entityConfig.src);
   }
   //return _deployEntity(src, dst);
   // OLD

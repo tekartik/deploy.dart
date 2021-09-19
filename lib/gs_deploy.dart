@@ -11,8 +11,7 @@ import 'src/gsutil.dart';
 
 final argOut = 'out';
 
-// User [gsUtilCmd]
-@deprecated
+@Deprecated('use gsUtilCmd')
 ProcessCmd gsutilCmd(List<String> args) => gsUtilCmd(args);
 
 ProcessCmd gsUtilCmd(List<String> args) => GsUtilCmd(gsUtilExecutable, args);

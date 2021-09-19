@@ -149,9 +149,9 @@ Future main(List<String> arguments) async {
                 .then((_) {
                   return Future.wait(sub).then((List<int> results) {
                     var count = 0;
-                    results.forEach((int value) {
+                    for (var value in results) {
                       count += value;
-                    });
+                    }
                     return count;
                   });
                 });

@@ -1,10 +1,7 @@
 library tekartik.deploy.yaml;
 
-import 'dart:async';
-
 import 'package:fs_shim/fs.dart';
 import 'package:fs_shim/utils/copy.dart';
-import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_deploy/src/fs_deploy_impl.dart';

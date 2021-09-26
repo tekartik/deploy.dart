@@ -1,5 +1,4 @@
 import 'package:process_run/shell_run.dart';
-import 'package:process_run/which.dart';
 import 'package:tekartik_io_utils/io_utils_import.dart';
 
 bool? _isLftpSupported;

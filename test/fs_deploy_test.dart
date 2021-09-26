@@ -1,10 +1,6 @@
-import 'package:fs_shim/utils/copy.dart';
-import 'package:fs_shim/utils/entity.dart';
-import 'package:fs_shim/utils/read_write.dart';
 import 'package:tekartik_deploy/fs/fs_deploy.dart';
 import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
 import 'package:tekartik_fs_test/test_common.dart';
-import 'package:test/test.dart';
 
 void main() {
   //debugQuickLogging(Level.FINEST);

@@ -7,8 +7,8 @@ File deployment helper (file system, google storage)
 ````
 tekartik_deploy:
     git:
-      url: git://github.com/tekartik/deploy.dart
-      ref: null_safety
+      url: https://github.com/tekartik/deploy.dart
+      ref: dart2_3
     version: ">=0.5.0"
 ````
 
@@ -41,7 +41,7 @@ For dirdeploy
 
 ### From git repository
 
-    pub global activate -s git git://github.com/tekartik/deploy.dart
+    pub global activate -s git https://github.com/tekartik/deploy.dart
 
 ### From local path
 

@@ -41,7 +41,7 @@ Future main(List<String> arguments) async {
   parser.addFlag('version',
       help: 'Display the script version', negatable: false);
 
-  final _argsResult = parser.parse(arguments);
+  final argResults = parser.parse(arguments);
 
   void _usage() {
     stdout.writeln('Deploy from build to deploy folder from a top pub package');
@@ -59,23 +59,23 @@ Future main(List<String> arguments) async {
     stdout.writeln(parser.usage);
   }
 
-  var help = _argsResult[flagHelp] as bool;
+  var help = argResults[flagHelp] as bool;
   if (help) {
     _usage();
     return null;
   }
 
-  if (_argsResult['version'] as bool) {
+  if (argResults['version'] as bool) {
     stdout.writeln('$currentScriptName $version');
     return null;
   }
 
-  if (_argsResult.rest.length > 3) {
+  if (argResults.rest.length > 3) {
     _usage();
     return null;
   }
 
-  var dirOnly = _argsResult['dir'] as bool?;
+  var dirOnly = argResults['dir'] as bool?;
 
   String? srcDir;
   String? dstDir;
@@ -173,8 +173,8 @@ Future main(List<String> arguments) async {
 
   // int argIndex = 0;
   // Handle direct yaml file
-  if (_argsResult.rest.isNotEmpty) {
-    final firstArg = _argsResult.rest[0];
+  if (argResults.rest.isNotEmpty) {
+    final firstArg = argResults.rest[0];
 
     // First arg can specify a file and the default src directory
     if (firstArg.endsWith('.yaml')) {
@@ -182,10 +182,10 @@ Future main(List<String> arguments) async {
       final yamlFilePath = normalize(absolute(yamlFileName));
       srcDir = dirname(yamlFilePath);
 
-      if (_argsResult.rest.length > 1) {
-        srcDir = normalize(absolute(_argsResult.rest[1]));
-        if (_argsResult.rest.length > 2) {
-          dstDir = normalize(absolute(_argsResult.rest[2]));
+      if (argResults.rest.length > 1) {
+        srcDir = normalize(absolute(argResults.rest[1]));
+        if (argResults.rest.length > 2) {
+          dstDir = normalize(absolute(argResults.rest[2]));
         }
       }
 
@@ -197,17 +197,17 @@ Future main(List<String> arguments) async {
 
     if (dirOnly!) {
       srcDir = firstArg;
-      if (_argsResult.rest.length > 1) {
-        dstDir = normalize(absolute(_argsResult.rest[1]));
+      if (argResults.rest.length > 1) {
+        dstDir = normalize(absolute(argResults.rest[1]));
       }
       return await _newDeploy({});
     }
   }
 
   // Regular dart build
-  if (_argsResult.rest.length < 2) {
+  if (argResults.rest.length < 2) {
     final dir =
-        _argsResult.rest.isEmpty ? Directory.current.path : _argsResult.rest[0];
+        argResults.rest.isEmpty ? Directory.current.path : argResults.rest[0];
 
     // try root
     srcDir = dir;
@@ -233,22 +233,22 @@ Future main(List<String> arguments) async {
       }
     }
   } else {
-//    String firstArg = _argsResult.rest[0];
+//    String firstArg = argResults.rest[0];
 
 //    // First arg can specify a file and the default src directory
 //    if (firstArg.endsWith('.yaml')) {
 //      String yamlFileName = firstArg;
 //      //srcDir
-//      srcDir = _argsResult.rest[1];
-//      if (_argsResult.rest.length > 2) {
-//        dstDir = _argsResult.rest[2];
+//      srcDir = argResults.rest[1];
+//      if (argResults.rest.length > 2) {
+//        dstDir = argResults.rest[2];
 //      }
 //      return new File(yamlFilePath).readAsString().then((content) {
 //
 //           var doc = loadYaml(content);
 //    } else {
-    srcDir = _argsResult.rest[0];
-    dstDir = _argsResult.rest[1];
+    srcDir = argResults.rest[0];
+    dstDir = argResults.rest[1];
     //}
 
     await _handleDir(srcDir).then((count) {

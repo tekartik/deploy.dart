@@ -24,7 +24,7 @@ Future main(List<String> arguments) async {
   parser.addFlag(checkFlag,
       help: 'Check if gsutil is installed', negatable: false);
 
-  final _argsResult = parser.parse(arguments);
+  final argResults = parser.parse(arguments);
 
   void _usage() {
     stdout.writeln('Deploy from source (local) to remote destination (gs://');
@@ -35,18 +35,18 @@ Future main(List<String> arguments) async {
     stdout.writeln(parser.usage);
   }
 
-  var help = _argsResult[flagHelp] as bool;
+  var help = argResults[flagHelp] as bool;
   if (help) {
     _usage();
     return null;
   }
 
-  if (_argsResult['version'] as bool) {
+  if (argResults['version'] as bool) {
     stdout.writeln('$currentScriptName $version');
     return null;
   }
 
-  var check = _argsResult[checkFlag] as bool;
+  var check = argResults[checkFlag] as bool;
   if (check) {
     try {
       findGsUtilSync();
@@ -56,13 +56,13 @@ Future main(List<String> arguments) async {
     exit(0);
   }
 
-  if (_argsResult.rest.length != 2) {
+  if (argResults.rest.length != 2) {
     _usage();
     return null;
   }
 
-  final src = _argsResult.rest[0];
-  final dst = _argsResult.rest[1];
+  final src = argResults.rest[0];
+  final dst = argResults.rest[1];
 //  String DST_FOLDER = 'gs://gstest.tekartik.com/milomedy/';
 //
 //  setupQuickLogging(Level.FINE);

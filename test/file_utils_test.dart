@@ -68,12 +68,12 @@ void defineTests() {
       var dir = await context.prepare();
       final sub1 = join(dir.path, 'sub1');
       final file1 = join(sub1, simpleFileName);
-      writeStringContentSync(file1, simpleContent + '1');
+      writeStringContentSync(file1, '${simpleContent}1');
       final file2 = join(sub1, simpleFileName2);
-      writeStringContentSync(file2, simpleContent + '2');
+      writeStringContentSync(file2, '${simpleContent}2');
       final subSub1 = join(dir.path, 'sub1', 'sub1');
       final file3 = join(subSub1, simpleFileName);
-      writeStringContentSync(file3, simpleContent + '3');
+      writeStringContentSync(file3, '${simpleContent}3');
 
       final sub2 = join(dir.path, 'sub2');
 
@@ -81,13 +81,13 @@ void defineTests() {
       expect(copied, 3);
       // check sub
       expect(File(join(sub2, simpleFileName)).readAsStringSync(),
-          equals(simpleContent + '1'));
+          equals('${simpleContent}1'));
       expect(File(join(sub2, simpleFileName2)).readAsStringSync(),
-          equals(simpleContent + '2'));
+          equals('${simpleContent}2'));
 
       // and subSub
       expect(File(join(sub2, 'sub1', simpleFileName)).readAsStringSync(),
-          equals(simpleContent + '3'));
+          equals('${simpleContent}3'));
       return copyFilesIfNewer(sub1, sub2).then((int copied) {
         expect(copied, equals(0));
       });
@@ -111,7 +111,7 @@ void defineTests() {
       var dir = await context.prepare();
       final sub1 = join(dir.path, 'sub1');
       final file1 = join(sub1, simpleFileName);
-      writeStringContentSync(file1, simpleContent + '1');
+      writeStringContentSync(file1, '${simpleContent}1');
 
       final sub2 = join(dir.path, 'sub2');
 
@@ -119,7 +119,7 @@ void defineTests() {
       expect(copied, equals(1));
       // check sub
       expect(File(join(sub2, simpleFileName)).readAsStringSync(),
-          equals(simpleContent + '1'));
+          equals('${simpleContent}1'));
 
       return linkOrCopyIfNewer(sub1, sub2).then((int copied) {
         expect(copied, equals(0));
@@ -130,16 +130,16 @@ void defineTests() {
       var dir = await context.prepare();
       final sub1 = join(dir.path, 'sub1');
       final file1 = join(sub1, simpleFileName);
-      writeStringContentSync(file1, simpleContent + '1');
+      writeStringContentSync(file1, '${simpleContent}1');
       final file2 = join(sub1, simpleFileName2);
-      writeStringContentSync(file2, simpleContent + '2');
+      writeStringContentSync(file2, '${simpleContent}2');
 
       final sub2 = join(dir.path, 'sub2');
 
       await deployEntitiesIfNewer(
           sub1, sub2, [simpleFileName, simpleFileName2]);
       expect(File(join(sub2, simpleFileName)).readAsStringSync(),
-          equals(simpleContent + '1'));
+          equals('${simpleContent}1'));
 
       final copied = await deployEntitiesIfNewer(
           sub1, sub2, [simpleFileName, simpleFileName2]);

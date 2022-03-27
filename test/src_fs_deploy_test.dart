@@ -50,8 +50,8 @@ void defineTests(FileSystemTestContext ctx) {
 
     test('simple entity_link', () async {
       await _prepare();
-      final _fileChild = childFile(src!, 'file');
-      await writeString(_fileChild, 'test');
+      final fileChild = childFile(src!, 'file');
+      await writeString(fileChild, 'test');
       final config = Config({})
         ..src = src
         ..dst = dst;
@@ -61,9 +61,9 @@ void defineTests(FileSystemTestContext ctx) {
         final link = childLink(dst!, 'file');
         expect(await fs.isLink(link.path), isTrue);
         final target = await link.target();
-        expect(target, _fileChild.path);
-        expect(_fileChild.isAbsolute, isTrue);
-        expect(fs.path.isAbsolute(_fileChild.path), isTrue);
+        expect(target, fileChild.path);
+        expect(fileChild.isAbsolute, isTrue);
+        expect(fs.path.isAbsolute(fileChild.path), isTrue);
         //expect(await readString(fs.file(link.path)), 'test');
       }
     });
@@ -121,8 +121,8 @@ void defineTests(FileSystemTestContext ctx) {
 
     test('with_config_file_only', () async {
       await _prepare();
-      final _fileChild = childFile(src!, 'file');
-      await writeString(_fileChild, 'test');
+      final fileChild = childFile(src!, 'file');
+      await writeString(fileChild, 'test');
       final yaml = childFile(src!, 'pubspec.yaml');
       await writeString(yaml, '''
       files:
@@ -130,13 +130,13 @@ void defineTests(FileSystemTestContext ctx) {
       final count = await fsDeploy(yaml: yaml);
       expect(count, 1);
       // location deploy/src if not specified
-      final _dstFile = childFile(top, fs.path.join('deploy', 'src', 'file'));
-      expect(await readString(_dstFile), 'test');
+      final dstFile = childFile(top, fs.path.join('deploy', 'src', 'file'));
+      expect(await readString(dstFile), 'test');
       if (fs.supportsFileLink) {
-        final link = fs.link(_dstFile.path);
+        final link = fs.link(dstFile.path);
         expect(await fs.isLink(link.path), isTrue);
         final target = await link.target();
-        expect(target, _fileChild.path);
+        expect(target, fileChild.path);
       }
     });
 

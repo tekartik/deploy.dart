@@ -29,7 +29,7 @@ Future main(List<String> arguments) async {
 
   final argResults = parser.parse(arguments);
 
-  void _usage() {
+  void printUsage() {
     stdout.writeln('Deploy from build to deploy folder from a top pub package');
     stdout.writeln('');
     stdout.writeln(
@@ -43,7 +43,7 @@ Future main(List<String> arguments) async {
 
   var help = argResults[flagHelp] as bool;
   if (help) {
-    _usage();
+    printUsage();
     return null;
   }
 
@@ -53,7 +53,7 @@ Future main(List<String> arguments) async {
   }
 
   if (argResults.rest.length > 3) {
-    _usage();
+    printUsage();
     return null;
   }
 

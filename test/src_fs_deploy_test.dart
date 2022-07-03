@@ -20,14 +20,14 @@ void defineTests(FileSystemTestContext ctx) {
     Directory? src;
     Directory? dst;
 
-    Future _prepare() async {
+    Future prepare() async {
       top = await ctx.prepare();
       src = childDirectory(top, 'src');
       dst = childDirectory(top, 'dst');
     }
 
     test('exclude', () async {
-      await _prepare();
+      await prepare();
       await writeString(childFile(src!, 'file1'), 'test');
       await writeString(childFile(src!, 'file2'), 'test');
       final copy = TopCopy(fsTopEntity(src!), fsTopEntity(dst!),
@@ -38,7 +38,7 @@ void defineTests(FileSystemTestContext ctx) {
     });
 
     test('simple entity', () async {
-      await _prepare();
+      await prepare();
       await writeString(childFile(src!, 'file'), 'test');
       final config = Config({})
         ..src = src
@@ -49,7 +49,7 @@ void defineTests(FileSystemTestContext ctx) {
     });
 
     test('simple entity_link', () async {
-      await _prepare();
+      await prepare();
       final fileChild = childFile(src!, 'file');
       await writeString(fileChild, 'test');
       final config = Config({})
@@ -69,7 +69,7 @@ void defineTests(FileSystemTestContext ctx) {
     });
 
     test('empty_config', () async {
-      await _prepare();
+      await prepare();
       await writeString(childFile(src!, 'file'), 'test');
       final config = Config({}, src: src, dst: dst);
       final count = await deployConfig(config);
@@ -89,7 +89,7 @@ void defineTests(FileSystemTestContext ctx) {
     });
 
     test('fs_deploy', () async {
-      await _prepare();
+      await prepare();
       await writeString(childFile(src!, 'file'), 'test');
 
       final count = await fsDeploy(src: src, dst: dst);
@@ -98,7 +98,7 @@ void defineTests(FileSystemTestContext ctx) {
     });
 
     test('fs_deploy_no_dst', () async {
-      await _prepare();
+      await prepare();
       await writeString(childFile(src!, 'file'), 'test');
 
       final count = await fsDeploy(src: src);
@@ -110,7 +110,7 @@ void defineTests(FileSystemTestContext ctx) {
     });
 
     test('single_entity_config', () async {
-      await _prepare();
+      await prepare();
       await writeString(childFile(src!, 'file'), 'test');
       final count = await fsDeploy(settings: {
         'files': ['file']
@@ -120,7 +120,7 @@ void defineTests(FileSystemTestContext ctx) {
     });
 
     test('with_config_file_only', () async {
-      await _prepare();
+      await prepare();
       final fileChild = childFile(src!, 'file');
       await writeString(fileChild, 'test');
       final yaml = childFile(src!, 'pubspec.yaml');
@@ -141,7 +141,7 @@ void defineTests(FileSystemTestContext ctx) {
     });
 
     test('with_config_file_and dst', () async {
-      await _prepare();
+      await prepare();
       await writeString(childFile(src!, 'file'), 'test');
       final yaml = childFile(src!, 'pubspec.yaml');
       await writeString(yaml, '''

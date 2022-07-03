@@ -27,7 +27,7 @@ Future main(List<String> arguments) async {
 
   final argResults = parser.parse(arguments);
 
-  void _usage() {
+  void printUsage() {
     stdout.writeln('Deploy from source to destination');
     stdout.writeln('');
     print('  $currentScriptName /my/folder gs://my.bucket/my_folder');
@@ -38,7 +38,7 @@ Future main(List<String> arguments) async {
 
   var help = argResults[flagHelp] as bool;
   if (help) {
-    _usage();
+    printUsage();
     return null;
   }
 
@@ -56,7 +56,7 @@ Future main(List<String> arguments) async {
   }
 
   if (argResults.rest.length != 2) {
-    _usage();
+    printUsage();
     return null;
   }
 

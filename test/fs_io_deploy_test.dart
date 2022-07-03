@@ -24,14 +24,14 @@ void main() {
     io.Directory? src;
     io.Directory? dst;
 
-    Future _prepare() async {
+    Future prepare() async {
       top = unwrapIoDirectory(await ctx.prepare());
       src = io.Directory(join(top.path, 'src'));
       dst = io.Directory(join(top.path, 'dst'));
     }
 
     test('fs_deploy', () async {
-      await _prepare();
+      await prepare();
       await writeString(io.File(join(src!.path, 'file')), 'test');
 
       final count = await fsDeploy(src: src, dst: dst);

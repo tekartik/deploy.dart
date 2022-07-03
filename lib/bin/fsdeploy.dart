@@ -43,7 +43,7 @@ Future main(List<String> arguments) async {
 
   final argResults = parser.parse(arguments);
 
-  void _usage() {
+  void printUsage() {
     stdout.writeln('Deploy from build to deploy folder from a top pub package');
     stdout.writeln('');
     stdout.writeln('  $currentScriptName [project_dir]');
@@ -61,7 +61,7 @@ Future main(List<String> arguments) async {
 
   var help = argResults[flagHelp] as bool;
   if (help) {
-    _usage();
+    printUsage();
     return null;
   }
 
@@ -71,7 +71,7 @@ Future main(List<String> arguments) async {
   }
 
   if (argResults.rest.length > 3) {
-    _usage();
+    printUsage();
     return null;
   }
 
@@ -80,7 +80,7 @@ Future main(List<String> arguments) async {
   String? srcDir;
   String? dstDir;
 
-  Future _deploy(Map settings, String dir) {
+  Future deployWithSettings(Map settings, String dir) {
     print(dir);
     print(settings);
 
@@ -113,7 +113,7 @@ Future main(List<String> arguments) async {
   }
   */
 
-  Future<int> _handleDir(String dir) async {
+  Future<int> handleDir(String dir) async {
     // this is a directoru
     final deployYaml = 'deploy.yaml';
 
@@ -132,7 +132,7 @@ Future main(List<String> arguments) async {
                 .then((content) async {
               var doc = loadYaml(content);
               if (doc is YamlMap) {
-                await _deploy(doc, relative(dir, from: srcDir));
+                await deployWithSettings(doc, relative(dir, from: srcDir));
                 return 1;
               }
               return 0;
@@ -143,7 +143,7 @@ Future main(List<String> arguments) async {
             return Directory(dir)
                 .list()
                 .listen((FileSystemEntity fse) {
-                  sub.add(_handleDir(fse.path));
+                  sub.add(handleDir(fse.path));
                 })
                 .asFuture()
                 .then((_) {
@@ -163,7 +163,7 @@ Future main(List<String> arguments) async {
   }
 
   // new implementation
-  Future _newDeploy(Map? settings) async {
+  Future newDeploy(Map? settings) async {
     final config = Config(settings,
         src: Directory(srcDir!),
         dst: dstDir == null ? null : Directory(dstDir));
@@ -192,7 +192,7 @@ Future main(List<String> arguments) async {
       final content = await File(yamlFilePath).readAsString();
 
       var settings = loadYaml(content) as Map?;
-      return await _newDeploy(settings);
+      return await newDeploy(settings);
     }
 
     if (dirOnly!) {
@@ -200,7 +200,7 @@ Future main(List<String> arguments) async {
       if (argResults.rest.length > 1) {
         dstDir = normalize(absolute(argResults.rest[1]));
       }
-      return await _newDeploy({});
+      return await newDeploy({});
     }
   }
 
@@ -212,7 +212,7 @@ Future main(List<String> arguments) async {
     // try root
     srcDir = dir;
     dstDir = join(srcDir, 'deploy');
-    final count = await _handleDir(srcDir);
+    final count = await handleDir(srcDir);
 
     if (count == 0) {
       print('no deploy.yaml file found in $srcDir');
@@ -221,11 +221,11 @@ Future main(List<String> arguments) async {
 
       // check where build exists first
       if (await Directory(srcDir).exists()) {
-        var count = await _handleDir(srcDir);
+        var count = await handleDir(srcDir);
         if (count == 0) {
           // Try to handle root
           // what is runned when using fsdeploy in a folder
-          count = await _handleDir(dir);
+          count = await handleDir(dir);
           if (count == 0) {
             print('no deploy.yaml file found in $srcDir nor $dir');
           }
@@ -251,7 +251,7 @@ Future main(List<String> arguments) async {
     dstDir = argResults.rest[1];
     //}
 
-    await _handleDir(srcDir).then((count) {
+    await handleDir(srcDir).then((count) {
       if (count == 0) {
         print('no deploy.yaml file found in $srcDir');
       }

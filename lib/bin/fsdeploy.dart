@@ -145,7 +145,7 @@ Future main(List<String> arguments) async {
                 .listen((FileSystemEntity fse) {
                   sub.add(handleDir(fse.path));
                 })
-                .asFuture()
+                .asFuture<void>()
                 .then((_) {
                   return Future.wait(sub).then((List<int> results) {
                     var count = 0;

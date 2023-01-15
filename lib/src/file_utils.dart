@@ -137,7 +137,7 @@ Future<int> dirSize(String path) async {
         size += stat.size;
       }
     }));
-  }).asFuture();
+  }).asFuture<void>();
   await Future.wait(futures);
   return size;
 }

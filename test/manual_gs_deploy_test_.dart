@@ -16,7 +16,7 @@ void main() {
 
   group('gsdeploy', () {
     test('deploy_1_file', () async {
-      var top = await ctx.prepare() as Directory;
+      var top = await ctx.prepare();
       //Directory
       final dir = Directory(join(top.path, 'dir'));
       final file = File(join(dir.path, 'file'));
@@ -30,7 +30,7 @@ void main() {
     });
 
     test('rsync_1_dir', () async {
-      var top = await ctx.prepare() as Directory;
+      var top = await ctx.prepare();
       //Directory
       final dir = Directory(join(top.path, 'dir'));
       final file = File(join(dir.path, 'file'));

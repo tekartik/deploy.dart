@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:process_run/cmd_run.dart';
-import 'package:process_run/shell.dart';
+import 'package:process_run/process_run.dart';
 import 'package:tekartik_io_utils/io_utils_import.dart';
 
 String? _gsUtilExecutable;

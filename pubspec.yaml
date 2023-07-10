@@ -4,7 +4,7 @@ description: File deployment helper
 homepage: https://github.com/tekartik/deploy.dart
 publish_to: none
 environment:
-  sdk: '>=2.18.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 dependencies:
   args: '>=1.5.1'
   path: '>=1.6.2'
@@ -15,7 +15,7 @@ dependencies:
   tekartik_io_utils:
     git:
       url: https://github.com/tekartik/io_utils.dart
-      ref: dart2_3
+      ref: dart3a
     version: '>=0.5.2'
 dev_dependencies:
   test: any
@@ -24,17 +24,17 @@ dev_dependencies:
     git:
       url: https://github.com/tekartik/fs_shim.dart
       path: fs_test
-      ref: dart2_3
+      ref: dart3a
     version: '>=0.1.0'
   tekartik_pub:
     git:
       url: https://github.com/tekartik/pub.dart
-      ref: dart2_3
+      ref: dart3a
   tekartik_platform_io:
     git:
       url: https://github.com/tekartik/platform.dart
       path: platform_io
-      ref: dart2_3
+      ref: dart3a
   build_runner: '>=1.1.2'
   build_test: '>=0.10.3+3'
 

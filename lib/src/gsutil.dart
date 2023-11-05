@@ -26,8 +26,7 @@ void findGsUtilSync() {
 }
 
 class GsUtilCmd extends ProcessCmd {
-  GsUtilCmd(String? executable, List<String> arguments)
-      : super(executable, arguments);
+  GsUtilCmd(super.executable, super.arguments);
 
   @override
   String toString() => executableArgumentsToString('gsutil', arguments);

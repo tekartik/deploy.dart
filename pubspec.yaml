@@ -4,7 +4,7 @@ description: File deployment helper
 homepage: https://github.com/tekartik/deploy.dart
 publish_to: none
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.4.0-0 <4.0.0'
 dependencies:
   args: '>=1.5.1'
   path: '>=1.6.2'

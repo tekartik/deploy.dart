@@ -14,7 +14,7 @@ final argOut = 'out';
 @Deprecated('use gsUtilCmd')
 ProcessCmd gsutilCmd(List<String> args) => gsUtilCmd(args);
 
-ProcessCmd gsUtilCmd(List<String> args) => GsUtilCmd(gsUtilExecutable, args);
+ProcessCmd gsUtilCmd(List<String> args) => GsUtilCmd(gsUtilExecutable!, args);
 
 /// synchronize from src to dst (no delete)
 ProcessCmd gsutilRsyncCmd(String src, String dst,

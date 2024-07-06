@@ -4,6 +4,7 @@ include: package:tekartik_lints/strict.yaml
 linter:
   rules:
     depend_on_referenced_packages: false
+    public_member_api_docs: false
 
 analyzer:
   exclude:

@@ -22,6 +22,10 @@ dependencies:
       url: https://github.com/tekartik/io_utils.dart
       ref: dart3a
     version: '>=0.5.2'
+  tekartik_common_utils:
+    git:
+      url: https://github.com/tekartik/common_utils.dart
+      ref: dart3a
 dev_dependencies:
   test: any
   dev_build: '>=0.16.3'

@@ -1,5 +1,5 @@
 @TestOn('vm')
-library tekartik_deploy.fs_io_deploy_test;
+library;
 
 import 'dart:async';
 import 'dart:io' as io;

@@ -1,6 +1,6 @@
 #!/usr/bin/env dart
 
-library tekartik_script.bin.gswebdeploy;
+library;
 
 import 'package:tekartik_deploy/bin/gswebdeploy.dart' as gswebdeploy;
 

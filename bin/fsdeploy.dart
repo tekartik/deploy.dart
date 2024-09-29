@@ -1,6 +1,6 @@
 #!/usr/bin/env dart
 
-library tekartik_script.bin.fsdeploy;
+library;
 
 import 'package:tekartik_deploy/bin/fsdeploy.dart' as fsdeploy;
 

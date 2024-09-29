@@ -1,4 +1,4 @@
-library tekartik_deploy.gs_deploy;
+library;
 
 //import 'dart:io';
 

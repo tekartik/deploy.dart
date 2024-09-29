@@ -1,5 +1,5 @@
 @TestOn('vm')
-library tekartik_deploy.test.bin_dirdeploy_test;
+library;
 
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';

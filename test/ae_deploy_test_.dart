@@ -1,5 +1,5 @@
 @TestOn('vm')
-library tekartik_deploy.ae_deploy_test_;
+library;
 
 import 'package:tekartik_fs_test/test_common.dart';
 import 'package:test/test.dart';

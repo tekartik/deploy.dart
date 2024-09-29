@@ -1,5 +1,5 @@
 @TestOn('vm')
-library tekartik_deploy.test.bin_dirdeploy_test;
+library;
 
 import 'dart:io';
 

@@ -1,4 +1,4 @@
-library tekartik_deploy.src.file_utils;
+library;
 
 import 'dart:async';
 import 'dart:io';

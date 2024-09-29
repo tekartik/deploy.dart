@@ -1,4 +1,4 @@
-library tekartik.deploy.yaml;
+library;
 
 import 'package:fs_shim/fs.dart';
 import 'package:fs_shim/utils/copy.dart';

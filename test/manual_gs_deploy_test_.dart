@@ -1,5 +1,5 @@
 @TestOn('vm')
-library tekartik_deploy.test.bin_dirdeploy_test;
+library;
 
 import 'package:fs_shim/fs_io.dart';
 import 'package:path/path.dart';

@@ -1,4 +1,4 @@
-library pubtest.src.pubtest_version;
+library;
 
 import 'package:pub_semver/pub_semver.dart';
 

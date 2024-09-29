@@ -1,6 +1,6 @@
 #!/usr/bin/env dart
 
-library tekartik_script.bin.aedeploy;
+library;
 
 import 'package:tekartik_deploy/bin/aedeploy.dart' as aedeploy;
 

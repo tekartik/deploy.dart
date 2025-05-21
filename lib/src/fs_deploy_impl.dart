@@ -25,10 +25,11 @@ class FsDeployImpl {
       var sum = 0;
 
       final copyOptions = CopyOptions(
-          recursive: true,
-          checkSizeAndModifiedDate: true,
-          tryToLinkFile: tryToLinkFile,
-          exclude: config.exclude);
+        recursive: true,
+        checkSizeAndModifiedDate: true,
+        tryToLinkFile: tryToLinkFile,
+        exclude: config.exclude,
+      );
 
       if (config.entities.isEmpty) {
         var files = await copyDirectoryListFiles(src, options: copyOptions);
@@ -58,13 +59,18 @@ class FsDeployImpl {
           if (isDir) {
             var srcDir = src.fs.directory(srcPath);
             var dstDir = dst.fs.directory(dstPath);
-            var files =
-                await copyDirectoryListFiles(srcDir, options: copyOptions);
+            var files = await copyDirectoryListFiles(
+              srcDir,
+              options: copyOptions,
+            );
             sum += files.length;
             await copyDirectory(srcDir, dstDir, options: copyOptions);
           } else {
-            await copyFile(src.fs.file(srcPath), dst.fs.file(dstPath),
-                options: copyOptions);
+            await copyFile(
+              src.fs.file(srcPath),
+              dst.fs.file(dstPath),
+              options: copyOptions,
+            );
             sum += 1;
           }
 
@@ -138,7 +144,7 @@ mixin ConfigMixin implements ConfigInternal {
 
 class ConfigImpl extends Config with ConfigMixin implements ConfigInternal {
   ConfigImpl(Map? settings, {FileSystemEntity? src, FileSystemEntity? dst})
-      : super.impl() {
+    : super.impl() {
     init(settings: settings, src: src, dst: dst);
   }
 
@@ -148,12 +154,12 @@ class ConfigImpl extends Config with ConfigMixin implements ConfigInternal {
 
 class FsDeployConfig extends Config with ConfigMixin implements ConfigInternal {
   final List<EntityConfig>? _inputEntities;
-  FsDeployConfig(
-      {List<EntityConfig>? entities,
-      FileSystemEntity? src,
-      FileSystemEntity? dst})
-      : _inputEntities = entities,
-        super.impl() {
+  FsDeployConfig({
+    List<EntityConfig>? entities,
+    FileSystemEntity? src,
+    FileSystemEntity? dst,
+  }) : _inputEntities = entities,
+       super.impl() {
     init(src: src, dst: dst);
   }
 

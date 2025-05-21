@@ -80,14 +80,20 @@ void defineTests() {
       var copied = await copyFilesIfNewer(sub1, sub2);
       expect(copied, 3);
       // check sub
-      expect(File(join(sub2, simpleFileName)).readAsStringSync(),
-          equals('${simpleContent}1'));
-      expect(File(join(sub2, simpleFileName2)).readAsStringSync(),
-          equals('${simpleContent}2'));
+      expect(
+        File(join(sub2, simpleFileName)).readAsStringSync(),
+        equals('${simpleContent}1'),
+      );
+      expect(
+        File(join(sub2, simpleFileName2)).readAsStringSync(),
+        equals('${simpleContent}2'),
+      );
 
       // and subSub
-      expect(File(join(sub2, 'sub1', simpleFileName)).readAsStringSync(),
-          equals('${simpleContent}3'));
+      expect(
+        File(join(sub2, 'sub1', simpleFileName)).readAsStringSync(),
+        equals('${simpleContent}3'),
+      );
       return copyFilesIfNewer(sub1, sub2).then((int copied) {
         expect(copied, equals(0));
       });
@@ -118,8 +124,10 @@ void defineTests() {
       var copied = await linkOrCopyIfNewer(sub1, sub2);
       expect(copied, equals(1));
       // check sub
-      expect(File(join(sub2, simpleFileName)).readAsStringSync(),
-          equals('${simpleContent}1'));
+      expect(
+        File(join(sub2, simpleFileName)).readAsStringSync(),
+        equals('${simpleContent}1'),
+      );
 
       return linkOrCopyIfNewer(sub1, sub2).then((int copied) {
         expect(copied, equals(0));
@@ -136,13 +144,19 @@ void defineTests() {
 
       final sub2 = join(dir.path, 'sub2');
 
-      await deployEntitiesIfNewer(
-          sub1, sub2, [simpleFileName, simpleFileName2]);
-      expect(File(join(sub2, simpleFileName)).readAsStringSync(),
-          equals('${simpleContent}1'));
+      await deployEntitiesIfNewer(sub1, sub2, [
+        simpleFileName,
+        simpleFileName2,
+      ]);
+      expect(
+        File(join(sub2, simpleFileName)).readAsStringSync(),
+        equals('${simpleContent}1'),
+      );
 
-      final copied = await deployEntitiesIfNewer(
-          sub1, sub2, [simpleFileName, simpleFileName2]);
+      final copied = await deployEntitiesIfNewer(sub1, sub2, [
+        simpleFileName,
+        simpleFileName2,
+      ]);
       expect(copied, equals(0));
     });
   });
@@ -185,24 +199,24 @@ void defineTests() {
       expect(result, 1);
       expect(File(path2).readAsStringSync(), equals(simpleContent));
     });
-//
-//    test('create dir symlink', () {
-//      if (Platform.isWindows) {
-//        return null;
-//      }
-//
-//      Directory inDir = new Directory(scriptDirPath).parent;
-//      Directory outDir = outDataDir;
-//
-//      return fu.createSymlink(inDir, outDir, 'packages').then((int result) {
-//        expect(fu.file(outDir, 'packages/browser/dart.js').existsSync(), isTrue);
-//
-//      });
-//    });
-//
-//
-//
-//
-//    });
+    //
+    //    test('create dir symlink', () {
+    //      if (Platform.isWindows) {
+    //        return null;
+    //      }
+    //
+    //      Directory inDir = new Directory(scriptDirPath).parent;
+    //      Directory outDir = outDataDir;
+    //
+    //      return fu.createSymlink(inDir, outDir, 'packages').then((int result) {
+    //        expect(fu.file(outDir, 'packages/browser/dart.js').existsSync(), isTrue);
+    //
+    //      });
+    //    });
+    //
+    //
+    //
+    //
+    //    });
   });
 }

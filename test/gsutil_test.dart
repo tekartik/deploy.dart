@@ -21,10 +21,15 @@ void main() {
     findGsUtilSync();
     gsUtilAvailable = true;
   } catch (_) {}
-  group('gsutil', () {
-    test('version', () async {
-      final result = await runCmd(gsUtilCmd(['--version']));
-      expect(result.stdout, contains('gsutil version'));
-    });
-  }, skip: !gsUtilAvailable, timeout: const Timeout(Duration(minutes: 2)));
+  group(
+    'gsutil',
+    () {
+      test('version', () async {
+        final result = await runCmd(gsUtilCmd(['--version']));
+        expect(result.stdout, contains('gsutil version'));
+      });
+    },
+    skip: !gsUtilAvailable,
+    timeout: const Timeout(Duration(minutes: 2)),
+  );
 }

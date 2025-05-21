@@ -16,14 +16,17 @@ ProcessCmd gsutilCmd(List<String> args) => gsUtilCmd(args);
 ProcessCmd gsUtilCmd(List<String> args) => GsUtilCmd(gsUtilExecutable!, args);
 
 /// synchronize from src to dst (no delete)
-ProcessCmd gsutilRsyncCmd(String src, String dst,
-    {bool? recursive,
-    bool? parallel,
-    // Causes the rsync command to compute and compare checksums (instead of comparing mtime) for files
-    // if the size of source and destination as well as mtime (if available) match.
-    // This option increases local disk I/O and run time if either src_url or dst_url are on the local file system.
-    bool? useChecksum,
-    Map<String, String?>? header}) {
+ProcessCmd gsutilRsyncCmd(
+  String src,
+  String dst, {
+  bool? recursive,
+  bool? parallel,
+  // Causes the rsync command to compute and compare checksums (instead of comparing mtime) for files
+  // if the size of source and destination as well as mtime (if available) match.
+  // This option increases local disk I/O and run time if either src_url or dst_url are on the local file system.
+  bool? useChecksum,
+  Map<String, String?>? header,
+}) {
   final args = <String>[];
 
   // run operation in parallel, good when src or dest is is a bucket
@@ -66,8 +69,15 @@ ProcessCmd gsutilCopyCmd(String src, String dst, {bool? recursive}) {
     src = join(src, '*');
   }
 
-  gsutilArgs
-      .addAll(['-v', '-z', 'html,css,js,json', '-a', 'public-read', src, dst]);
+  gsutilArgs.addAll([
+    '-v',
+    '-z',
+    'html,css,js,json',
+    '-a',
+    'public-read',
+    src,
+    dst,
+  ]);
 
   return gsUtilCmd(gsutilArgs);
 }
@@ -77,16 +87,22 @@ const encodingNoneFolder = 'none';
 
 // gsutil setwebcfg -m index.html gs://gstest.tekartik.com
 //ProcessCmd gsDeployCmd(String src, String dst) => gsutilRsyncCmd(src, dst);
-ProcessCmd gsDeployCmd(String src, String dst,
-        {bool recursive = true, bool parallel = true}) =>
-    gsutilRsyncCmd(src, dst, recursive: recursive, parallel: parallel);
+ProcessCmd gsDeployCmd(
+  String src,
+  String dst, {
+  bool recursive = true,
+  bool parallel = true,
+}) => gsutilRsyncCmd(src, dst, recursive: recursive, parallel: parallel);
 
 List<ProcessCmd> gsWebDeployCmds(String src, String dst) {
-  final gzipCmd = gsutilRsyncCmd(join(src, encodingGZipFolder), join(dst),
-      recursive: true,
-      parallel: true,
-      useChecksum: true,
-      header: {'Content-Encoding': 'gzip'});
+  final gzipCmd = gsutilRsyncCmd(
+    join(src, encodingGZipFolder),
+    join(dst),
+    recursive: true,
+    parallel: true,
+    useChecksum: true,
+    header: {'Content-Encoding': 'gzip'},
+  );
   final noneCmd = gsutilRsyncCmd(
     join(src, encodingNoneFolder),
     join(dst),
@@ -105,30 +121,37 @@ Future gsWebPrepareForRsync(String src, String dst) async {
     '*.json',
     '*.appcache',
     '*.css',
-    '*.txt'
+    '*.txt',
   ];
-  await copyDirectory(Directory(src), Directory(join(dst, encodingGZipFolder)),
-      options: recursiveLinkOrCopyNewerOptions..include = gzipFilter);
-  await copyDirectory(Directory(src), Directory(join(dst, encodingNoneFolder)),
-      options: recursiveLinkOrCopyNewerOptions..exclude = gzipFilter);
+  await copyDirectory(
+    Directory(src),
+    Directory(join(dst, encodingGZipFolder)),
+    options: recursiveLinkOrCopyNewerOptions..include = gzipFilter,
+  );
+  await copyDirectory(
+    Directory(src),
+    Directory(join(dst, encodingNoneFolder)),
+    options: recursiveLinkOrCopyNewerOptions..exclude = gzipFilter,
+  );
 }
 
 // gzip in place
 Future _gzip(String src) async {
   final futures = <Future>[];
-  futures
-      .add(Directory(src).list(recursive: true).listen((FileSystemEntity fse) {
-    futures.add(() async {
-      // ignore: avoid_slow_async_io
-      if (await FileSystemEntity.isFile(fse.path)) {
-        //print(fse.path);
-        final file = File(fse.path);
-        final data = gzip.encode(await file.readAsBytes());
-        await file.delete();
-        await file.writeAsBytes(data);
-      }
-    }());
-  }).asFuture());
+  futures.add(
+    Directory(src).list(recursive: true).listen((FileSystemEntity fse) {
+      futures.add(() async {
+        // ignore: avoid_slow_async_io
+        if (await FileSystemEntity.isFile(fse.path)) {
+          //print(fse.path);
+          final file = File(fse.path);
+          final data = gzip.encode(await file.readAsBytes());
+          await file.delete();
+          await file.writeAsBytes(data);
+        }
+      }());
+    }).asFuture(),
+  );
   await Future.wait(futures);
 }
 

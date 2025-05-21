@@ -19,10 +19,16 @@ Future main(List<String> arguments) async {
 
   final parser = ArgParser(allowTrailingOptions: true);
   parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
-  parser.addFlag('version',
-      help: 'Display the script version', negatable: false);
-  parser.addFlag(checkFlag,
-      help: 'Check if gsutil is installed', negatable: false);
+  parser.addFlag(
+    'version',
+    help: 'Display the script version',
+    negatable: false,
+  );
+  parser.addFlag(
+    checkFlag,
+    help: 'Check if gsutil is installed',
+    negatable: false,
+  );
 
   final argResults = parser.parse(arguments);
 
@@ -63,10 +69,10 @@ Future main(List<String> arguments) async {
 
   final src = argResults.rest[0];
   final dst = argResults.rest[1];
-//  String DST_FOLDER = 'gs://gstest.tekartik.com/milomedy/';
-//
-//  setupQuickLogging(Level.FINE);
-//  String buildPath = APPENGINE_APP_DEPLOY_TOP;
-//
+  //  String DST_FOLDER = 'gs://gstest.tekartik.com/milomedy/';
+  //
+  //  setupQuickLogging(Level.FINE);
+  //  String buildPath = APPENGINE_APP_DEPLOY_TOP;
+  //
   await gsWebDeploy(src, dst);
 }

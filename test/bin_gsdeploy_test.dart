@@ -26,14 +26,17 @@ void main() {
   group('gsdeploy', () {
     test('version', () async {
       final result = await runCmd(DartCmd([gsdeployDartScript, '--version']));
-      final parts =
-          LineSplitter.split(result.stdout as String).first.split(' ');
+      final parts = LineSplitter.split(
+        result.stdout as String,
+      ).first.split(' ');
       expect(parts.first, 'gsdeploy');
       expect(Version.parse(parts.last), version);
     });
     test('check', () async {
-      var result =
-          await runCmd(DartCmd([gsdeployDartScript, '--check']), verbose: true);
+      var result = await runCmd(
+        DartCmd([gsdeployDartScript, '--check']),
+        verbose: true,
+      );
       assert(result.exitCode == 0 || result.exitCode == 1);
       /*
       List<String> parts =

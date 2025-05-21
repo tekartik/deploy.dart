@@ -34,12 +34,17 @@ Future main(List<String> arguments) async {
 
   final parser = ArgParser(allowTrailingOptions: true);
   parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
-  parser.addFlag('dir',
-      abbr: 'd',
-      help: 'Deploy a directory as is, even if no deploy.yaml is present',
-      negatable: false);
-  parser.addFlag('version',
-      help: 'Display the script version', negatable: false);
+  parser.addFlag(
+    'dir',
+    abbr: 'd',
+    help: 'Deploy a directory as is, even if no deploy.yaml is present',
+    negatable: false,
+  );
+  parser.addFlag(
+    'version',
+    help: 'Display the script version',
+    negatable: false,
+  );
 
   final argResults = parser.parse(arguments);
 
@@ -51,10 +56,12 @@ Future main(List<String> arguments) async {
     stdout.writeln('or from a given folder to another one');
     stdout.writeln('');
     stdout.writeln(
-        '  $currentScriptName <dir_containing_deploy_yaml> destination_dir>');
+      '  $currentScriptName <dir_containing_deploy_yaml> destination_dir>',
+    );
     stdout.writeln('  $currentScriptName <deploy_file.yaml> <destination_dir>');
     stdout.writeln(
-        '  $currentScriptName <deploy_file.yaml> <source_dir> <destination_dir>');
+      '  $currentScriptName <deploy_file.yaml> <source_dir> <destination_dir>',
+    );
     stdout.writeln();
     stdout.writeln(parser.usage);
   }
@@ -94,7 +101,8 @@ Future main(List<String> arguments) async {
       var fileOrDir = fileOrDirRaw.toString();
       print(fileOrDir);
       futures.add(
-          _deployEntity(join(buildDir, fileOrDir), join(deployDir, fileOrDir)));
+        _deployEntity(join(buildDir, fileOrDir), join(deployDir, fileOrDir)),
+      );
     }
     return Future.wait(futures);
   }
@@ -122,14 +130,15 @@ Future main(List<String> arguments) async {
       if (isDir) {
         final deployYamlPath = join(dir, deployYaml);
         //devPrint(dir);
-        return FileSystemEntity.isFile(deployYamlPath)
-            .then((bool containsDeployYaml) async {
+        return FileSystemEntity.isFile(deployYamlPath).then((
+          bool containsDeployYaml,
+        ) async {
           //print('gitFile $gitFile: ${containsDotGit}');
           if (containsDeployYaml) {
             //gitPull(dir);
-            return await File(deployYamlPath)
-                .readAsString()
-                .then((content) async {
+            return await File(deployYamlPath).readAsString().then((
+              content,
+            ) async {
               var doc = loadYaml(content);
               if (doc is YamlMap) {
                 await deployWithSettings(doc, relative(dir, from: srcDir));
@@ -164,9 +173,11 @@ Future main(List<String> arguments) async {
 
   // new implementation
   Future newDeploy(Map? settings) async {
-    final config = Config(settings,
-        src: Directory(srcDir!),
-        dst: dstDir == null ? null : Directory(dstDir));
+    final config = Config(
+      settings,
+      src: Directory(srcDir!),
+      dst: dstDir == null ? null : Directory(dstDir),
+    );
 
     return await deployConfig(config);
   }
@@ -233,20 +244,20 @@ Future main(List<String> arguments) async {
       }
     }
   } else {
-//    String firstArg = argResults.rest[0];
+    //    String firstArg = argResults.rest[0];
 
-//    // First arg can specify a file and the default src directory
-//    if (firstArg.endsWith('.yaml')) {
-//      String yamlFileName = firstArg;
-//      //srcDir
-//      srcDir = argResults.rest[1];
-//      if (argResults.rest.length > 2) {
-//        dstDir = argResults.rest[2];
-//      }
-//      return new File(yamlFilePath).readAsString().then((content) {
-//
-//           var doc = loadYaml(content);
-//    } else {
+    //    // First arg can specify a file and the default src directory
+    //    if (firstArg.endsWith('.yaml')) {
+    //      String yamlFileName = firstArg;
+    //      //srcDir
+    //      srcDir = argResults.rest[1];
+    //      if (argResults.rest.length > 2) {
+    //        dstDir = argResults.rest[2];
+    //      }
+    //      return new File(yamlFilePath).readAsString().then((content) {
+    //
+    //           var doc = loadYaml(content);
+    //    } else {
     srcDir = argResults.rest[0];
     dstDir = argResults.rest[1];
     //}

@@ -20,12 +20,17 @@ Future main(List<String> arguments) async {
 
   final parser = ArgParser(allowTrailingOptions: true);
   parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
-  parser.addFlag('dir',
-      abbr: 'd',
-      help: 'Deploy a directory as is, even if no deploy.yaml is present',
-      negatable: false);
-  parser.addFlag('version',
-      help: 'Display the script version', negatable: false);
+  parser.addFlag(
+    'dir',
+    abbr: 'd',
+    help: 'Deploy a directory as is, even if no deploy.yaml is present',
+    negatable: false,
+  );
+  parser.addFlag(
+    'version',
+    help: 'Display the script version',
+    negatable: false,
+  );
 
   final argResults = parser.parse(arguments);
 
@@ -33,7 +38,8 @@ Future main(List<String> arguments) async {
     stdout.writeln('Deploy from build to deploy folder from a top pub package');
     stdout.writeln('');
     stdout.writeln(
-        '  $currentScriptName <cmd> <applicationId> <module> <template_dir>');
+      '  $currentScriptName <cmd> <applicationId> <module> <template_dir>',
+    );
     stdout.writeln('');
     stdout.writeln('or from a given folder to another one');
 

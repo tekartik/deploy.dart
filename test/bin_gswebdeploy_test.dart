@@ -25,16 +25,20 @@ void main() {
   //useVMConfiguration();
   group('gsdeploy', () {
     test('version', () async {
-      final result =
-          await runCmd(DartCmd([gswebdeployDartScript, '--version']));
-      final parts =
-          LineSplitter.split(result.stdout as String).first.split(' ');
+      final result = await runCmd(
+        DartCmd([gswebdeployDartScript, '--version']),
+      );
+      final parts = LineSplitter.split(
+        result.stdout as String,
+      ).first.split(' ');
       expect(parts.first, 'gswebdeploy');
       expect(Version.parse(parts.last), version);
     });
     test('check', () async {
-      var result = await runCmd(DartCmd([gswebdeployDartScript, '--check']),
-          verbose: true);
+      var result = await runCmd(
+        DartCmd([gswebdeployDartScript, '--check']),
+        verbose: true,
+      );
       assert(result.exitCode == 0 || result.exitCode == 1);
       /*
       List<String> parts =

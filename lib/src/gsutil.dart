@@ -15,9 +15,11 @@ void findGsUtilSync() {
         gsUtilExecutable = join(gloudSdkDir, 'bin', 'gsutil');
       } else {
         stderr.writeln(
-            'gsutil not found. It might be in your user path. If so please define in /etc/environment (with the proper path)');
+          'gsutil not found. It might be in your user path. If so please define in /etc/environment (with the proper path)',
+        );
         stderr.writeln(
-            'TEKARTIK_GOOGLE_CLOUD_SDK_DIR=/opt/apps/google-cloud-sdk');
+          'TEKARTIK_GOOGLE_CLOUD_SDK_DIR=/opt/apps/google-cloud-sdk',
+        );
         throw 'gsutil not found';
       }
     }

@@ -22,24 +22,35 @@ Future copyFile(String input, String output) {
 }
 
 /// Parameter are directory path
-Future<int> copyFilesIfNewer(String input, String output,
-    {bool recursive = true, bool followLinks = false}) {
+Future<int> copyFilesIfNewer(
+  String input,
+  String output, {
+  bool recursive = true,
+  bool followLinks = false,
+}) {
   var count = 0;
   final completer = Completer<int>();
   var futures = <Future>[];
-  Directory(input).list(recursive: recursive, followLinks: followLinks).listen(
-      (FileSystemEntity fse) {
-    //print('# ${fse.path}');
-    if (FileSystemEntity.isFileSync(fse.path)) {
-      final relativePath = relative(fse.path, from: input);
-      futures.add(copyFileIfNewer(fse.path, join(output, relativePath))
-          .then((int copied) {
-        count += copied;
-      }));
-    }
-  }, onDone: () {
-    Future.wait(futures).then((_) => completer.complete(count));
-  });
+  Directory(input)
+      .list(recursive: recursive, followLinks: followLinks)
+      .listen(
+        (FileSystemEntity fse) {
+          //print('# ${fse.path}');
+          if (FileSystemEntity.isFileSync(fse.path)) {
+            final relativePath = relative(fse.path, from: input);
+            futures.add(
+              copyFileIfNewer(fse.path, join(output, relativePath)).then((
+                int copied,
+              ) {
+                count += copied;
+              }),
+            );
+          }
+        },
+        onDone: () {
+          Future.wait(futures).then((_) => completer.complete(count));
+        },
+      );
 
   return completer.future;
 }
@@ -124,19 +135,19 @@ Future<int> dirSize(String path) async {
   var size = 0;
   final futures = <Future>[];
 
-  await Directory(path)
-      .list(recursive: true, followLinks: true)
-      .listen((FileSystemEntity fse) {
+  await Directory(path).list(recursive: true, followLinks: true).listen((
+    FileSystemEntity fse,
+  ) {
     //devPrint(FileSystemEntity.type(fse.path));
 
     // ignore: avoid_slow_async_io
-    futures.add(FileSystemEntity.isFile(fse.path).then((bool isFile) async {
-      if (isFile) {
+    if (FileSystemEntity.isFileSync(fse.path)) {
+      futures.add(() async {
         var stat = await fse.stat();
         //devPrint('${stat.size} ${fse}');
         size += stat.size;
-      }
-    }));
+      }());
+    }
   }).asFuture<void>();
   await Future.wait(futures);
   return size;
@@ -178,21 +189,24 @@ Future<int> _link(String target, String link) async {
     }
   }
 
-  return await ioLink.create(target).catchError((e) {
-    final parent = Directory(dirname(link));
-    if (!parent.existsSync()) {
-      try {
-        parent.createSync(recursive: true);
-      } catch (e) {
-        // ignore the error
-      }
-    } else {
-      // ignore the error and try again
-      // print('linkDir failed($e) - target: $target, existingLink: $existingLink');
-      // throw e;
-    }
-    return ioLink.create(target);
-  }).then((_) => 1);
+  return await ioLink
+      .create(target)
+      .catchError((e) {
+        final parent = Directory(dirname(link));
+        if (!parent.existsSync()) {
+          try {
+            parent.createSync(recursive: true);
+          } catch (e) {
+            // ignore the error
+          }
+        } else {
+          // ignore the error and try again
+          // print('linkDir failed($e) - target: $target, existingLink: $existingLink');
+          // throw e;
+        }
+        return ioLink.create(target);
+      })
+      .then((_) => 1);
 }
 
 /// link dir (work on all platforms)
@@ -219,12 +233,17 @@ Future<int> linkOrCopyFileIfNewer(String input, String output) {
 }
 
 /// create the dirs but copy or link the files
-Future<int> linkOrCopyFilesInDirIfNewer(String input, String output,
-    {bool recursive = true, List<String>? but}) async {
+Future<int> linkOrCopyFilesInDirIfNewer(
+  String input,
+  String output, {
+  bool recursive = true,
+  List<String>? but,
+}) async {
   var futures = <Future<int>>[];
 
-  final entities =
-      Directory(input).listSync(recursive: false, followLinks: true);
+  final entities = Directory(
+    input,
+  ).listSync(recursive: false, followLinks: true);
   Directory(output).createSync(recursive: true);
   for (var entity in entities) {
     var ignore = false;
@@ -237,8 +256,9 @@ Future<int> linkOrCopyFilesInDirIfNewer(String input, String output,
     if (!ignore) {
       if (FileSystemEntity.isFileSync(entity.path)) {
         final file = relative(entity.path, from: input);
-        futures
-            .add(linkOrCopyFileIfNewer(join(input, file), join(output, file)));
+        futures.add(
+          linkOrCopyFileIfNewer(join(input, file), join(output, file)),
+        );
       } else if (FileSystemEntity.isDirectorySync(entity.path)) {
         if (recursive) {
           final dir = relative(entity.path, from: input);
@@ -280,11 +300,15 @@ Future<int> linkOrCopyIfNewer(String src, String dst) async {
 
 /// Helper to copy recursively a source to a destination
 Future<int> deployEntitiesIfNewer(
-    String srcDir, String dstDir, List<String> entitiesPath) async {
+  String srcDir,
+  String dstDir,
+  List<String> entitiesPath,
+) async {
   final futures = <Future>[];
   for (final entityPath in entitiesPath) {
     futures.add(
-        linkOrCopyIfNewer(join(srcDir, entityPath), join(dstDir, entityPath)));
+      linkOrCopyIfNewer(join(srcDir, entityPath), join(dstDir, entityPath)),
+    );
   }
   return await Future.wait(futures).then((_) {
     // Todo
@@ -294,8 +318,11 @@ Future<int> deployEntitiesIfNewer(
 
 /// obsolete
 Future<int> createSymlink(
-    Directory targetDir, Directory linkDir, String targetSubPath,
-    [String? linkSubPath]) async {
+  Directory targetDir,
+  Directory linkDir,
+  String targetSubPath, [
+  String? linkSubPath,
+]) async {
   linkSubPath ??= targetSubPath;
 
   //linkDir.
@@ -335,11 +362,14 @@ Future<int> createSymlink(
     } else {
       // print('${target} ${new Directory.fromPath(target).existsSync()}');
       final ioLink = Link(link);
-      return await ioLink.create(absolute(target)).then((_) {
-        return 0;
-      }).catchError((_) {
-        return 0;
-      });
+      return await ioLink
+          .create(absolute(target))
+          .then((_) {
+            return 0;
+          })
+          .catchError((_) {
+            return 0;
+          });
     }
   }
 }

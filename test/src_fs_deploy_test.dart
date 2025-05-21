@@ -33,8 +33,11 @@ void defineTests(FileSystemTestContext ctx) {
       await prepare();
       await writeString(childFile(src!, 'file1'), 'test');
       await writeString(childFile(src!, 'file2'), 'test');
-      final copy = TopCopy(fsTopEntity(src!), fsTopEntity(dst!),
-          options: CopyOptions(recursive: true, exclude: ['file1']));
+      final copy = TopCopy(
+        fsTopEntity(src!),
+        fsTopEntity(dst!),
+        options: CopyOptions(recursive: true, exclude: ['file1']),
+      );
       await copy.run();
       expect(await entityExists(childFile(dst!, 'file1')), isFalse);
       expect(await readString(childFile(dst!, 'file2')), 'test');
@@ -43,9 +46,10 @@ void defineTests(FileSystemTestContext ctx) {
     test('simple entity', () async {
       await prepare();
       await writeString(childFile(src!, 'file'), 'test');
-      final config = Config({})
-        ..src = src
-        ..dst = dst;
+      final config =
+          Config({})
+            ..src = src
+            ..dst = dst;
       final count = await deployConfigEntity(config, 'file');
       expect(count, 1);
       expect(await readString(childFile(dst!, 'file')), 'test');
@@ -55,9 +59,10 @@ void defineTests(FileSystemTestContext ctx) {
       await prepare();
       final fileChild = childFile(src!, 'file');
       await writeString(fileChild, 'test');
-      final config = Config({})
-        ..src = src
-        ..dst = dst;
+      final config =
+          Config({})
+            ..src = src
+            ..dst = dst;
       final count = await deployConfigEntity(config, 'file');
       expect(count, 1);
       if (fs.supportsFileLink) {
@@ -107,17 +112,21 @@ void defineTests(FileSystemTestContext ctx) {
       final count = await fsDeploy(src: src);
       expect(count, 1);
       expect(
-          await readString(
-              childFile(top, fs.path.join('deploy', 'src', 'file'))),
-          'test');
+        await readString(childFile(top, fs.path.join('deploy', 'src', 'file'))),
+        'test',
+      );
     });
 
     test('single_entity_config', () async {
       await prepare();
       await writeString(childFile(src!, 'file'), 'test');
-      final count = await fsDeploy(settings: {
-        'files': ['file']
-      }, src: src, dst: dst);
+      final count = await fsDeploy(
+        settings: {
+          'files': ['file'],
+        },
+        src: src,
+        dst: dst,
+      );
       expect(count, 1);
       expect(await readString(childFile(dst!, 'file')), 'test');
     });
@@ -168,10 +177,11 @@ void defineTests(FileSystemTestContext ctx) {
       final count = await deployEntity(config, entityConfig);
       expect(count, 1);
       expect(
-          await fs
-              .file(fs.path.join(top.path, 'deploy', 'dir', 'data'))
-              .readAsString(),
-          'test');
+        await fs
+            .file(fs.path.join(top.path, 'deploy', 'dir', 'data'))
+            .readAsString(),
+        'test',
+      );
     });
 
     test('simple entity_rename', () async {
@@ -186,15 +196,15 @@ void defineTests(FileSystemTestContext ctx) {
       final count = await deployEntity(config, entityConfig);
       expect(count, 1);
       expect(
-          await fs
-              .file(fs.path.join(top.path, 'deploy', 'dir', 'data'))
-              .exists(),
-          isFalse);
+        await fs.file(fs.path.join(top.path, 'deploy', 'dir', 'data')).exists(),
+        isFalse,
+      );
       expect(
-          await fs
-              .file(fs.path.join(top.path, 'deploy', 'dir', 'data2'))
-              .readAsString(),
-          'test');
+        await fs
+            .file(fs.path.join(top.path, 'deploy', 'dir', 'data2'))
+            .readAsString(),
+        'test',
+      );
     });
 
     test('empty_config', () async {
@@ -202,7 +212,7 @@ void defineTests(FileSystemTestContext ctx) {
       final dir = fs.directory(fs.path.join(top.path, 'dir'));
       await dir.create();
       final config = Config({}, src: dir);
-//              config.src = dir;
+      //              config.src = dir;
       // file
       final file = fs.file(fs.path.join(dir.path, 'file.txt'));
       await file.writeAsString('test', flush: true);
@@ -213,10 +223,11 @@ void defineTests(FileSystemTestContext ctx) {
       final count = await deployConfig(config);
       expect(count, 1);
       expect(
-          await fs
-              .file(fs.path.join(top.path, 'deploy', 'dir', 'file.txt'))
-              .readAsString(),
-          'test');
+        await fs
+            .file(fs.path.join(top.path, 'deploy', 'dir', 'file.txt'))
+            .readAsString(),
+        'test',
+      );
     });
 
     test('with src and dst config', () async {
@@ -225,14 +236,16 @@ void defineTests(FileSystemTestContext ctx) {
       await dir.create();
       final dst = fs.directory(fs.path.join(top.path, 'new_dir'));
       final config = Config({}, src: dir, dst: dst);
-//              config.src = dir;
+      //              config.src = dir;
       // file
       final file = fs.file(fs.path.join(dir.path, 'file.txt'));
       await file.writeAsString('test', flush: true);
       final count = await deployConfig(config);
       expect(count, 1);
-      expect(await fs.file(fs.path.join(dst.path, 'file.txt')).readAsString(),
-          'test');
+      expect(
+        await fs.file(fs.path.join(dst.path, 'file.txt')).readAsString(),
+        'test',
+      );
     });
 
     group('impl', () {
@@ -242,15 +255,17 @@ void defineTests(FileSystemTestContext ctx) {
           fail('should fail');
         } on ArgumentError catch (_) {}
 
-        var src =
-            getDeploySrc(yaml: fs.file(fs.path.join('yaml_dir', 'toc.yaml')));
+        var src = getDeploySrc(
+          yaml: fs.file(fs.path.join('yaml_dir', 'toc.yaml')),
+        );
 
         expect(fs.path.isAbsolute(src.path), isTrue);
         expect(src.path, endsWith('yaml_dir'));
 
         src = getDeploySrc(
-            yaml: fs.file(fs.path.join('yaml_dir', 'toc.yaml')),
-            src: fs.directory('src'));
+          yaml: fs.file(fs.path.join('yaml_dir', 'toc.yaml')),
+          src: fs.directory('src'),
+        );
 
         expect(fs.path.isAbsolute(src.path), isTrue);
         expect(src.path, endsWith('src'));

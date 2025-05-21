@@ -26,8 +26,9 @@ void main() {
   group('fsdeploy', () {
     test('version', () async {
       final result = await runCmd(DartCmd([dirdeployDartScript, '--version']));
-      final parts =
-          LineSplitter.split(result.stdout as String).first.split(' ');
+      final parts = LineSplitter.split(
+        result.stdout as String,
+      ).first.split(' ');
       expect(parts.first, 'fsdeploy');
       expect(Version.parse(parts.last), version);
     });
@@ -45,7 +46,8 @@ void main() {
       final dst = fs.directory(join(top.path, 'dst'));
 
       await runCmd(
-          DartCmd([dirdeployDartScript, deployYamlFile.path, dst.path]));
+        DartCmd([dirdeployDartScript, deployYamlFile.path, dst.path]),
+      );
       //await runCmd(DartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //print(processResultToDebugString(result));
     });
@@ -70,8 +72,9 @@ void main() {
 
       final dst = fs.directory(join(top.path, 'dst'));
 
-      await runCmd(DartCmd(
-          [dirdeployDartScript, deployYamlFile.path, dir.path, dst.path]));
+      await runCmd(
+        DartCmd([dirdeployDartScript, deployYamlFile.path, dir.path, dst.path]),
+      );
       //await runCmd(DartCmd([dirdeployDartScript, '--dir', dir.path, dst.path]));
       //print(processResultToDebugString(result));
       expect(await fs.file(join(dst.path, 'file2')).readAsString(), 'test');
@@ -98,8 +101,10 @@ void main() {
 
       // 2020-01-20 used to be link
       //if (fs.supportsFileLink) {
-      expect(await fs.type(filePath, followLinks: false),
-          FileSystemEntityType.file);
+      expect(
+        await fs.type(filePath, followLinks: false),
+        FileSystemEntityType.file,
+      );
       //}
     });
   });

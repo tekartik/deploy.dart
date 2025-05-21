@@ -20,12 +20,13 @@ class FsDeployOptions {
 ///
 /// [settings] can be set (files and exclude keys)
 ///
-Future<int> fsDeploy(
-    {FsDeployOptions? options,
-    Map? settings,
-    File? yaml,
-    Directory? src,
-    Directory? dst}) async {
+Future<int> fsDeploy({
+  FsDeployOptions? options,
+  Map? settings,
+  File? yaml,
+  Directory? src,
+  Directory? dst,
+}) async {
   if (settings == null) {
     if (yaml != null) {
       final content = await yaml.readAsString();
@@ -46,8 +47,11 @@ Future<int> fsDeploy(
 ///
 /// List source files
 ///
-Future<List<File>> fsDeployListFiles(
-    {Map? settings, File? yaml, Directory? src}) async {
+Future<List<File>> fsDeployListFiles({
+  Map? settings,
+  File? yaml,
+  Directory? src,
+}) async {
   if (settings == null) {
     if (yaml != null) {
       final content = await yaml.readAsString();
@@ -95,8 +99,9 @@ abstract class Config {
       _src = src;
       var fs = _src!.fs;
       final dstBasename = fs.path.basename(src.path);
-      _dst = _src!.fs
-          .link(fs.path.join(fs.path.dirname(src.path), 'deploy', dstBasename));
+      _dst = _src!.fs.link(
+        fs.path.join(fs.path.dirname(src.path), 'deploy', dstBasename),
+      );
     }
   }
 
@@ -107,29 +112,31 @@ abstract class Config {
     }
   }
 
-//  Future _handleYaml(String dir, String yamlFilePath) {
-//    return new File(yamlFilePath).readAsString().then((content) {
-//
-//      var doc = loadYaml(content);
-//      if (doc is YamlMap) {
-//        return _deploy(doc, relative(dir, from: srcDir)).then((_) {
-//          return 1;
-//        });
-//      }
-//      return 0;
-//    });
-//  }
-//
-//
-//  Future deploy() {
-//
-//  }
+  //  Future _handleYaml(String dir, String yamlFilePath) {
+  //    return new File(yamlFilePath).readAsString().then((content) {
+  //
+  //      var doc = loadYaml(content);
+  //      if (doc is YamlMap) {
+  //        return _deploy(doc, relative(dir, from: srcDir)).then((_) {
+  //          return 1;
+  //        });
+  //      }
+  //      return 0;
+  //    });
+  //  }
+  //
+  //
+  //  Future deploy() {
+  //
+  //  }
 
   Config.impl();
 
-  factory Config(Map? settings,
-          {FileSystemEntity? src, FileSystemEntity? dst}) =>
-      ConfigImpl(settings, src: src, dst: dst);
+  factory Config(
+    Map? settings, {
+    FileSystemEntity? src,
+    FileSystemEntity? dst,
+  }) => ConfigImpl(settings, src: src, dst: dst);
 
   List<EntityConfig> get entities;
 
@@ -214,7 +221,10 @@ Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
   final topCopy = TopCopy(fsTopEntity(config.src!), fsTopEntity(config.dst!));
   //ChildCopy child = new ChildCopy()
   return await topCopy.runChild(
-      null, basename(entityConfig.src), basename(entityConfig.dst!));
+    null,
+    basename(entityConfig.src),
+    basename(entityConfig.dst!),
+  );
   /*  return await copyFileSystemEntity(
       config.src.fs.newLink(src), config.src.fs.newLink(dst));
       */
@@ -236,14 +246,16 @@ Future<List<File>> deployConfigListFiles(Config config) async {
   }
 
   final options = CopyOptions(
-      recursive: true,
-      checkSizeAndModifiedDate: true,
-      tryToLinkFile: true,
-      exclude: config.exclude,
-      include: include);
+    recursive: true,
+    checkSizeAndModifiedDate: true,
+    tryToLinkFile: true,
+    exclude: config.exclude,
+    include: include,
+  );
 
   files.addAll(
-      await copyDirectoryListFiles(config.src as Directory, options: options));
+    await copyDirectoryListFiles(config.src as Directory, options: options),
+  );
 
   return files;
 }
@@ -258,6 +270,7 @@ class FsDeployStat {
 }
 
 Future<int> deployConfig(Config config) async {
-  return await FsDeployImpl(FsDeployOptions()..noSymLink = true)
-      .deployConfig(config);
+  return await FsDeployImpl(
+    FsDeployOptions()..noSymLink = true,
+  ).deployConfig(config);
 }

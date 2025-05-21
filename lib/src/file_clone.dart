@@ -101,21 +101,24 @@ Future<int> _link(String target, String link) async {
     }
   }
 
-  return await ioLink.create(target).catchError((e) {
-    final parent = Directory(dirname(link));
-    if (!parent.existsSync()) {
-      try {
-        parent.createSync(recursive: true);
-      } catch (e) {
-        // ignore the error
-      }
-    } else {
-      // ignore the error and try again
-      // print('linkDir failed($e) - target: $target, existingLink: $existingLink');
-      // throw e;
-    }
-    return ioLink.create(target);
-  }).then((_) => 1);
+  return await ioLink
+      .create(target)
+      .catchError((e) {
+        final parent = Directory(dirname(link));
+        if (!parent.existsSync()) {
+          try {
+            parent.createSync(recursive: true);
+          } catch (e) {
+            // ignore the error
+          }
+        } else {
+          // ignore the error and try again
+          // print('linkDir failed($e) - target: $target, existingLink: $existingLink');
+          // throw e;
+        }
+        return ioLink.create(target);
+      })
+      .then((_) => 1);
 }
 
 /// on windows
@@ -129,12 +132,17 @@ Future<int> _linkOrCopyFileIfNewer(String input, String output) {
 }
 
 /// create the dirs but copy or link the files
-Future<int> _linkOrCopyFilesInDirIfNewer(String input, String output,
-    {bool recursive = true, List<String>? but}) async {
+Future<int> _linkOrCopyFilesInDirIfNewer(
+  String input,
+  String output, {
+  bool recursive = true,
+  List<String>? but,
+}) async {
   var futures = <Future<int>>[];
 
-  final entities =
-      Directory(input).listSync(recursive: false, followLinks: true);
+  final entities = Directory(
+    input,
+  ).listSync(recursive: false, followLinks: true);
   Directory(output).createSync(recursive: true);
   for (var entity in entities) {
     var ignore = false;
@@ -147,15 +155,17 @@ Future<int> _linkOrCopyFilesInDirIfNewer(String input, String output,
     if (!ignore) {
       if (FileSystemEntity.isFileSync(entity.path)) {
         final file = relative(entity.path, from: input);
-        futures
-            .add(_linkOrCopyFileIfNewer(join(input, file), join(output, file)));
+        futures.add(
+          _linkOrCopyFileIfNewer(join(input, file), join(output, file)),
+        );
       } else if (FileSystemEntity.isDirectorySync(entity.path)) {
         if (recursive) {
           final dir = relative(entity.path, from: input);
           final outputDir = join(output, dir);
 
-          futures
-              .add(_linkOrCopyFilesInDirIfNewer(join(input, dir), outputDir));
+          futures.add(
+            _linkOrCopyFilesInDirIfNewer(join(input, dir), outputDir),
+          );
         }
       }
     }

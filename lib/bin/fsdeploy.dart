@@ -217,8 +217,9 @@ Future main(List<String> arguments) async {
 
   // Regular dart build
   if (argResults.rest.length < 2) {
-    final dir =
-        argResults.rest.isEmpty ? Directory.current.path : argResults.rest[0];
+    final dir = argResults.rest.isEmpty
+        ? Directory.current.path
+        : argResults.rest[0];
 
     // try root
     srcDir = dir;

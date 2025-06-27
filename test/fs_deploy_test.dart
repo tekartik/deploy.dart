@@ -135,10 +135,9 @@ void defineTests(FileSystemTestContext ctx) {
     test('simple entity', () async {
       await prepare();
       await writeString(childFile(src!, 'file'), 'test');
-      final config =
-          Config({})
-            ..src = src
-            ..dst = dst;
+      final config = Config({})
+        ..src = src
+        ..dst = dst;
       final count = await deployConfigEntity(config, 'file');
       expect(count, 1);
       expect(await readString(childFile(dst!, 'file')), 'test');
@@ -148,10 +147,9 @@ void defineTests(FileSystemTestContext ctx) {
       await prepare();
       final fileChild = childFile(src!, 'file');
       await writeString(fileChild, 'test');
-      final config =
-          Config({})
-            ..src = src
-            ..dst = dst;
+      final config = Config({})
+        ..src = src
+        ..dst = dst;
       final count = await deployConfigEntity(config, 'file');
       expect(count, 1);
       if (fs.supportsFileLink) {

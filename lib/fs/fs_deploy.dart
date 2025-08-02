@@ -4,6 +4,7 @@ import 'package:fs_shim/fs.dart';
 import 'package:fs_shim/utils/copy.dart';
 import 'package:path/path.dart';
 import 'package:tekartik_common_utils/common_utils_import.dart';
+import 'package:tekartik_common_utils/log_utils.dart';
 import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
 import 'package:yaml/yaml.dart';
 

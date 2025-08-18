@@ -4,7 +4,7 @@ description: File deployment helper
 homepage: https://github.com/tekartik/deploy.dart
 publish_to: none
 environment:
-  sdk: ^3.8.0
+  sdk: ^3.9.0
 dependencies:
   tekaly_file_download_web:
     git:

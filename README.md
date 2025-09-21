@@ -8,7 +8,6 @@ File deployment helper (file system, google storage)
 tekartik_deploy:
     git:
       url: https://github.com/tekartik/deploy.dart
-      ref: dart3a
     version: ">=0.5.0"
 ````
 

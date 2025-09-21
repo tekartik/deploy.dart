@@ -6,11 +6,7 @@ publish_to: none
 environment:
   sdk: ^3.9.0
 dependencies:
-  tekaly_file_download_web:
-    git:
-      url: https://github.com/tekartikprj/tekaly
-      path: packages/file_download_web
-      ref: dart3a
+
   args: ">=2.6.0"
   path: ">=1.9.0"
   pub_semver: ">=2.1.4"
@@ -20,12 +16,14 @@ dependencies:
   tekartik_io_utils:
     git:
       url: https://github.com/tekartik/io_utils.dart
-      ref: dart3a
     version: '>=0.5.2'
   tekartik_common_utils:
     git:
       url: https://github.com/tekartik/common_utils.dart
-      ref: dart3a
+  tekartik_app_media:
+    git:
+      url: https://github.com/tekartik/app_common_utils.dart
+      path: app_media
 dev_dependencies:
   test: ">=1.24.0"
   dev_build: ">=1.1.2"
@@ -33,17 +31,14 @@ dev_dependencies:
     git:
       url: https://github.com/tekartik/fs_shim.dart
       path: fs_test
-      ref: dart3a
     version: '>=0.1.0'
   tekartik_pub:
     git:
       url: https://github.com/tekartik/pub.dart
-      ref: dart3a
   tekartik_platform_io:
     git:
       url: https://github.com/tekartik/platform.dart
       path: platform_io
-      ref: dart3a
   build_runner: ">=2.4.13"
   build_test: '>=0.10.3+3'
 

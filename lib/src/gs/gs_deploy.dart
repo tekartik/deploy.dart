@@ -1,7 +1,7 @@
 import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
 
-import 'package:tekaly_file_download_web/mime_type.dart';
+import 'package:tekartik_app_media/mime_type.dart';
 
 /// Copy file to google storage, if dst file name is omitted, it uses
 /// the one from the source.

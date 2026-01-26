@@ -7,7 +7,9 @@ export 'package:fs_shim/fs.dart';
 export 'package:tekartik_fs_test/test_common.dart' show FileSystemTestContext;
 export 'package:test/test.dart';
 
-class FileSystemTestContextIo extends FileSystemTestContext {
+class FileSystemTestContextIo
+    with FileSystemTestContextMixin
+    implements FileSystemTestContext {
   @override
   final PlatformContext platform = platformContextIo;
   @override

@@ -8,14 +8,17 @@ import 'package:process_run/cmd_run.dart';
 import 'package:tekartik_deploy/src/gsutil.dart';
 import 'package:tekartik_io_utils/io_utils_import.dart';
 
+/// Argument for output.
 final argOut = 'out';
 
 @Deprecated('use gsUtilCmd')
+/// Get gsutil command.
 ProcessCmd gsutilCmd(List<String> args) => gsUtilCmd(args);
 
+/// Get gsutil command.
 ProcessCmd gsUtilCmd(List<String> args) => GsUtilCmd(gsUtilExecutable!, args);
 
-/// synchronize from src to dst (no delete)
+/// Synchronize from src to dst (no delete).
 ProcessCmd gsutilRsyncCmd(
   String src,
   String dst, {
@@ -53,6 +56,7 @@ ProcessCmd gsutilRsyncCmd(
   return gsUtilCmd(args);
 }
 
+/// Copy a file or directory using gsutil.
 ProcessCmd gsutilCopyCmd(String src, String dst, {bool? recursive}) {
   final gsutilArgs = <String>[];
 
@@ -82,9 +86,13 @@ ProcessCmd gsutilCopyCmd(String src, String dst, {bool? recursive}) {
   return gsUtilCmd(gsutilArgs);
 }
 
+/// Gzip encoding folder name.
 const encodingGZipFolder = 'gzip';
+
+/// No encoding folder name.
 const encodingNoneFolder = 'none';
 
+/// Deploy to Google Cloud Storage.
 // gsutil setwebcfg -m index.html gs://gstest.tekartik.com
 //ProcessCmd gsDeployCmd(String src, String dst) => gsutilRsyncCmd(src, dst);
 ProcessCmd gsDeployCmd(
@@ -94,6 +102,7 @@ ProcessCmd gsDeployCmd(
   bool parallel = true,
 }) => gsutilRsyncCmd(src, dst, recursive: recursive, parallel: parallel);
 
+/// Get gsweb deploy commands.
 List<ProcessCmd> gsWebDeployCmds(String src, String dst) {
   final gzipCmd = gsutilRsyncCmd(
     join(src, encodingGZipFolder),
@@ -113,6 +122,7 @@ List<ProcessCmd> gsWebDeployCmds(String src, String dst) {
   return [gzipCmd, noneCmd];
 }
 
+/// Prepare for rsync.
 // Create a gzip and none folder in a gs folder
 Future gsWebPrepareForRsync(String src, String dst) async {
   final gzipFilter = <String>[
@@ -135,6 +145,7 @@ Future gsWebPrepareForRsync(String src, String dst) async {
   );
 }
 
+/// Gzip a directory in place.
 // gzip in place
 Future _gzip(String src) async {
   final futures = <Future>[];
@@ -155,6 +166,7 @@ Future _gzip(String src) async {
   await Future.wait(futures);
 }
 
+/// Deploy to Google Cloud Storage web.
 Future gsWebDeploy(String src, String gsDst) async {
   final name = basename(src);
   final srcParent = dirname(src);

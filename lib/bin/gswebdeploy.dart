@@ -9,11 +9,16 @@ import 'package:tekartik_deploy/gs_deploy.dart';
 import 'package:tekartik_deploy/src/bin_version.dart';
 import 'package:tekartik_deploy/src/gsutil.dart';
 
+/// Help flag.
 const String flagHelp = 'help';
 
+/// Get the current script name.
 String get currentScriptName => basenameWithoutExtension(Platform.script.path);
+
+/// Check flag.
 String checkFlag = 'check';
 
+/// Main entry point.
 Future main(List<String> arguments) async {
   //debugQuickLogging(Level.FINE);
 
@@ -35,7 +40,7 @@ Future main(List<String> arguments) async {
   void printUsage() {
     stdout.writeln('Deploy from source (local) to remote destination (gs://');
     stdout.writeln('');
-    print('  $currentScriptName /my/folder gs://my.bucket/my_folder');
+    stdout.writeln('  $currentScriptName /my/folder gs://my.bucket/my_folder');
     stdout.writeln('');
 
     stdout.writeln(parser.usage);

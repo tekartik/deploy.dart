@@ -56,6 +56,7 @@ Future<int> _copyFileIfNewer(String input, String output) async {
   */
 }
 
+/// Empty or create a directory synchronously.
 Directory emptyOrCreateDirSync(String path) {
   final dir = Directory(path);
   if (dir.existsSync()) {
@@ -181,6 +182,9 @@ Future<int> _linkOrCopyFilesInDirIfNewer(
 }
 
 /// Helper to copy recursively a source to a destination
+/// Helper to copy recursively a source to a destination.
+///
+/// Returns the number of files copied.
 Future<int> cloneFiles(String src, String dst) async {
   // ignore: avoid_slow_async_io
   return await FileSystemEntity.isDirectory(src).then((bool isDir) {

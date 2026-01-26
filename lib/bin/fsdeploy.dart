@@ -8,7 +8,10 @@ import 'package:tekartik_deploy/src/bin_version.dart';
 import 'package:tekartik_deploy/src/file_utils.dart';
 import 'package:yaml/yaml.dart';
 
+/// Help flag.
 const String flagHelp = 'help';
+
+/// Deploy a file or directory.
 // ignore_for_file: avoid_slow_async_io
 
 Future _deployEntity(String src, String dst) async {
@@ -27,8 +30,10 @@ Future _deployEntity(String src, String dst) async {
   }
 }
 
+/// Get the current script name.
 String get currentScriptName => basenameWithoutExtension(Platform.script.path);
 
+/// Main entry point.
 Future main(List<String> arguments) async {
   //debugQuickLogging(Level.FINE);
 
@@ -87,9 +92,9 @@ Future main(List<String> arguments) async {
   String? srcDir;
   String? dstDir;
 
-  Future deployWithSettings(Map settings, String dir) {
-    print(dir);
-    print(settings);
+  /// Deploy with settings.
+  Future deployWithSettings(Map settings, String dir, {bool? verbose}) {
+    stdout.writeln('Deploying $dir with $settings');
 
     // first delete destination
     final buildDir = normalize(join(srcDir!, dir));
@@ -99,7 +104,7 @@ Future main(List<String> arguments) async {
     final futures = <Future>[];
     for (var fileOrDirRaw in settings['files'] as List) {
       var fileOrDir = fileOrDirRaw.toString();
-      print(fileOrDir);
+      stdout.writeln(fileOrDir);
       futures.add(
         _deployEntity(join(buildDir, fileOrDir), join(deployDir, fileOrDir)),
       );
@@ -121,6 +126,7 @@ Future main(List<String> arguments) async {
   }
   */
 
+  /// Handle directory.
   Future<int> handleDir(String dir) async {
     // this is a directoru
     final deployYaml = 'deploy.yaml';
@@ -172,6 +178,7 @@ Future main(List<String> arguments) async {
   }
 
   // new implementation
+  /// New deploy.
   Future newDeploy(Map? settings) async {
     final config = Config(
       settings,
@@ -227,7 +234,7 @@ Future main(List<String> arguments) async {
     final count = await handleDir(srcDir);
 
     if (count == 0) {
-      print('no deploy.yaml file found in $srcDir');
+      stdout.writeln('no deploy.yaml file found in $srcDir');
       srcDir = join(dir, 'build');
       dstDir = join(srcDir, 'deploy');
 
@@ -239,7 +246,7 @@ Future main(List<String> arguments) async {
           // what is runned when using fsdeploy in a folder
           count = await handleDir(dir);
           if (count == 0) {
-            print('no deploy.yaml file found in $srcDir nor $dir');
+            stdout.writeln('no deploy.yaml file found in $srcDir nor $dir');
           }
         }
       }
@@ -265,7 +272,7 @@ Future main(List<String> arguments) async {
 
     await handleDir(srcDir).then((count) {
       if (count == 0) {
-        print('no deploy.yaml file found in $srcDir');
+        stdout.writeln('no deploy.yaml file found in $srcDir');
       }
     });
   }

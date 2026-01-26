@@ -11,10 +11,13 @@ import 'package:tekartik_deploy/src/bin_version.dart';
 //import 'package:tekartik_core/log_utils.dart';
 //import 'package:tekartik_deploy/deploy_io.dart' hide Config, deployConfig;
 
+/// Help flag.
 const String flagHelp = 'help';
 
+/// Get the current script name.
 String get currentScriptName => basenameWithoutExtension(Platform.script.path);
 
+/// Main entry point.
 Future main(List<String> arguments) async {
   //debugQuickLogging(Level.FINE);
 

@@ -8,16 +8,19 @@ import 'package:tekartik_common_utils/log_utils.dart';
 import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
 import 'package:yaml/yaml.dart';
 
+/// Logger for tekartik.deploy.
 Logger _log = Logger('tekartik.deploy');
 
+/// Options to prevent symlink creation.
 FsDeployOptions fsDeployOptionsNoSymLink = FsDeployOptions()..noSymLink = true;
 
+/// Options for fs deploy.
 class FsDeployOptions {
+  /// Do not use symlinks.
   bool? noSymLink;
 }
 
-///
-/// Deploy between 2 folders with an option config file
+/// Deploy between 2 folders with an option config file.
 ///
 /// [settings] can be set (files and exclude keys)
 ///
@@ -45,8 +48,7 @@ Future<int> fsDeploy({
   return await FsDeployImpl(options).deployConfig(config);
 }
 
-///
-/// List source files
+/// List source files.
 ///
 Future<List<File>> fsDeployListFiles({
   Map? settings,
@@ -69,11 +71,15 @@ Future<List<File>> fsDeployListFiles({
   return await deployConfigListFiles(config);
 }
 
+/// Config setting.
 class ConfigSetting {
+  /// Source path.
   String? src;
 }
 
+/// Config transform settings.
 class ConfigTransformSettings {
+  /// Destination path.
   String? dst;
 }
 
@@ -91,10 +97,13 @@ abstract class Config {
   FileSystemEntity? _src;
   FileSystemEntity? _dst;
 
+  /// Destination entity.
   FileSystemEntity? get dst => _dst;
 
+  /// Source entity.
   FileSystemEntity? get src => _src;
 
+  /// Set the source entity.
   set src(FileSystemEntity? src) {
     if (src != null) {
       _src = src;
@@ -106,6 +115,7 @@ abstract class Config {
     }
   }
 
+  /// Set the destination entity.
   set dst(FileSystemEntity? dst) {
     // don't replace with null
     if (dst != null) {
@@ -131,16 +141,20 @@ abstract class Config {
   //
   //  }
 
+  /// Config implementation.
   Config.impl();
 
+  /// Config factory.
   factory Config(
     Map? settings, {
     FileSystemEntity? src,
     FileSystemEntity? dst,
   }) => ConfigImpl(settings, src: src, dst: dst);
 
+  /// Entities to deploy.
   List<EntityConfig> get entities;
 
+  /// Exclude patterns.
   List<String>? get exclude;
 
   @override
@@ -150,29 +164,24 @@ abstract class Config {
   }
 }
 
-/*
-///
-/// Simple IO config
-///
-class FsDeployConfig {
-  final Directory src;
-  final List<String> includes;
-
-  FsDeployConfig({@required this.src, this.includes});
-}
-*/
+/// Entity config.
 class EntityConfig {
   final String _path;
   String? _dst;
 
+  /// Source path.
   String get src => _path;
 
+  /// Destination path.
   String? get dst => (_dst == null) ? src : _dst;
 
+  /// Entity config with destination.
   EntityConfig.withDst(this._path, this._dst);
 
+  /// Entity config.
   EntityConfig(this._path);
 
+  /// True if a destination is defined.
   bool get hasDst => _dst != null;
 
   @override
@@ -202,12 +211,14 @@ class EntityConfig {
   }
 }
 
+/// Deploy config entity.
 Future<int> deployConfigEntity(Config config, String sub) async {
   final topCopy = TopCopy(fsTopEntity(config.src!), fsTopEntity(config.dst!));
   final childCopy = ChildCopy(topCopy, null, sub);
   return await childCopy.run();
 }
 
+/// Deploy entity.
 Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
   //String src = join(config.src.path, entityConfig.src);
   //String dst = join(config.dst.path, entityConfig.dst);
@@ -231,6 +242,7 @@ Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
       */
 }
 
+/// Deploy config list files.
 Future<List<File>> deployConfigListFiles(Config config) async {
   final files = <File>[];
 
@@ -261,15 +273,22 @@ Future<List<File>> deployConfigListFiles(Config config) async {
   return files;
 }
 
+/// FsDeploy stat entity.
 class FsDeployStatEntity {
+  /// Source path.
   String? src;
+
+  /// Destination path.
   String? dst;
 }
 
+/// FsDeploy stat.
 class FsDeployStat {
+  /// Entities.
   List<FsDeployStatEntity>? entities;
 }
 
+/// Deploy config.
 Future<int> deployConfig(Config config) async {
   return await FsDeployImpl(
     FsDeployOptions()..noSymLink = true,

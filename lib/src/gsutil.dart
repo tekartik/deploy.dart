@@ -4,8 +4,10 @@ import 'package:path/path.dart';
 import 'package:process_run/process_run.dart';
 import 'package:tekartik_io_utils/io_utils_import.dart';
 
+/// Gsutil executable path.
 String? _gsUtilExecutable;
 
+/// Find gsutil executable path.
 void findGsUtilSync() {
   if (_gsUtilExecutable == null) {
     var gsUtilExecutable = whichSync('gsutil');
@@ -27,13 +29,16 @@ void findGsUtilSync() {
   }
 }
 
+/// GsUtil command.
 class GsUtilCmd extends ProcessCmd {
+  /// GsUtil command.
   GsUtilCmd(super.executable, super.arguments);
 
   @override
   String toString() => executableArgumentsToString('gsutil', arguments);
 }
 
+/// Get gsutil executable path.
 String? get gsUtilExecutable {
   findGsUtilSync();
   return _gsUtilExecutable;

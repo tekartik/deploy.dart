@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 
+/// Copy a file.
 Future copyFile(String input, String output) {
   var inStream = File(input).openRead().cast<List<int>>();
   IOSink outSink;
@@ -21,6 +22,8 @@ Future copyFile(String input, String output) {
   });
 }
 
+/// Copy files if newer.
+///
 /// Parameter are directory path
 Future<int> copyFilesIfNewer(
   String input,
@@ -55,6 +58,7 @@ Future<int> copyFilesIfNewer(
   return completer.future;
 }
 
+/// Copy file if newer.
 Future<int> copyFileIfNewer(String input, String output) async {
   final inputStat = await FileStat.stat(input);
   final outputStat = await FileStat.stat(output);
@@ -91,10 +95,12 @@ Future<int> copyFileIfNewer(String input, String output) async {
   */
 }
 
+/// Check if a directory is a symlink.
 bool dirIsSymlink(Directory dir) {
   return FileSystemEntity.isLinkSync(dir.path);
 }
 
+/// Write string content to a file synchronously.
 void writeStringContentSync(String path, String content) {
   final file = File(path);
   try {
@@ -108,10 +114,12 @@ void writeStringContentSync(String path, String content) {
   }
 }
 
+/// Write bytes to a file.
 Future _writeBytes(File file, List<int> bytes) {
   return file.writeAsBytes(bytes);
 }
 
+/// Write bytes to a file, creating parent directories if needed.
 Future writeBytes(File file, List<int> bytes) {
   return _writeBytes(file, bytes).catchError((e) {
     final parent = file.parent;
@@ -122,6 +130,7 @@ Future writeBytes(File file, List<int> bytes) {
   });
 }
 
+/// Empty or create a directory synchronously.
 Directory emptyOrCreateDirSync(String path) {
   final dir = Directory(path);
   if (dir.existsSync()) {
@@ -131,6 +140,7 @@ Directory emptyOrCreateDirSync(String path) {
   return dir;
 }
 
+/// Get the size of a directory recursively.
 Future<int> dirSize(String path) async {
   var size = 0;
   final futures = <Future>[];
@@ -155,6 +165,8 @@ Future<int> dirSize(String path) async {
 
 /// link dir (work on all platforms)
 
+/// Link a file (work on all platforms except windows).
+///
 /// Not for windows
 Future<int> linkFile(String target, String link) {
   if (Platform.isWindows) {
@@ -163,6 +175,8 @@ Future<int> linkFile(String target, String link) {
   return _link(target, link);
 }
 
+/// Create a link.
+///
 /// link dir (work on all platforms)
 Future<int> _link(String target, String link) async {
   link = normalize(absolute(link));
@@ -209,6 +223,8 @@ Future<int> _link(String target, String link) async {
       .then((_) => 1);
 }
 
+/// Create a link to a directory.
+///
 /// link dir (work on all platforms)
 Future<int> linkDir(String target, String link) {
   // resolve target
@@ -216,12 +232,14 @@ Future<int> linkDir(String target, String link) {
     target = Link(target).targetSync();
   }
   if (!FileSystemEntity.isDirectorySync(target)) {
-    print('$target not a directory');
+    stderr.writeln('$target not a directory');
     return Future.value(0);
   }
   return _link(target, link);
 }
 
+/// Link or copy a file if newer.
+///
 /// on windows
 Future<int> linkOrCopyFileIfNewer(String input, String output) {
   //devPrint('cplnk $input -> $output');
@@ -232,6 +250,8 @@ Future<int> linkOrCopyFileIfNewer(String input, String output) {
   }
 }
 
+/// Link or copy files in a directory if newer.
+///
 /// create the dirs but copy or link the files
 Future<int> linkOrCopyFilesInDirIfNewer(
   String input,
@@ -279,6 +299,8 @@ Future<int> linkOrCopyFilesInDirIfNewer(
   });
 }
 
+/// Link or copy files recursively if newer.
+///
 /// Helper to copy recursively a source to a destination
 Future<int> linkOrCopyIfNewer(String src, String dst) async {
   // ignore: avoid_slow_async_io
@@ -299,6 +321,7 @@ Future<int> linkOrCopyIfNewer(String src, String dst) async {
 }
 
 /// Helper to copy recursively a source to a destination
+/// Deploy entities if newer.
 Future<int> deployEntitiesIfNewer(
   String srcDir,
   String dstDir,
@@ -316,6 +339,8 @@ Future<int> deployEntitiesIfNewer(
   });
 }
 
+/// Create a symlink.
+///
 /// obsolete
 Future<int> createSymlink(
   Directory targetDir,
@@ -330,7 +355,7 @@ Future<int> createSymlink(
   final link = join(linkDir.path, linkSubPath);
 
   if (FileSystemEntity.typeSync(target) == FileSystemEntityType.notFound) {
-    print('$target not found from ${Directory.current}');
+    stderr.writeln('$target not found from ${Directory.current}');
     return Future.value(0);
   }
 

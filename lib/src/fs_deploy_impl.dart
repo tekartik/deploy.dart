@@ -4,11 +4,21 @@ import 'package:tekartik_common_utils/common_utils_import.dart';
 
 import 'package:tekartik_deploy/fs/fs_deploy.dart';
 
+/// Log message.
+void _log(String message) {
+  // ignore: avoid_print
+  print('fs_deploy: $message');
+}
+
+/// FsDeploy implementation.
 class FsDeployImpl {
+  /// Options for fs deploy.
   FsDeployOptions? options;
 
+  /// FsDeploy implementation.
   FsDeployImpl(this.options);
 
+  /// Deploy a config.
   Future<int> deployConfig(Config config) async {
     try {
       final dst = config.dst!.fs.directory(config.dst!.path);
@@ -79,12 +89,13 @@ class FsDeployImpl {
       }
       return sum;
     } catch (e) {
-      print('deployConfig $e');
+      _log('deployConfig $e');
       rethrow;
     }
   }
 }
 
+/// Get deploy source directory.
 Directory getDeploySrc({File? yaml, Directory? src}) {
   // default src?
   if (src == null) {
@@ -96,19 +107,26 @@ Directory getDeploySrc({File? yaml, Directory? src}) {
   return src.absolute;
 }
 
+/// Config internal interface.
 abstract class ConfigInternal implements Config {
+  /// Entity configs.
   List<EntityConfig>? get entityConfigs;
 }
 
+/// Config mixin.
 mixin ConfigMixin implements ConfigInternal {
+  /// Settings.
   Map? settings;
   @override
+  /// Exclude patterns.
   List<String>? exclude = [];
   final _entities = <EntityConfig>[];
 
   @override
+  /// Entities.
   List<EntityConfig> get entities => _entities;
 
+  /// Initialize the config.
   void init({Map? settings, FileSystemEntity? src, FileSystemEntity? dst}) {
     this.src = src;
     this.dst = dst;
@@ -142,18 +160,24 @@ mixin ConfigMixin implements ConfigInternal {
   }
 }
 
+/// Config implementation.
 class ConfigImpl extends Config with ConfigMixin implements ConfigInternal {
+  /// Config implementation.
   ConfigImpl(Map? settings, {FileSystemEntity? src, FileSystemEntity? dst})
     : super.impl() {
     init(settings: settings, src: src, dst: dst);
   }
 
   @override
+  /// Entity configs.
   List<EntityConfig>? get entityConfigs => null;
 }
 
+/// FsDeploy config.
 class FsDeployConfig extends Config with ConfigMixin implements ConfigInternal {
   final List<EntityConfig>? _inputEntities;
+
+  /// FsDeploy config.
   FsDeployConfig({
     List<EntityConfig>? entities,
     FileSystemEntity? src,
@@ -164,5 +188,6 @@ class FsDeployConfig extends Config with ConfigMixin implements ConfigInternal {
   }
 
   @override
+  /// Entity configs.
   List<EntityConfig>? get entityConfigs => _inputEntities;
 }

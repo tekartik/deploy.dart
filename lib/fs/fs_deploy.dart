@@ -214,7 +214,9 @@ class EntityConfig {
 /// Deploy config entity.
 Future<int> deployConfigEntity(Config config, String sub) async {
   final topCopy = TopCopy(fsTopEntity(config.src!), fsTopEntity(config.dst!));
-  final childCopy = ChildCopy(topCopy, null, sub);
+
+  /// Try to symlink first
+  final childCopy = ChildCopy(topCopy, defaultCloneOptions, sub);
   return await childCopy.run();
 }
 
@@ -233,7 +235,8 @@ Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
   final topCopy = TopCopy(fsTopEntity(config.src!), fsTopEntity(config.dst!));
   //ChildCopy child = new ChildCopy()
   return await topCopy.runChild(
-    null,
+    /// Try to symlink first
+    defaultCloneOptions,
     basename(entityConfig.src),
     basename(entityConfig.dst!),
   );

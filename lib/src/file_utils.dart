@@ -143,7 +143,6 @@ Directory emptyOrCreateDirSync(String path) {
 /// Get the size of a directory recursively.
 Future<int> dirSize(String path) async {
   var size = 0;
-  final futures = <Future>[];
 
   await Directory(path).list(recursive: true, followLinks: true).listen((
     FileSystemEntity fse,
@@ -152,14 +151,11 @@ Future<int> dirSize(String path) async {
 
     // ignore: avoid_slow_async_io
     if (FileSystemEntity.isFileSync(fse.path)) {
-      futures.add(() async {
-        var stat = await fse.stat();
-        //devPrint('${stat.size} ${fse}');
-        size += stat.size;
-      }());
+      var stat = fse.statSync();
+      //devPrint('${stat.size} ${fse}');
+      size += stat.size;
     }
   }).asFuture<void>();
-  await Future.wait(futures);
   return size;
 }
 

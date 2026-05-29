@@ -166,7 +166,7 @@ Future<int> dirSize(String path) async {
 /// Not for windows
 Future<int> linkFile(String target, String link) {
   if (Platform.isWindows) {
-    throw 'not supported on windows';
+    throw UnsupportedError('not supported on windows');
   }
   return _link(target, link);
 }
@@ -309,7 +309,7 @@ Future<int> linkOrCopyIfNewer(String src, String dst) async {
         if (isFile) {
           return linkOrCopyFileIfNewer(src, dst);
         } else {
-          throw '$src entity not found';
+          throw StateError('$src entity not found');
         }
       });
     }

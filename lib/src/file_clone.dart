@@ -71,7 +71,7 @@ Directory emptyOrCreateDirSync(String path) {
 /// Not for windows
 Future<int> _linkFile(String target, String link) {
   if (Platform.isWindows) {
-    throw 'not supported on windows';
+    throw UnsupportedError('not supported on windows');
   }
   return _link(target, link);
 }
@@ -196,7 +196,7 @@ Future<int> cloneFiles(String src, String dst) async {
         if (isFile) {
           return _linkOrCopyFileIfNewer(src, dst);
         } else {
-          throw '$src entity not found';
+          throw StateError('$src entity not found');
         }
       });
     }

@@ -22,7 +22,7 @@ void findGsUtilSync() {
         stderr.writeln(
           'TEKARTIK_GOOGLE_CLOUD_SDK_DIR=/opt/apps/google-cloud-sdk',
         );
-        throw 'gsutil not found';
+        throw StateError('gsutil not found');
       }
     }
     _gsUtilExecutable = gsUtilExecutable;

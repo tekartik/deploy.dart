@@ -31,7 +31,7 @@ Future<FtpClient?> load() async {
       return FtpClient()..fromMap(map);
     }
   } catch (e) {
-    print('$e fail to load config at $path');
+    stderr.writeln('$e fail to load config at $path');
   }
   return null;
 }

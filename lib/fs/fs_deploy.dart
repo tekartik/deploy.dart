@@ -23,7 +23,6 @@ class FsDeployOptions {
 /// Deploy between 2 folders with an option config file.
 ///
 /// [settings] can be set (files and exclude keys)
-///
 Future<int> fsDeploy({
   FsDeployOptions? options,
   Map? settings,
@@ -49,7 +48,6 @@ Future<int> fsDeploy({
 }
 
 /// List source files.
-///
 Future<List<File>> fsDeployListFiles({
   Map? settings,
   File? yaml,
@@ -83,7 +81,6 @@ class ConfigTransformSettings {
   String? dst;
 }
 
-///
 /// Config format
 ///
 /// files:

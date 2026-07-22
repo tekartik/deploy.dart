@@ -1,11 +1,9 @@
 library;
 
 /*
-///
 /// Deploy between 2 folders with an option config file
 ///
 /// [settings] can be set (files and exclude keys)
-///
 Future aeDeployEmpty(String applicationId, String module) async {
   String baseUrl = 'package:tekartik_deploy/ae/empty_app/';
   Uri uri = Uri.parse(baseUrl);

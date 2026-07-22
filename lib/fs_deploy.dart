@@ -5,11 +5,9 @@ import 'fs/fs_deploy.dart' as fs;
 
 export 'fs/fs_deploy.dart' show FsDeployOptions, fsDeployOptionsNoSymLink;
 
-///
 /// Deploy between 2 folders with an option config file
 ///
 /// [settings] can be set (files and exclude keys)
-///
 Future<int> fsDeploy({
   fs.FsDeployOptions? options,
   Map? settings,
@@ -38,11 +36,9 @@ Future<int> fsDeploy({
   );
 }
 
-///
 /// Deploy list files
 ///
 /// [settings] can be set (files and exclude keys)
-///
 Future<List<File>> fsDeployListFiles({
   Map? settings,
   File? yaml,

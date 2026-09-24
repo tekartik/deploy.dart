@@ -1,0 +1,47 @@
+# New default (preferred over run_ci_action_dart.yml and
+# run_ci_action_dart_latest.yml): run ci as separate jobs (pub get, analyze,
+# format, test, build) for each os/sdk.
+name: Run CI workflow dart all
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'  # every sunday at midnight
+
+# One job per os/sdk (no matrix) so that each one is displayed as its own
+# group (pub get then analyze, format, test, build) in the workflow graph.
+jobs:
+  ubuntu_stable:
+    name: ubuntu stable
+    uses: tekartik/ci.dart/.github/workflows/run_ci_dart_jobs.yml@v1
+    with:
+      sdk: stable
+      runs-on: ubuntu-latest
+
+  ubuntu_beta:
+    name: ubuntu beta
+    uses: tekartik/ci.dart/.github/workflows/run_ci_dart_jobs.yml@v1
+    with:
+      sdk: beta
+      runs-on: ubuntu-latest
+
+  ubuntu_dev:
+    name: ubuntu dev
+    uses: tekartik/ci.dart/.github/workflows/run_ci_dart_jobs.yml@v1
+    with:
+      sdk: dev
+      runs-on: ubuntu-latest
+
+  windows_stable:
+    name: windows stable
+    uses: tekartik/ci.dart/.github/workflows/run_ci_dart_jobs.yml@v1
+    with:
+      sdk: stable
+      runs-on: windows-latest
+
+  macos_stable:
+    name: macos stable
+    uses: tekartik/ci.dart/.github/workflows/run_ci_dart_jobs.yml@v1
+    with:
+      sdk: stable
+      runs-on: macos-latest

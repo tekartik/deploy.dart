@@ -33,6 +33,10 @@ For dirdeploy
     files:
     - file_to_include
       file_to_include2: new_file_name
+    - main.dart.{js,mjs,wasm} # pattern (*, ?, {a,b}), must match at least one
+    optional:
+    - skipped_if_missing
+    - icons/
     exclude:
       file_or_dir_to exclude
 

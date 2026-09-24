@@ -51,6 +51,16 @@ in other libraries: see the `tekartik-deploy-cloud` skill.
     be a single-entry map `- src_name: dst_name` to rename. Directories are
     copied recursively. When `files` is absent or empty, the whole `src`
     directory is copied.
+  * `optional:` same format as `files:`, but an entry that does not exist in
+    `src` is skipped instead of failing the deploy (e.g. `main.dart.wasm`,
+    `flutter_service_worker.js`, `icons/` in a Flutter web build).
+  * Entries of `files:` and `optional:` can be patterns: `*` and `?` within a
+    path segment (`flutter*.js`, `icons/*.png`) and `{a,b}` alternatives
+    (`main.dart.{js,mjs,wasm}`). A pattern in `files:` must match at least one
+    file or directory (`StateError` otherwise), a pattern in `optional:` can
+    match nothing. As in a shell, wildcards do not match a leading `.`
+    (`.last_build_id` is not matched by `*`). A pattern cannot be renamed
+    (`ArgumentError`). Quote entries starting with `*` or `{` in yaml.
   * `exclude:` a list of globs applied to the copy
     (`fs_shim`'s `CopyOptions.exclude`), e.g. `- '*.map'`.
   * Beware: the map form (`files:` followed by `name:` entries) keeps the keys
@@ -80,6 +90,22 @@ in other libraries: see the `tekartik-deploy-cloud` skill.
   commented out and the executable does nothing useful. Ignore it.
 
 ## Examples
+
+### deploy.yaml for a Flutter web build (optional files)
+
+```yaml
+files:
+  - index.html
+  - main.dart.{js,mjs,wasm}   # whatever exists, at least one
+  - flutter*.js
+  - manifest.json
+  - version.json
+  - assets/
+optional:
+  - flutter_service_worker.js
+  - favicon.png
+  - icons/
+```
 
 ### deploy.yaml next to the build output
 
@@ -194,6 +220,8 @@ Future<void> main() async {
   destination.
 * Relying on the `files:` map form to rename files (values are ignored); use
   `- src: dst` list entries.
+* Putting a file that only some builds produce (wasm, service worker) in
+  `files:`: the deploy fails when it is missing, use `optional:`.
 * Uploading a deploy folder made of hard links without
   `fsDeployOptionsNoSymLink`.
 * Mixing the two libraries in one file: `fs_deploy.dart` and

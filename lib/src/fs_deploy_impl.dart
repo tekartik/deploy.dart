@@ -1,5 +1,7 @@
 import 'package:fs_shim/fs.dart';
 import 'package:fs_shim/utils/copy.dart';
+import 'package:fs_shim/utils/glob.dart';
+import 'package:path/path.dart';
 import 'package:tekartik_common_utils/common_utils_import.dart';
 
 import 'package:tekartik_deploy/fs/fs_deploy.dart';
@@ -62,7 +64,10 @@ class FsDeployImpl {
         sum += await topCopy.runChild(null, entityConfig.src, entityConfig.dst);
       }
        */
-        for (final entityConfig in config.entities) {
+        for (final entityConfig in await resolveDeployEntities(
+          src,
+          config.entities,
+        )) {
           var srcPath = src.fs.path.join(src.path, entityConfig.src);
           var dstPath = dst.fs.path.join(dst.path, entityConfig.dst);
           var isDir = await src.fs.isDirectory(srcPath);
@@ -93,6 +98,140 @@ class FsDeployImpl {
       rethrow;
     }
   }
+}
+
+/// True if [path] is a pattern (contains `*`, `?` or `{`).
+bool deployPathIsPattern(String path) => path.contains(_patternRegExp);
+
+final _patternRegExp = RegExp(r'[*?{]');
+
+/// Expand `{a,b}` alternatives, i.e. `main.dart.{js,wasm}` gives
+/// `main.dart.js` and `main.dart.wasm`. Nested and multiple groups are
+/// supported, unbalanced braces are kept as is.
+List<String> deployPathExpandBraces(String pattern) {
+  var start = pattern.indexOf('{');
+  if (start < 0) {
+    return [pattern];
+  }
+  var depth = 0;
+  var alternatives = <String>[];
+  var alternativeStart = start + 1;
+  for (var i = start + 1; i < pattern.length; i++) {
+    var chr = pattern[i];
+    if (chr == '{') {
+      depth++;
+    } else if (chr == '}') {
+      if (depth == 0) {
+        alternatives.add(pattern.substring(alternativeStart, i));
+        var prefix = pattern.substring(0, start);
+        var suffix = pattern.substring(i + 1);
+        return {
+          for (var alternative in alternatives)
+            ...deployPathExpandBraces('$prefix$alternative$suffix'),
+        }.toList();
+      }
+      depth--;
+    } else if (chr == ',' && depth == 0) {
+      alternatives.add(pattern.substring(alternativeStart, i));
+      alternativeStart = i + 1;
+    }
+  }
+  return [pattern];
+}
+
+/// Resolve [entities] against [src]: patterns are replaced by the matching
+/// entities and missing optional entities are dropped.
+///
+/// Required plain entities are kept as is (copying them fails if missing),
+/// a required pattern must match at least one entity.
+Future<List<EntityConfig>> resolveDeployEntities(
+  Directory src,
+  List<EntityConfig> entities,
+) async {
+  var resolved = <EntityConfig>[];
+  var keys = <String>{};
+  void add(EntityConfig entity) {
+    if (keys.add('${entity.src}\n${entity.dst}')) {
+      resolved.add(entity);
+    }
+  }
+
+  for (var entity in entities) {
+    if (entity.isPattern) {
+      if (entity.hasDst) {
+        throw ArgumentError(
+          'Pattern ${entity.src} cannot be renamed to ${entity.dst}',
+        );
+      }
+      var paths = <String>[];
+      for (var pattern in deployPathExpandBraces(entity.src)) {
+        paths.addAll(await _patternPaths(src, pattern));
+      }
+      if (paths.isEmpty) {
+        if (!entity.optional) {
+          throw StateError('No match for ${entity.src} in ${src.path}');
+        }
+        _log('skipping ${entity.src}, no match');
+      }
+      for (var path in paths) {
+        add(EntityConfig(path));
+      }
+    } else if (entity.optional) {
+      if (await _exists(src, entity.src)) {
+        add(entity);
+      } else {
+        _log('skipping ${entity.src}, not found');
+      }
+    } else {
+      add(entity);
+    }
+  }
+  return resolved;
+}
+
+String _join(Directory dir, String relativePath) =>
+    dir.fs.path.joinAll([dir.path, ...posix.split(relativePath)]);
+
+Future<bool> _exists(Directory dir, String relativePath) async =>
+    await dir.fs.type(_join(dir, relativePath)) !=
+    FileSystemEntityType.notFound;
+
+/// Existing paths (relative to [src], posix) matching [pattern] (braces
+/// already expanded), `*` and `?` only apply within a path segment.
+Future<List<String>> _patternPaths(Directory src, String pattern) async {
+  var fs = src.fs;
+  var paths = <String>[''];
+  for (var segment in posix.split(pattern)) {
+    var matches = <String>[];
+    for (var parent in paths) {
+      if (!deployPathIsPattern(segment)) {
+        matches.add(posix.join(parent, segment));
+        continue;
+      }
+      var dirPath = _join(src, parent);
+      if (!await fs.isDirectory(dirPath)) {
+        continue;
+      }
+      var names = [
+        await for (var entity in fs.directory(dirPath).list())
+          fs.path.basename(entity.path),
+      ]..sort();
+      for (var name in names) {
+        // Like shells, wildcards do not match a leading dot.
+        if (name.startsWith('.') && !segment.startsWith('.')) {
+          continue;
+        }
+        if (Glob.matchPart(segment, name)) {
+          matches.add(posix.join(parent, name));
+        }
+      }
+    }
+    paths = matches;
+  }
+  return [
+    for (var path in paths)
+      if (await _exists(src, path)) path,
+  ];
 }
 
 /// Get deploy source directory.
@@ -134,25 +273,30 @@ mixin ConfigMixin implements ConfigInternal {
     if (entityConfigs != null) {
       _entities.addAll(entityConfigs!);
     } else if (settings != null) {
-      var files = settings['files'];
-      if (files is List) {
-        for (var fileOrDir in files) {
-          if (fileOrDir is String) {
-            _entities.add(EntityConfig(fileOrDir));
-          } else if (fileOrDir is Map) {
-            // - fileName: dstFileName
-            var src = fileOrDir.keys.first as String;
-            var dst = fileOrDir[src] as String?;
+      void addEntities(Object? files, {required bool optional}) {
+        if (files is List) {
+          for (var fileOrDir in files) {
+            if (fileOrDir is String) {
+              _entities.add(EntityConfig(fileOrDir, optional: optional));
+            } else if (fileOrDir is Map) {
+              // - fileName: dstFileName
+              var src = fileOrDir.keys.first as String;
+              var dst = fileOrDir[src] as String?;
 
-            _entities.add(EntityConfig.withDst(src, dst));
+              _entities.add(EntityConfig.withDst(src, dst, optional: optional));
+            }
           }
+        } else if (files is Map) {
+          files.forEach((var key, var value) {
+            //devPrint('$key => $value');
+            _entities.add(EntityConfig(key as String, optional: optional));
+          });
         }
-      } else if (files is Map) {
-        files.forEach((var key, var value) {
-          //devPrint('$key => $value');
-          _entities.add(EntityConfig(key as String));
-        });
       }
+
+      addEntities(settings['files'], optional: false);
+      // skipped when missing
+      addEntities(settings['optional'], optional: true);
 
       // exclude
       exclude = (settings['exclude'] as List?)?.cast<String>();

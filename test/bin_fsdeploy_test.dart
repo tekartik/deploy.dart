@@ -81,6 +81,47 @@ void main() {
       expect(await fs.file(join(dst.path, 'file')).exists(), isFalse);
     });
 
+    test('deploy.yaml_optional', () async {
+      var top = await ctx.prepare();
+      final dir = fs.directory(join(top.path, 'dir'));
+      for (var path in ['index.html', 'main.dart.js', 'flutter.js', 'a/b']) {
+        final file = fs.file(join(dir.path, path));
+        await file.create(recursive: true);
+        await file.writeAsString(path, flush: true);
+      }
+      final deployYamlFile = fs.file(join(dir.path, 'deploy.yaml'));
+      await deployYamlFile.writeAsString('''
+      files:
+        - index.html
+        - main.dart.{js,wasm}
+        - a/
+      optional:
+        - flutter*.js
+        - favicon.png
+      ''');
+
+      Future<void> check(Directory dst) async {
+        for (var path in ['index.html', 'main.dart.js', 'flutter.js', 'a/b']) {
+          expect(await fs.file(join(dst.path, path)).readAsString(), path);
+        }
+        for (var path in ['main.dart.wasm', 'favicon.png', 'deploy.yaml']) {
+          expect(await fs.file(join(dst.path, path)).exists(), isFalse);
+        }
+      }
+
+      // yaml file
+      var dst = fs.directory(join(top.path, 'dst'));
+      await runCmd(
+        DartCmd([dirdeployDartScript, deployYamlFile.path, dir.path, dst.path]),
+      );
+      await check(dst);
+
+      // scan for deploy.yaml
+      dst = fs.directory(join(top.path, 'dst_scan'));
+      await runCmd(DartCmd([dirdeployDartScript, dir.path, dst.path]));
+      await check(dst);
+    });
+
     test('dir', () async {
       var top = await ctx.prepare();
       //Directory

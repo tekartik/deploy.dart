@@ -6,6 +6,7 @@ import 'package:path/path.dart';
 import 'package:tekartik_deploy/fs/fs_deploy.dart';
 import 'package:tekartik_deploy/src/bin_version.dart';
 import 'package:tekartik_deploy/src/file_utils.dart';
+import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
 import 'package:yaml/yaml.dart';
 
 /// Help flag.
@@ -93,7 +94,7 @@ Future main(List<String> arguments) async {
   String? dstDir;
 
   /// Deploy with settings.
-  Future deployWithSettings(Map settings, String dir, {bool? verbose}) {
+  Future deployWithSettings(Map settings, String dir, {bool? verbose}) async {
     stdout.writeln('Deploying $dir with $settings');
 
     // first delete destination
@@ -101,12 +102,16 @@ Future main(List<String> arguments) async {
     final deployDir = normalize(join(dstDir!, dir));
 
     emptyOrCreateDirSync(deployDir);
+    // files and optional (patterns resolved, missing optional dropped)
+    final entities = await resolveDeployEntities(
+      Directory(buildDir),
+      Config(settings).entities,
+    );
     final futures = <Future>[];
-    for (var fileOrDirRaw in settings['files'] as List) {
-      var fileOrDir = fileOrDirRaw.toString();
-      stdout.writeln(fileOrDir);
+    for (var entity in entities) {
+      stdout.writeln(entity);
       futures.add(
-        _deployEntity(join(buildDir, fileOrDir), join(deployDir, fileOrDir)),
+        _deployEntity(join(buildDir, entity.src), join(deployDir, entity.dst)),
       );
     }
     return Future.wait(futures);

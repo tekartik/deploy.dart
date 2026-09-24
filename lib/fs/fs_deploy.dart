@@ -86,6 +86,12 @@ class ConfigTransformSettings {
 /// files:
 /// - file1
 /// - file2
+/// - main.dart.{js,mjs,wasm} # pattern, must match at least one
+///
+/// # skipped when missing, patterns can match nothing
+/// optional:
+/// - favicon.png
+/// - icons/
 ///
 /// # default dest folder, compare to src
 /// dst: ${src}/../deploy
@@ -162,9 +168,17 @@ abstract class Config {
 }
 
 /// Entity config.
+///
+/// [src] can be a pattern (`*`, `?` in a path segment, `{a,b}` alternatives),
+/// see [isPattern].
 class EntityConfig {
   final String _path;
   String? _dst;
+
+  /// True if the entity is skipped when missing (`optional:` in yaml).
+  ///
+  /// A required pattern must match at least one entity.
+  final bool optional;
 
   /// Source path.
   String get src => _path;
@@ -173,21 +187,24 @@ class EntityConfig {
   String? get dst => (_dst == null) ? src : _dst;
 
   /// Entity config with destination.
-  EntityConfig.withDst(this._path, this._dst);
+  EntityConfig.withDst(this._path, this._dst, {this.optional = false});
 
   /// Entity config.
-  EntityConfig(this._path);
+  EntityConfig(this._path, {this.optional = false});
 
   /// True if a destination is defined.
   bool get hasDst => _dst != null;
 
+  /// True if [src] is a pattern (contains `*`, `?` or `{`).
+  bool get isPattern => deployPathIsPattern(src);
+
   @override
   String toString() {
-    if (_dst == null) {
-      return src;
-    } else {
-      return '$src => $dst';
+    var text = (_dst == null) ? src : '$src => $dst';
+    if (optional) {
+      text = '$text (optional)';
     }
+    return text;
   }
 
   @override
@@ -200,6 +217,9 @@ class EntityConfig {
         return false;
       }
       if (other.dst != dst) {
+        return false;
+      }
+      if (other.optional != optional) {
         return false;
       }
       return true;
@@ -253,7 +273,11 @@ Future<List<File>> deployConfigListFiles(Config config) async {
     // default copy all
     // recursiveLinkOrCopyNewerOptions);
     include = <String>[];
-    for (final entityConfig in config.entities) {
+    final src = config.src!.fs.directory(config.src!.path);
+    for (final entityConfig in await resolveDeployEntities(
+      src,
+      config.entities,
+    )) {
       include.add(entityConfig.src);
     }
   }

@@ -81,6 +81,26 @@ void main() {
       expect(await fs.file(join(dst.path, 'file')).exists(), isFalse);
     });
 
+    test('deploy.yaml_exclude scan', () async {
+      var top = await ctx.prepare();
+      final dir = fs.directory(join(top.path, 'dir'));
+      for (var name in ['file', 'file2']) {
+        final file = fs.file(join(dir.path, name));
+        await file.create(recursive: true);
+        await file.writeAsString('test', flush: true);
+      }
+      await fs.file(join(dir.path, 'deploy.yaml')).writeAsString('''
+      exclude:
+        - file
+      ''');
+
+      // scan for deploy.yaml
+      final dst = fs.directory(join(top.path, 'dst_scan'));
+      await runCmd(DartCmd([dirdeployDartScript, dir.path, dst.path]));
+      expect(await fs.file(join(dst.path, 'file2')).readAsString(), 'test');
+      expect(await fs.file(join(dst.path, 'file')).exists(), isFalse);
+    });
+
     test('deploy.yaml_optional', () async {
       var top = await ctx.prepare();
       final dir = fs.directory(join(top.path, 'dir'));

@@ -5,6 +5,7 @@ library;
 import 'package:fs_shim/utils/io/copy.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:tekartik_deploy/src/gs/gs_gzip.dart';
 import 'package:tekartik_deploy/src/gsutil.dart';
 import 'package:tekartik_io_utils/io_utils_import.dart';
 
@@ -147,24 +148,7 @@ Future gsWebPrepareForRsync(String src, String dst) async {
 
 /// Gzip a directory in place.
 // gzip in place
-Future _gzip(String src) async {
-  final futures = <Future>[];
-  futures.add(
-    Directory(src).list(recursive: true).listen((FileSystemEntity fse) {
-      futures.add(() async {
-        // ignore: avoid_slow_async_io
-        if (await FileSystemEntity.isFile(fse.path)) {
-          //print(fse.path);
-          final file = File(fse.path);
-          final data = gzip.encode(await file.readAsBytes());
-          await file.delete();
-          await file.writeAsBytes(data);
-        }
-      }());
-    }).asFuture(),
-  );
-  await Future.wait(futures);
-}
+Future _gzip(String src) => gzipDirectoryInPlace(src);
 
 /// Deploy to Google Cloud Storage web.
 Future gsWebDeploy(String src, String gsDst) async {

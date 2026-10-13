@@ -2,7 +2,6 @@ library;
 
 import 'package:fs_shim/fs.dart';
 import 'package:fs_shim/utils/copy.dart';
-import 'package:path/path.dart';
 import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_common_utils/log_utils.dart';
 import 'package:tekartik_deploy/src/fs_deploy_impl.dart';
@@ -254,8 +253,8 @@ Future<int> deployEntity(Config config, EntityConfig entityConfig) async {
   return await topCopy.runChild(
     /// Try to symlink first
     defaultCloneOptions,
-    basename(entityConfig.src),
-    basename(entityConfig.dst!),
+    entityConfig.src,
+    entityConfig.dst,
   );
   /*  return await copyFileSystemEntity(
       config.src.fs.newLink(src), config.src.fs.newLink(dst));

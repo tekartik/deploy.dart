@@ -24,37 +24,24 @@ class FtpClient {
 
   /// [src] is local, [dst] is remote
   Future lftpDeploy({required String src, required String dst}) async {
-    var cmd =
-        '''${_preCommand}mirror --only-newer --reverse --delete --verbose $src $dst } ; quit''';
-    // '''set ftp:ssl-allow no; ls''';
-
-    var scheme = (allowUnsecure ?? false) ? 'ftp:' : 'sftp:';
-    await run('''
-# call lftp, upload files
-lftp $scheme//$username:$password@$host${(port != null) ? '$port' : ''} -e "$cmd"
-''');
-  }
-
-  /// Pre command to use for lftp.
-  String get _preCommand {
-    if (allowUnsecure ?? false) {
-      return 'set ftp:ssl-allow no ; ';
-    } else {
-      return '';
-    }
+    await _runLftp(
+      'mirror --only-newer --reverse --delete --verbose $src $dst',
+    );
   }
 
   /// List remote directory content.
   /// [remoteDir] is remote directory.
   Future ls({required String remoteDir}) async {
-    var cmd = '''${_preCommand}ls $remoteDir } ; quit''';
-    // '''set ftp:ssl-allow no; ls''';
+    await _runLftp('ls $remoteDir');
+  }
 
-    var scheme = (allowUnsecure ?? false) ? 'ftp:' : 'sftp:';
-    await run('''
-# call lftp, upload files
-lftp $scheme//$username:$password@$host${(port != null) ? '$port' : ''} -e "$cmd"
-''');
+  /// Run lftp without printing the script, which holds the password.
+  Future<void> _runLftp(String command) async {
+    var script = ftpClientLftpScript(this, command);
+    stdout.writeln(
+      '\$ ${ftpClientLftpScript(this, command, hidePassword: true).trim().split('\n').last}',
+    );
+    await run(script, commandVerbose: false);
   }
 
   /// Read from a map.
@@ -65,4 +52,22 @@ lftp $scheme//$username:$password@$host${(port != null) ? '$port' : ''} -e "$cmd
     username = map['username']?.toString();
     password = map['password']?.toString();
   }
+}
+
+/// The lftp script running [command] on [client], then quitting.
+///
+/// [hidePassword] replaces the password, to print the script.
+String ftpClientLftpScript(
+  FtpClient client,
+  String command, {
+  bool hidePassword = false,
+}) {
+  var allowUnsecure = client.allowUnsecure ?? false;
+  var preCommand = allowUnsecure ? 'set ftp:ssl-allow no ; ' : '';
+  var scheme = allowUnsecure ? 'ftp:' : 'sftp:';
+  var port = client.port;
+  return '''
+# call lftp
+lftp $scheme//${client.username}:${hidePassword ? '****' : client.password}@${client.host}${(port != null) ? ':$port' : ''} -e "$preCommand$command ; quit"
+''';
 }

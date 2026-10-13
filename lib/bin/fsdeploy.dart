@@ -102,10 +102,20 @@ Future main(List<String> arguments) async {
     final deployDir = normalize(join(dstDir!, dir));
 
     emptyOrCreateDirSync(deployDir);
+    var config = Config(
+      settings,
+      src: Directory(buildDir),
+      dst: Directory(deployDir),
+    );
+    // With an exclude list or no files list, deploy like a yaml file argument
+    // (whole folder, exclude applied)
+    if ((config.exclude?.isNotEmpty ?? false) || config.entities.isEmpty) {
+      return await deployConfig(config);
+    }
     // files and optional (patterns resolved, missing optional dropped)
     final entities = await resolveDeployEntities(
       Directory(buildDir),
-      Config(settings).entities,
+      config.entities,
     );
     final futures = <Future>[];
     for (var entity in entities) {

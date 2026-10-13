@@ -10,11 +10,21 @@ import 'package:tekartik_app_media/mime_type.dart';
 /// gsCopyFile('my/local/file', 'gs://my-bucket/');
 Future<void> gsCopyFile(String src, String dst, {bool? verbose}) async {
   verbose ??= false;
+  var shell = Shell(verbose: verbose);
+  for (var script in gsCopyFileScripts(src, dst)) {
+    await shell.run(script);
+  }
+}
+
+/// The gsutil commands run by [gsCopyFile], arguments quoted.
+List<String> gsCopyFileScripts(String src, String dst) {
   if (dst.endsWith('/')) {
     dst = url.join(dst, basename(src));
   }
   var mimeType = filenameMimeType(src);
-  var shell = Shell(verbose: verbose);
-  await shell.run('gsutil cp $src $dst');
-  await shell.run('gsutil -m setmeta -h "Content-Type:$mimeType" $dst');
+  var header = shellArgument('Content-Type:$mimeType');
+  return [
+    'gsutil cp ${shellArgument(src)} ${shellArgument(dst)}',
+    'gsutil -m setmeta -h $header ${shellArgument(dst)}',
+  ];
 }

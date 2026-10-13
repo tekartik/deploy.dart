@@ -30,32 +30,20 @@ Future<int> copyFilesIfNewer(
   String output, {
   bool recursive = true,
   bool followLinks = false,
-}) {
-  var count = 0;
-  final completer = Completer<int>();
-  var futures = <Future>[];
-  Directory(input)
-      .list(recursive: recursive, followLinks: followLinks)
-      .listen(
-        (FileSystemEntity fse) {
-          //print('# ${fse.path}');
-          if (FileSystemEntity.isFileSync(fse.path)) {
-            final relativePath = relative(fse.path, from: input);
-            futures.add(
-              copyFileIfNewer(fse.path, join(output, relativePath)).then((
-                int copied,
-              ) {
-                count += copied;
-              }),
-            );
-          }
-        },
-        onDone: () {
-          Future.wait(futures).then((_) => completer.complete(count));
-        },
-      );
-
-  return completer.future;
+}) async {
+  // Throws if input does not exist
+  var entities = await Directory(
+    input,
+  ).list(recursive: recursive, followLinks: followLinks).toList();
+  var counts = await Future.wait([
+    for (var fse in entities)
+      if (FileSystemEntity.isFileSync(fse.path))
+        copyFileIfNewer(
+          fse.path,
+          join(output, relative(fse.path, from: input)),
+        ),
+  ]);
+  return counts.fold<int>(0, (sum, count) => sum + count);
 }
 
 /// Copy file if newer.

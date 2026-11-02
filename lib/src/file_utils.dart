@@ -51,7 +51,10 @@ Future<int> copyFileIfNewer(String input, String output) async {
   final inputStat = await FileStat.stat(input);
   final outputStat = await FileStat.stat(output);
   try {
-    if ((inputStat.size != outputStat.size) ||
+    // Only an existing file can be up to date: a directory has a size of 0 on
+    // windows, it would match an empty input and the copy error be missed.
+    if ((outputStat.type != FileSystemEntityType.file) ||
+        (inputStat.size != outputStat.size) ||
         (inputStat.modified.isAfter(outputStat.modified))) {
       await copyFile(input, output);
       return 1;

@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:tekartik_io_utils/directory_utils.dart' as io_utils;
 
 /// Copy a file.
 Future copyFile(String input, String output) {
@@ -131,24 +132,32 @@ Directory emptyOrCreateDirSync(String path) {
   return dir;
 }
 
-/// Get the size of a directory recursively.
-Future<int> dirSize(String path) async {
-  var size = 0;
+/// Get the size of a directory recursively, links are not followed.
+///
+/// Same as `dirSize` of `package:tekartik_io_utils/directory_utils.dart`.
+Future<int> dirSize(String path) => io_utils.dirSize(path);
 
-  await Directory(path).list(recursive: true, followLinks: true).listen((
-    FileSystemEntity fse,
-  ) {
-    //devPrint(FileSystemEntity.type(fse.path));
-
-    // ignore: avoid_slow_async_io
-    if (FileSystemEntity.isFileSync(fse.path)) {
-      var stat = fse.statSync();
-      //devPrint('${stat.size} ${fse}');
-      size += stat.size;
-    }
-  }).asFuture<void>();
-  return size;
+/// The path of [path] with its links resolved, [path] normalized if it cannot
+/// be resolved.
+String _resolvedDirectoryPath(String path) {
+  try {
+    return Directory(path).resolveSymbolicLinksSync();
+  } catch (_) {
+    return normalize(absolute(path));
+  }
 }
+
+/// True if [path] is a link to one of [ancestors] (resolved paths of the
+/// directories being walked): following it would never end.
+bool isDirectoryLinkLoop(String path, Set<String> ancestors) =>
+    FileSystemEntity.isLinkSync(path) &&
+    ancestors.contains(_resolvedDirectoryPath(path));
+
+/// [ancestors] with the resolved path of [path] added.
+Set<String> directoryAncestorsWith(Set<String> ancestors, String path) => {
+  ...ancestors,
+  _resolvedDirectoryPath(path),
+};
 
 /// link dir (work on all platforms)
 
@@ -240,11 +249,28 @@ Future<int> linkOrCopyFileIfNewer(String input, String output) {
 /// Link or copy files in a directory if newer.
 ///
 /// create the dirs but copy or link the files
+///
+/// Links to directories are followed, except a link to a directory being
+/// copied (a link loop).
 Future<int> linkOrCopyFilesInDirIfNewer(
   String input,
   String output, {
   bool recursive = true,
   List<String>? but,
+}) => _linkOrCopyFilesInDirIfNewer(
+  input,
+  output,
+  recursive: recursive,
+  but: but,
+  ancestors: directoryAncestorsWith(const {}, input),
+);
+
+Future<int> _linkOrCopyFilesInDirIfNewer(
+  String input,
+  String output, {
+  required bool recursive,
+  required List<String>? but,
+  required Set<String> ancestors,
 }) async {
   var futures = <Future<int>>[];
 
@@ -268,10 +294,22 @@ Future<int> linkOrCopyFilesInDirIfNewer(
         );
       } else if (FileSystemEntity.isDirectorySync(entity.path)) {
         if (recursive) {
+          if (isDirectoryLinkLoop(entity.path, ancestors)) {
+            stderr.writeln('${entity.path} skipped, link loop');
+            continue;
+          }
           final dir = relative(entity.path, from: input);
           final outputDir = join(output, dir);
 
-          futures.add(linkOrCopyFilesInDirIfNewer(join(input, dir), outputDir));
+          futures.add(
+            _linkOrCopyFilesInDirIfNewer(
+              join(input, dir),
+              outputDir,
+              recursive: true,
+              but: null,
+              ancestors: directoryAncestorsWith(ancestors, entity.path),
+            ),
+          );
         }
       }
     }

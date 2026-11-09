@@ -46,17 +46,22 @@ first (see the `tekartik-deploy-fs` skill for `fsDeploy`).
   general form (`-c` for checksums, `-h Key:Value` headers), `gsutilCopyCmd`
   the `cp` variant (`-z html,css,js,json`, `-a public-read`), `gsUtilCmd(args)`
   a raw `gsutil` command. `gsutilCmd` is deprecated, use `gsUtilCmd`.
-  rsync mirrors but does not delete extra remote files here.
+  rsync mirrors but does not delete extra remote files here. `runCmd` does
+  not throw when gsutil fails: check `result.exitCode`.
 * Static web site: `await gsWebDeploy(src, gsDst)` does the whole job — it
   builds `<parent>/gs/<name>/gzip` and `.../none` next to `src`
   (`gsWebPrepareForRsync`), gzips **in place** everything under the `gzip`
   folder (`.html`, `.js`, `.json`, `.appcache`, `.css`, `.txt`; everything else
   goes to `none`), then rsyncs both with `Content-Encoding: gzip` set on the
-  first (`gsWebDeployCmds`). Give it a throwaway build folder: the staging
-  folders are rewritten, and re-running on an already gzipped staging folder
-  would double-compress it.
+  first (`gsWebDeployCmds`). The staging folders are refreshed from `src` on
+  each run (no double compression, `src` is never modified) and kept
+  afterwards; a file deleted from `src` stays in them. It throws a
+  `StateError` when an rsync fails, and the next one is not run.
 * `encodingGZipFolder` (`'gzip'`) and `encodingNoneFolder` (`'none'`) name
-  those staging subfolders if you drive the steps yourself.
+  those staging subfolders. The gzip step itself is not exported: use
+  `gsWebDeploy`, running `gsWebDeployCmds` on a folder prepared with
+  `gsWebPrepareForRsync` alone would upload uncompressed files declared as
+  gzip.
 * ftp/sftp: `FtpClient()` has mutable `host`, `port`, `username`, `password`
   and `allowUnsecure` fields, or `fromMap(map)` reading the same keys from a
   decoded yaml/json map (a `.local/ftp.yaml` kept out of git).
@@ -65,13 +70,20 @@ first (see the `tekartik-deploy-fs` skill for `fsDeploy`).
   `dst` **and deletes remote files that are not in `src`**. `ls(remoteDir:)`
   lists a remote folder. `allowUnsecure: true` switches the url from `sftp:` to
   `ftp:` and sets `ftp:ssl-allow no`; leave it null/false otherwise.
-  Credentials end up on the `lftp` command line, so avoid verbose logs.
-* Known limitation: `FtpClient.port` is appended to the host without a `:`
-  separator, so a non-default port produces a wrong url. Leave `port` null and
-  use the default port.
-* Command line (`dart pub global activate -s git https://github.com/tekartik/deploy.dart`):
-  * `gsdeploy <local_dir> gs://bucket/path` — the `gsDeployCmd` rsync;
-  * `gswebdeploy <local_dir> gs://bucket/path` — the gzip web deploy;
+  `port` is appended to the host (`sftp://user:****@host:2222`). The user
+  and the password are percent encoded in the lftp url (any character is
+  fine), but they end up on the `lftp` command line (visible in the process
+  list): the printed command hides the password, avoid other logs of them.
+  A `src` or `dst` path with spaces or quotes is not supported (it goes
+  unquoted in the lftp command).
+* Command line: the package declares no `executables:`, run
+  `dart run tekartik_deploy:gsdeploy ...` from a package depending on it, or
+  `dart pub global run tekartik_deploy:gsdeploy ...` after
+  `dart pub global activate -s git https://github.com/tekartik/deploy.dart`:
+  * `gsdeploy <local_dir> gs://bucket/path` — the `gsDeployCmd` rsync, exits
+    with gsutil's exit code when it fails;
+  * `gswebdeploy <local_dir> gs://bucket/path` — the gzip web deploy, fails
+    (non zero exit) when an rsync fails;
   * both take `--check` (exit code tells whether `gsutil` was found),
     `--version` and `-h`.
 
@@ -96,7 +108,14 @@ import 'package:process_run/cmd_run.dart';
 import 'package:tekartik_deploy/gs_deploy.dart';
 
 Future<void> main() async {
-  await runCmd(gsDeployCmd('build/deploy', 'gs://my-bucket/app'), verbose: true);
+  var result = await runCmd(
+    gsDeployCmd('build/deploy', 'gs://my-bucket/app'),
+    verbose: true,
+  );
+  // runCmd does not throw when gsutil fails
+  if (result.exitCode != 0) {
+    throw StateError('gsutil rsync failed (${result.exitCode})');
+  }
 
   // Custom: checksums and a cache header, no parallelism.
   await runCmd(
@@ -116,17 +135,18 @@ Future<void> main() async {
 ### Deploy a gzipped static web site
 
 ```dart
-import 'package:process_run/cmd_run.dart';
+import 'dart:io';
+
 import 'package:tekartik_deploy/gs_deploy.dart';
 
 Future<void> main() async {
-  // All in one: prepare gzip/none folders, gzip, rsync both.
-  await gsWebDeploy('build/deploy', 'gs://my-bucket/www');
-
-  // Or drive the steps, e.g. to inspect the staging folders first.
-  await gsWebPrepareForRsync('build/deploy', 'build/gs');
-  for (var cmd in gsWebDeployCmds('build/gs', 'gs://my-bucket/www')) {
-    await runCmd(cmd, verbose: true);
+  try {
+    // All in one: prepare build/gs/deploy/{gzip,none}, gzip, rsync both.
+    await gsWebDeploy('build/deploy', 'gs://my-bucket/www');
+  } on StateError catch (e) {
+    // gsutil not found, or an rsync failed (its output is above)
+    stderr.writeln(e);
+    exitCode = 1;
   }
 }
 ```
@@ -154,8 +174,9 @@ Future<void> main() async {
 
 * Calling any `gs*` helper where `gsutil` is not installed/authenticated: it
   throws a `StateError` or fails in the subprocess.
-* Passing the source build folder to `gsWebDeploy` twice in a row without
-  rebuilding: the staging folder is gzipped in place.
+* Running `gsDeployCmd` with `runCmd` and ignoring `result.exitCode`: a failed
+  upload then looks like a success.
+* Running `gsWebDeployCmds` on a folder that was not gzipped by
+  `gsWebDeploy`: the files are declared `Content-Encoding: gzip` but are not.
 * Forgetting that `lftpDeploy` deletes remote files absent from `src`.
-* Setting `FtpClient.port` (see the limitation above).
 * Using these libraries from Flutter or web code.

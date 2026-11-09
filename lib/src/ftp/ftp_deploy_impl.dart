@@ -22,7 +22,9 @@ class FtpClient {
   /// Password.
   String? password;
 
-  /// [src] is local, [dst] is remote
+  /// Mirrors the local [src] folder to the remote [dst] folder with lftp
+  /// (`mirror --only-newer --reverse --delete`): remote files absent from
+  /// [src] are deleted.
   Future lftpDeploy({required String src, required String dst}) async {
     await _runLftp(
       'mirror --only-newer --reverse --delete --verbose $src $dst',
@@ -66,8 +68,17 @@ String ftpClientLftpScript(
   var preCommand = allowUnsecure ? 'set ftp:ssl-allow no ; ' : '';
   var scheme = allowUnsecure ? 'ftp:' : 'sftp:';
   var port = client.port;
+  var username = _lftpUrlEncode(client.username);
+  var password = hidePassword ? '****' : _lftpUrlEncode(client.password);
   return '''
 # call lftp
-lftp $scheme//${client.username}:${hidePassword ? '****' : client.password}@${client.host}${(port != null) ? ':$port' : ''} -e "$preCommand$command ; quit"
+lftp $scheme//$username:$password@${client.host}${(port != null) ? ':$port' : ''} -e "$preCommand$command ; quit"
 ''';
 }
+
+/// Percent encode a user or a password of an lftp url (lftp decodes them),
+/// so that `@`, `:`, `/`, spaces and quotes neither break the url nor the
+/// script line.
+String _lftpUrlEncode(String? text) => Uri.encodeComponent(
+  text ?? 'null',
+).replaceAll("'", '%27').replaceAll('!', '%21');

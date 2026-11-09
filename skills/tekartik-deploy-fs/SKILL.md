@@ -3,7 +3,8 @@ name: tekartik-deploy-fs
 description: >-
   Use when copying a build output to a deploy folder with tekartik_deploy:
   fsDeploy, fsDeployListFiles, FsDeployOptions, fsDeployOptionsNoSymLink, the
-  deploy.yaml files/exclude format, the lower level Config / EntityConfig /
+  deploy.yaml files/optional/exclude format and its patterns
+  (main.dart.{js,wasm}), the lower level Config / EntityConfig /
   deployConfig / deployConfigListFiles API, the dart:io
   (package:tekartik_deploy/fs_deploy.dart) versus fs_shim
   (package:tekartik_deploy/fs/fs_deploy.dart) libraries, and the fsdeploy
@@ -14,8 +15,8 @@ description: >-
 
 `fsDeploy` copies a source directory to a destination directory, filtered by a
 `files`/`exclude` configuration given inline or read from a `deploy.yaml`. It is
-the packaging step of a build: pick what ships, drop the rest, hard-link when
-possible. Remote (Google Storage, ftp) deployment lives in the same package but
+the packaging step of a build: pick what ships, drop the rest, symlink (or
+copy) the files. Remote (Google Storage, ftp) deployment lives in the same package but
 in other libraries: see the `tekartik-deploy-cloud` skill.
 
 ## Guidelines
@@ -66,23 +67,34 @@ in other libraries: see the `tekartik-deploy-cloud` skill.
   * Beware: the map form (`files:` followed by `name:` entries) keeps the keys
     but **ignores the destination values**; use the list-of-maps form to
     rename.
-* Files are hard-linked when the file system allows it
-  (`tryToLinkFile: true`) and skipped when size and modified date match. Pass
+* By default files are symbolic links to the source when the file system
+  supports them (`fs_shim`'s `tryToLinkFile: true`), copies otherwise. Pass
   `options: fsDeployOptionsNoSymLink` (same as
   `FsDeployOptions()..noSymLink = true`) to force real copies, which is what
-  you want when the deploy folder is then zipped, uploaded or published.
+  you want when the deploy folder is then zipped, uploaded or published, or
+  kept after the next build.
+* Links to directories in the source are followed, except a link to one of
+  the folders being copied or scanned (a link loop such as `loop -> ..`),
+  which `fsdeploy` and the link-or-copy helpers skip with a message on stderr.
 * `Future<List<File>> fsDeployListFiles({settings, yaml, src})` applies the
   same filtering and returns the source files without writing anything: use it
   to check a configuration, or to feed another tool.
 * Progress is logged through `package:logging` on the `tekartik.deploy` logger
   (plus a few prints); enable a logging handler if you want the per-entity
   lines.
-* Command line (`dart pub global activate -s git https://github.com/tekartik/deploy.dart`
-  installs `fsdeploy`, `gsdeploy`, `gswebdeploy`, `aedeploy`):
-  * `fsdeploy` — scans the current directory (then `build/`) for directories
-    containing a `deploy.yaml` and deploys each to `<src>/deploy`;
-  * `fsdeploy <src_dir> <dst_dir>` — same scan, explicit destination;
-  * `fsdeploy <deploy.yaml> [<src_dir> [<dst_dir>]]` — one configuration file;
+* Command line: the package declares no `executables:`, so run the `bin/`
+  scripts with `dart run tekartik_deploy:fsdeploy ...` from a package that
+  depends on it, or after
+  `dart pub global activate -s git https://github.com/tekartik/deploy.dart`
+  with `dart pub global run tekartik_deploy:fsdeploy ...` (same for
+  `gsdeploy`, `gswebdeploy`):
+  * `fsdeploy` — from the current directory, finds the directories holding a
+    `deploy.yaml` (not below one) and deploys each `<path>` to
+    `deploy/<path>`; with none, tries `build/` into `build/deploy/`. The
+    `files:` entries are symlinked on Linux and macOS, copied on Windows;
+  * `fsdeploy <src_dir> <dst_dir>` — same search, into `<dst_dir>/<path>`;
+  * `fsdeploy <deploy.yaml> [<src_dir> [<dst_dir>]]` — one configuration file,
+    real copies, `dst_dir` defaulting to `<src>/../deploy/<src name>`;
   * `fsdeploy --dir <src_dir> [<dst_dir>]` — deploy a directory as is, no
     `deploy.yaml` needed;
   * `fsdeploy --version`, `fsdeploy -h`.
@@ -198,6 +210,9 @@ import 'package:tekartik_deploy/fs/fs_deploy.dart';
 
 Future<void> main() async {
   var fs = newFileSystemMemory();
+  for (var name in ['index.html', 'favicon.png']) {
+    await fs.file('/src/$name').create(recursive: true);
+  }
   var config = Config({
     'files': [
       'index.html',
@@ -222,7 +237,9 @@ Future<void> main() async {
   `- src: dst` list entries.
 * Putting a file that only some builds produce (wasm, service worker) in
   `files:`: the deploy fails when it is missing, use `optional:`.
-* Uploading a deploy folder made of hard links without
+* Uploading a deploy folder made of symbolic links without
   `fsDeployOptionsNoSymLink`.
+* Pointing `dst` at a folder that holds `src` (or `src` itself): it is
+  deleted before the copy.
 * Mixing the two libraries in one file: `fs_deploy.dart` and
   `fs/fs_deploy.dart` both define `fsDeploy` on different `Directory` types.

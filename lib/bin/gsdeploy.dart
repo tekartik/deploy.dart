@@ -78,5 +78,9 @@ Future main(List<String> arguments) async {
   //  setupQuickLogging(Level.FINE);
   //  String buildPath = APPENGINE_APP_DEPLOY_TOP;
   //
-  await runCmd(gsDeployCmd(src, dst), verbose: true);
+  var result = await runCmd(gsDeployCmd(src, dst), verbose: true);
+  if (result.exitCode != 0) {
+    // gsutil failed (its output is above)
+    exitCode = result.exitCode;
+  }
 }

@@ -5,13 +5,20 @@ import 'dart:io' as io;
 
 import 'package:fs_shim/fs_memory.dart';
 import 'package:path/path.dart';
-import 'package:process_run/shell.dart' show shellArgument;
+import 'package:process_run/shell.dart'
+    show platformEnvironment, shellArgument, stringToArguments, whichSync;
+import 'package:tekartik_deploy/bin/fsdeploy.dart' as fsdeploy;
 import 'package:tekartik_deploy/fs/fs_deploy.dart';
+import 'package:tekartik_deploy/gs_deploy.dart' show gsWebDeploy;
 import 'package:tekartik_deploy/src/file_utils.dart';
 import 'package:tekartik_deploy/src/ftp/ftp_deploy_impl.dart';
 import 'package:tekartik_deploy/src/gs/gs_deploy.dart';
 import 'package:tekartik_deploy/src/gs/gs_gzip.dart';
+import 'package:tekartik_io_utils/file_utils.dart' show setExecutablePermission;
 import 'package:test/test.dart';
+
+/// A link loop must fail fast on a broken implementation.
+const _loopTimeout = Timeout(Duration(seconds: 30));
 
 void main() {
   late io.Directory top;
@@ -117,6 +124,124 @@ void main() {
         allOf(contains('ftp://u:****@h '), isNot(contains(':p@'))),
       );
     });
+
+    test('lftp script special user and password', () {
+      const password = 'p@ss word"x\'y:z/(a)*!~\$\\%';
+      var client = FtpClient()
+        ..host = 'h'
+        ..port = 21
+        ..username = 'us@er:1'
+        ..password = password;
+      var line = ftpClientLftpScript(client, 'ls dir').split('\n')[1];
+      // As parsed by process_run run(): one url argument
+      var args = stringToArguments(line);
+      expect(args, hasLength(4));
+      expect(args[0], 'lftp');
+      var uri = Uri.parse(args[1]);
+      expect(uri.host, 'h');
+      expect(uri.port, 21);
+      var userInfo = uri.userInfo;
+      var colon = userInfo.indexOf(':');
+      expect(Uri.decodeComponent(userInfo.substring(0, colon)), 'us@er:1');
+      expect(Uri.decodeComponent(userInfo.substring(colon + 1)), password);
+      expect(args.sublist(2), ['-e', 'ls dir ; quit']);
+    });
+
+    group('link loops', () {
+      late String dir;
+      setUp(() {
+        dir = join(top.path, 'src');
+        io.Directory(join(dir, 'sub')).createSync(recursive: true);
+        io.File(join(dir, 'f')).writeAsStringSync('12345');
+        io.File(join(dir, 'sub', 'g')).writeAsStringSync('1');
+        // A link to a parent: followed until ELOOP (40 levels). A single link
+        // keeps a broken implementation bounded (two would mean 2^40 paths
+        // and files written without end).
+        io.Link(join(dir, 'sub', 'up')).createSync(dir);
+      });
+
+      test('dirSize does not follow links', () async {
+        var other = join(top.path, 'other');
+        io.File(join(other, 'big')).createSync(recursive: true);
+        io.File(join(other, 'big')).writeAsStringSync('x' * 1000);
+        io.Link(join(dir, 'other')).createSync(other);
+        expect(await dirSize(dir).timeout(const Duration(seconds: 20)), 5 + 1);
+      }, timeout: _loopTimeout);
+
+      test('linkOrCopyFilesInDirIfNewer', () async {
+        var dst = join(top.path, 'dst');
+        expect(
+          await linkOrCopyFilesInDirIfNewer(
+            dir,
+            dst,
+          ).timeout(const Duration(seconds: 20)),
+          2,
+        );
+        expect(io.File(join(dst, 'sub', 'g')).readAsStringSync(), '1');
+        expect(io.Directory(join(dst, 'sub', 'up')).existsSync(), isFalse);
+      }, timeout: _loopTimeout);
+
+      test('linkOrCopyFilesInDirIfNewer follows other links', () async {
+        var shared = join(top.path, 'shared');
+        io.File(join(shared, 'h')).createSync(recursive: true);
+        io.Link(join(dir, 'shared')).createSync(shared);
+        var dst = join(top.path, 'dst');
+        expect(
+          await linkOrCopyFilesInDirIfNewer(
+            dir,
+            dst,
+          ).timeout(const Duration(seconds: 20)),
+          3,
+        );
+        expect(io.File(join(dst, 'shared', 'h')).existsSync(), isTrue);
+      }, timeout: _loopTimeout);
+
+      test('fsdeploy scan for deploy.yaml', () async {
+        // The scan goes through sub (no deploy.yaml) and its links
+        io.File(join(dir, 'app', 'a.txt'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('a');
+        io.File(
+          join(dir, 'app', 'deploy.yaml'),
+        ).writeAsStringSync('files:\n  - a.txt\n');
+        await fsdeploy.main([dir]).timeout(const Duration(seconds: 20));
+        expect(
+          io.File(join(dir, 'deploy', 'app', 'a.txt')).readAsStringSync(),
+          'a',
+        );
+        // Not found again through the link (deploy/sub/up/app)
+        expect(io.Directory(join(dir, 'deploy', 'sub')).existsSync(), isFalse);
+      }, timeout: _loopTimeout);
+    }, skip: io.Platform.isWindows ? 'links need admin rights' : false);
+
+    test('gsWebDeploy fails when gsutil fails', () async {
+      var bin = join(top.path, 'bin');
+      var log = io.File(join(top.path, 'gsutil.log'));
+      var gsutil = io.File(join(bin, 'gsutil'))
+        ..createSync(recursive: true)
+        ..writeAsStringSync(
+          '#!/bin/sh\necho "\$@" >> ${shellArgument(log.path)}\n'
+          'echo "fake gsutil fails" >&2\nexit 3\n',
+        );
+      await setExecutablePermission(gsutil.path);
+      platformEnvironment = {
+        ...platformEnvironment,
+        'PATH': '$bin:${platformEnvironment['PATH']}',
+      };
+      addTearDown(() => platformEnvironment = null);
+      // Never the real gsutil
+      expect(whichSync('gsutil'), gsutil.path);
+      var src = join(top.path, 'web');
+      io.File(join(src, 'index.html'))
+        ..createSync(recursive: true)
+        ..writeAsStringSync('<html></html>');
+      await expectLater(
+        gsWebDeploy(src, 'gs://fake-bucket.invalid/x'),
+        throwsA(isA<StateError>()),
+      );
+      // The second rsync is not run
+      expect(log.readAsLinesSync(), hasLength(1));
+    }, skip: io.Platform.isWindows ? 'posix shell script' : false);
 
     test('gsutil cp arguments quoted', () {
       var scripts = gsCopyFileScripts('my dir/file.txt', 'gs://bucket/');

@@ -5,9 +5,17 @@ import 'fs/fs_deploy.dart' as fs;
 
 export 'fs/fs_deploy.dart' show FsDeployOptions, fsDeployOptionsNoSymLink;
 
-/// Deploy between 2 folders with an option config file
+/// Copies the entries of [src] listed in [settings] (or in the [yaml]
+/// `deploy.yaml` file) to [dst], and returns the number of files deployed.
 ///
-/// [settings] can be set (files and exclude keys)
+/// [dst] is deleted first, then filled: never point it at a folder holding
+/// [src]. It defaults to `<src>/../deploy/<src name>`; [src] defaults to the
+/// folder of [yaml]. [settings] (the `files`, `optional` and `exclude` keys of
+/// a `deploy.yaml`) wins over [yaml]. Without `files`, the whole [src] folder
+/// is copied.
+///
+/// Files are symbolic links to the source unless [options] is
+/// [fsDeployOptionsNoSymLink] (real copies).
 Future<int> fsDeploy({
   fs.FsDeployOptions? options,
   Map? settings,
@@ -36,9 +44,8 @@ Future<int> fsDeploy({
   );
 }
 
-/// Deploy list files
-///
-/// [settings] can be set (files and exclude keys)
+/// The source files [fsDeploy] would deploy with the same [settings], [yaml]
+/// and [src], nothing is written (a dry run).
 Future<List<File>> fsDeployListFiles({
   Map? settings,
   File? yaml,

@@ -93,7 +93,11 @@ const encodingGZipFolder = 'gzip';
 /// No encoding folder name.
 const encodingNoneFolder = 'none';
 
-/// Deploy to Google Cloud Storage.
+/// Deploy to Google Cloud Storage: `gsutil -m rsync -r <src> <dst>` (remote
+/// files absent from [src] are kept).
+///
+/// Run it with process_run `runCmd`, which does not throw when gsutil fails:
+/// check the `exitCode` of the result.
 // gsutil setwebcfg -m index.html gs://gstest.tekartik.com
 //ProcessCmd gsDeployCmd(String src, String dst) => gsutilRsyncCmd(src, dst);
 ProcessCmd gsDeployCmd(
@@ -151,6 +155,8 @@ Future gsWebPrepareForRsync(String src, String dst) async {
 Future _gzip(String src) => gzipDirectoryInPlace(src);
 
 /// Deploy to Google Cloud Storage web.
+///
+/// Throws a [StateError] if a `gsutil rsync` fails, the next one is not run.
 Future gsWebDeploy(String src, String gsDst) async {
   final name = basename(src);
   final srcParent = dirname(src);
@@ -162,6 +168,9 @@ Future gsWebDeploy(String src, String gsDst) async {
   await _gzip(gzipFolder);
 
   for (final cmd in gsWebDeployCmds(gsSrc, gsDst)) {
-    await runCmd(cmd, verbose: true);
+    var result = await runCmd(cmd, verbose: true);
+    if (result.exitCode != 0) {
+      throw StateError('$cmd failed (exit code ${result.exitCode})');
+    }
   }
 }

@@ -142,9 +142,17 @@ Future main(List<String> arguments) async {
   */
 
   /// Handle directory.
-  Future<int> handleDir(String dir) async {
+  ///
+  /// [ancestors] are the resolved paths of the directories being scanned, a
+  /// link to one of them is skipped (link loop).
+  Future<int> handleDir(String dir, [Set<String> ancestors = const {}]) async {
     // this is a directoru
     final deployYaml = 'deploy.yaml';
+    if (isDirectoryLinkLoop(dir, ancestors)) {
+      stderr.writeln('$dir skipped, link loop');
+      return 0;
+    }
+    ancestors = directoryAncestorsWith(ancestors, dir);
 
     return await (FileSystemEntity.isDirectory(dir)).then((bool isDir) {
       //print('dir $dir: ${isDir}');
@@ -173,7 +181,7 @@ Future main(List<String> arguments) async {
             return Directory(dir)
                 .list()
                 .listen((FileSystemEntity fse) {
-                  sub.add(handleDir(fse.path));
+                  sub.add(handleDir(fse.path, ancestors));
                 })
                 .asFuture<void>()
                 .then((_) {
